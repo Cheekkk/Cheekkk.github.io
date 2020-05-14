@@ -1,6 +1,6 @@
 html,
 body {
-  font-size: 16px;
+  font-size: 22px;
   font-family: "SF Pro SC", "SF Pro Text", "SF Pro Icons", PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
 }
 html,
@@ -22,7 +22,7 @@ body a {
   transition-timing-function: ease-in-out;
 }
 body a:hover {
-  color: #1abc9c;
+  color: #f5b314;
   text-decoration: none;
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
@@ -546,10 +546,10 @@ a.beian-police img {
   color: white;
 }
 .top-nav-collapse {
-  background-color: #2f4154;
+  background-color: #3F4A75;
 }
 .navbar-col-show {
-  background-color: #2f4154;
+  background-color: #3F4A75;
 }
 @media (max-width: 767px) {
   .navbar {
@@ -1010,7 +1010,7 @@ h6::before {
 }
 .tocbot-active-link {
   font-weight: bold;
-  color: #1abc9c;
+  color: #f5b314;
 }
 .tocbot-is-collapsed {
   max-height: 0;
@@ -1327,7 +1327,7 @@ mjx-container svg:focus {
   padding: 0.5rem;
 }
 .tagcloud a:hover {
-  color: #1abc9c !important;
+  color: #f5b314 !important;
 }
 .links .card {
   box-shadow: none;
