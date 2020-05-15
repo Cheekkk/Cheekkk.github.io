@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>test0 - Cheekkk&#39;s Blog</title>
+  <title>SQL注入 几种特殊的注入 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    5 字
+                    475 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    1
+                    5
                      分钟
                   </span>
                 
@@ -175,15 +175,63 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <h1 id="part-1"><a href="#part-1" class="headerlink" title="part 1"></a>part 1</h1><p>test</p>
-<h2 id="part-2"><a href="#part-2" class="headerlink" title="part 2"></a>part 2</h2><p>test</p>
-<p>test3</p>
+              <p>本文介绍了二次注入、宽字节注入</p>
+<a id="more"></a>
+
+<h1 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h1><h2 id="01-二次注入介绍"><a href="#01-二次注入介绍" class="headerlink" title="01 二次注入介绍"></a>01 二次注入介绍</h2><ol>
+<li>先构造语句（此语句含有被转义字符的语句）</li>
+<li>将我们构造的恶意语句存入数据库；</li>
+<li>第二次构造语句（结合前面已被存入数据库的语句构造。因为系统没有已存入的数据做检查，成功注入）</li>
+</ol>
+<h2 id="02-二次注入利用"><a href="#02-二次注入利用" class="headerlink" title="02 二次注入利用"></a>02 二次注入利用</h2><p><strong>Lesson 24</strong></p>
+<ol>
+<li>注册用户名 admin’ – -<br>密码123456</li>
+<li>进行登录</li>
+<li>修改密码为112233</li>
+<li>成功将admin的密码修改为112233<br>而admin’ – -的密码没有改变</li>
+</ol>
+<h2 id="03-二次注入危害"><a href="#03-二次注入危害" class="headerlink" title="03 二次注入危害"></a>03 二次注入危害</h2><ol>
+<li>注入payload触发二次sql注入</li>
+<li>注入payload触发xss攻击</li>
+</ol>
+<h1 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h1><p>宽字节注入适用于单引号被转义为\‘的场景，原理是将反斜杠拼接成一个宽字符，从而避免单引号被转义</p>
+<h2 id="01-宽字节注入基础"><a href="#01-宽字节注入基础" class="headerlink" title="01 宽字节注入基础"></a>01 宽字节注入基础</h2><p>GBK编码 占用两字节，ASCII编码占用一个字节</p>
+<p>PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集</p>
+<p>如果PHP中有addslashes函数，单引号就会被转义为\‘，通常使用%DF进行宽字符注入绕过，’URL编码是%27，\URL编码是%5C，即%DF\‘会被转为%DF%5C%27</p>
+<p>若网站的字符集是GBK，MYSQL使用的编码也是GBK，就会认为%DF%5C是一个宽字符,从而解析为 <strong>宽字符’</strong></p>
+<p>最常使用的宽字节注入是%DF，其实只要用ascii码大于128的即可</p>
+<p>%81-%FE均可注入<strong>（%7F除外）</strong></p>
+<p><strong>ascii码转码方法</strong></p>
+<p>如ascii码为129，先将129转为十六进制，即为0x81，然后加%即可，%81</p>
+<h2 id="02-绕过演示"><a href="#02-绕过演示" class="headerlink" title="02 绕过演示"></a>02 绕过演示</h2><p><strong>Lesson 32</strong></p>
+<p>?id=-1%DF’ union select 1,database(),user() –+</p>
+<p><strong>Lesson 33</strong></p>
+<p>?id=-1%DF’ union select 1,database(),user() –+</p>
+<h2 id="03-sqlmap安全测试"><a href="#03-sqlmap安全测试" class="headerlink" title="03 sqlmap安全测试"></a>03 sqlmap安全测试</h2><p>sqlmap -u “URL?id=%df%27”</p>
+<p><strong>用于宽字节注入的脚本 unmagicquotes.py</strong></p>
+<p>sqlmap -u “URL?id=1” –tamper=unmagicquotes.py</p>
 
             </article>
             <hr>
             <div>
               <div class="post-metas mb-3">
                 
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
+                    
+                  </div>
                 
               </div>
               
@@ -194,9 +242,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/05/15/test3/">
+                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">test1</span>
+                        <span class="hidden-mobile">SQL注入 文件读写</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -204,8 +252,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/05/12/test2/">
-                        <span class="hidden-mobile">test2</span>
+                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-SQLmap%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">
+                        <span class="hidden-mobile">SQL注入 SQLmap的使用方法</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -314,7 +362,7 @@
         listClass: 'tocbot-list',
         isCollapsedClass: 'tocbot-is-collapsed',
         collapsibleClass: 'tocbot-is-collapsible',
-        collapseDepth: 0,
+        collapseDepth: 1,
         scrollSmooth: true,
         headingsOffset: -boardTop
       });
@@ -345,7 +393,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "test0&nbsp;",
+        "SQL注入 几种特殊的注入&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

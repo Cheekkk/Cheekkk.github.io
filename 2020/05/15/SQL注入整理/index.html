@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#4a4770">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <title>SQL注入整理 - Cheekkk&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/atelier-forest-light.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Cheekkk's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">
+              <i class="iconfont icon-category-fill"></i>
+              分类</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/bg.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.4k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    16
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>本文整理了SQL注入的原理、分类等基础知识</p>
+<a id="more"></a>
+<h1 id="01-SQL注入简介"><a href="#01-SQL注入简介" class="headerlink" title="01 SQL注入简介"></a>01 SQL注入简介</h1><h2 id="SQL注入的原因"><a href="#SQL注入的原因" class="headerlink" title="SQL注入的原因"></a>SQL注入的原因</h2><ol>
+<li>程序编写者在处理程序和数据库交互时，使用字符串拼接的方式构造SQL语句</li>
+<li>未对用户可控参数进行足够的过滤便将参数内容拼接进入到SQL语句中</li>
+</ol>
+<h2 id="可能存在SQL注入的位置"><a href="#可能存在SQL注入的位置" class="headerlink" title="可能存在SQL注入的位置"></a>可能存在SQL注入的位置</h2><p>web应用在获取用户数据的地方，只要带入数据库查询，就可能存在注入</p>
+<p>常见的地方包括：</p>
+<ol>
+<li>GET数据</li>
+<li>POST数据</li>
+<li>HTTP头部</li>
+<li>COOKIE数据</li>
+</ol>
+<p>…</p>
+<h2 id="SQL注入的危害"><a href="#SQL注入的危害" class="headerlink" title="SQL注入的危害"></a>SQL注入的危害</h2><ol>
+<li>获取管理员的账号密码</li>
+<li>获取数据库中内容</li>
+<li>修改或插入数据到数据库内</li>
+<li>利用注入漏洞获得webshell</li>
+</ol>
+<h1 id="02-SQL注入原理"><a href="#02-SQL注入原理" class="headerlink" title="02 SQL注入原理"></a>02 SQL注入原理</h1><h2 id="简单案例讲解"><a href="#简单案例讲解" class="headerlink" title="简单案例讲解"></a>简单案例讲解</h2><p>在常见的登录页面，通常使用如下SQL语句：<br>select * from admin where username=’输入的用户名’ and password=’输入的密码’</p>
+<p>如果用户输入的用户名为’ or 1=1 –  <strong>注意最后需要有一个空格</strong><br>拼接起来的SQL语句为<br>select * from admin where username=’ <strong>‘ or 1=1 –</strong> <del>‘ and password=’输入的密码’</del></p>
+<p>使用单引号提前闭合，or 1=1永远为真，–将后边的内容注释掉，即完成查询，实现了登录，我们输入的’ or 1=1 –  就可以看作为一个万能密码</p>
+<p>SQL语句中的注释</p>
+<ul>
+<li><p>#（可以用%23代替)</p>
+</li>
+<li><p>–+ 或者–空格 (空格可以用%20代替)</p>
+</li>
+<li><p>/<em>….\</em>/</p>
+</li>
+<li><p>/<em>!…\</em>/ 此为内联注释，在mysql中可以执行注释中的语句，其他系统无法执行<br>如：select * from articles where id=id</p>
+<p>使用内联注释注入 select *from articles where id=</p>
+<p>-1 /*!union*//*!select*/ 1,2,3,4</p>
+<p>在mysql中可以执行 union select 1,2,3,4</p>
+</li>
+</ul>
+<p>以下列出了一些常见的万能密码</p>
+<pre><code class="hljs ada"><span class="hljs-symbol">'or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span>/*
+<span class="hljs-string">"or "</span>a<span class="hljs-string">"="</span>a
+<span class="hljs-string">"or 1=1--</span>
+<span class="hljs-string">"</span><span class="hljs-keyword">or</span><span class="hljs-string">"="</span>
+<span class="hljs-string">"or"</span>=<span class="hljs-string">"a'='a</span>
+<span class="hljs-string">"</span>or1=<span class="hljs-number">1</span><span class="hljs-comment">--</span>
+<span class="hljs-string">"or=or"</span>
+'<span class="hljs-symbol">'or</span><span class="hljs-string">'='</span><span class="hljs-keyword">or</span>'
+') <span class="hljs-keyword">or</span> (<span class="hljs-string">'a'</span>=<span class="hljs-symbol">'a</span>
+'.).<span class="hljs-keyword">or</span>.('.a.<span class="hljs-string">'='</span>.a
+<span class="hljs-symbol">'or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span>
+<span class="hljs-symbol">'or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span>
+<span class="hljs-symbol">'or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span>/*
+<span class="hljs-symbol">'or</span><span class="hljs-string">"="</span>a<span class="hljs-string">'='</span>a
+<span class="hljs-symbol">'or</span><span class="hljs-string">' '</span><span class="hljs-number">1</span><span class="hljs-string">'='</span><span class="hljs-number">1</span>'
+<span class="hljs-symbol">'or</span>'<span class="hljs-string">'='</span>
+<span class="hljs-symbol">'or</span>'<span class="hljs-string">'='</span><span class="hljs-symbol">'or</span>'<span class="hljs-string">'='</span>
+<span class="hljs-symbol">'or</span><span class="hljs-string">'='</span><span class="hljs-number">1</span>'
+<span class="hljs-symbol">'or</span><span class="hljs-string">'='</span><span class="hljs-keyword">or</span>'
+<span class="hljs-symbol">'or.</span><span class="hljs-symbol">'a.</span><span class="hljs-string">'='</span>a
+<span class="hljs-symbol">'or1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span>
+<span class="hljs-number">1</span><span class="hljs-symbol">'or</span><span class="hljs-string">'1'</span>='<span class="hljs-number">1</span>
+a<span class="hljs-symbol">'or</span>' <span class="hljs-number">1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span>
+a<span class="hljs-symbol">'or</span>'<span class="hljs-number">1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span>
+<span class="hljs-keyword">or</span> <span class="hljs-string">'a'</span>=<span class="hljs-string">'a'</span>
+<span class="hljs-keyword">or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span>
+or1=<span class="hljs-number">1</span><span class="hljs-comment">--</span></code></pre>
+
+<p>可以将以上密码作为字典，使用burpsuite用枚举的方法进行测试</p>
+<h2 id="简单注入漏洞探测"><a href="#简单注入漏洞探测" class="headerlink" title="简单注入漏洞探测"></a>简单注入漏洞探测</h2><p>一般网页的CMS逻辑为：CMS逻辑：index.php首页展示内容，具有文章列表（链接具有文章id）、articles.php文章详细页，URL中article.php?id=文章id读取id对应文章<br>可以利用Google Hacking寻找可能存在漏洞的URL</p>
+<p>简单验证方法，如在URL中?id=1 后边添加内容：</p>
+<ol>
+<li>单引号 ‘</li>
+<li>and 1=1</li>
+<li>and 1=2</li>
+</ol>
+<p>*<em>逻辑运算<br>在SQL语句中，and比or的优先级高<br>select 1=2 and 1=2 or 1=1<br>返回的结果为1 *</em></p>
+<p>如果页面中mysql报错，证明存在sql注入漏洞<br>如果报错信息中存在自己输入的值，就是字符型注入，否则是数字型注入    </p>
+<p>根据页面显示的内容，可以分为报错注入、盲注等</p>
+<h2 id="SQL注入的分类"><a href="#SQL注入的分类" class="headerlink" title="SQL注入的分类"></a>SQL注入的分类</h2><ol>
+<li>根据输入数据的分类：<ul>
+<li>数字型 select * from table where id=@id</li>
+<li>字符型 select * from table where id=’@id’</li>
+</ul>
+</li>
+<li>根据注入手法的分类：<ul>
+<li>联合查询 页面有回显<br>使用order by判断出表的列数<br>使用select 1，2，3 观察各列的输出情况，替换成想要查询的内容</li>
+<li>报错注入 页面有报错信息<br>报错信息会显示在页面中，可以执行报错注入<br>可以使用group by语句报错，如：<br>?id=1 union select 1,concat(left(rand(),3),’^’,(select version()),’^’)a,count(*),3 from information_schema.tables group by a –+</li>
+<li>布尔盲注 页面有真假状态<br>通常使用二分法对数据库名等信息进行长度、ascii码的探测<br>根据页面的真假状态进行判断表达式是否正确</li>
+<li>延时盲注 页面没有真假状态<br>通常使用二分法对数据库名等信息进行长度、ascii码的探测<br>使用if(exp,sleep(),1)根据时间判断表达式是否正确</li>
+</ul>
+</li>
+<li>根据提交方式的分类：<ul>
+<li>GET型 可以直接在URL中修改参数进行测试</li>
+<li>POST型 需要抓包进行参数修改</li>
+</ul>
+</li>
+<li>一些特殊的注入：宽字节注入、二次注入<h2 id="sql注入常用的函数"><a href="#sql注入常用的函数" class="headerlink" title="sql注入常用的函数"></a>sql注入常用的函数</h2><ul>
+<li>select user()查看当前用户名</li>
+<li>select database()查看当前数据库</li>
+<li>select version()查看当前版本</li>
+<li>Limit m,n 从第m行开始到第m+n行（从0开始索引）</li>
+<li>order by 获取字段数</li>
+<li>length() 获取长度</li>
+<li>ascii() 获取ascii码</li>
+<li>substring(s,m,n),substr(),mid() 截取字符串<br>三个参数分别是截取的字符串，截取的起始位置(从1开始计数)，截取长度</li>
+<li>floor(x) 返回不大于x的最大整数</li>
+<li>round() 返回参数x最接近的整数</li>
+<li>rand() 返回0-1之间的随机浮点数</li>
+<li>load_file() 读取文件，并返回文件内容作为一个字符串</li>
+<li>select … into outfile ‘绝对路径’ 写入文件</li>
+<li>sleep(n) 延时n秒</li>
+<li>benchmark(n,e) 执行e表达式n次，通过指定较大的n，实现延时</li>
+<li>if(exp,t,f) 如果exp表达式为真就返回t，为假就返回f </li>
+</ul>
+</li>
+</ol>
+<h2 id="SQL注入绕过方式"><a href="#SQL注入绕过方式" class="headerlink" title="SQL注入绕过方式"></a>SQL注入绕过方式</h2><ol>
+<li><p>大小写绕过，sql语句对大小写不敏感</p>
+<p>如：AnD、ORdeR</p>
+</li>
+<li><p>使用&amp;&amp;、||替换and和or</p>
+</li>
+<li><p>双写绕过<br>如：un<del><strong>union</strong></del>ion</p>
+</li>
+<li><p>编码绕过</p>
+<p>利用URL编码 或 十六进制编码</p>
+</li>
+<li><p>内联注释绕过<br>mysql中内联注释中的内容会被执行<br>如：/*!select*/ * from admin 可以正常执行</p>
+</li>
+<li><p>注释被过滤时，要闭合后边 </p>
+</li>
+</ol>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E7%9B%B2%E6%B3%A8/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SQL注入 盲注</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "SQL注入整理&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

