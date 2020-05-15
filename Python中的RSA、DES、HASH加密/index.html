@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>SQL注入 盲注 - Cheekkk&#39;s Blog</title>
+  <title>Python中的RSA、DES、HASH加密 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    794 字
+                    980 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    9
+                    12
                      分钟
                   </span>
                 
@@ -175,52 +175,150 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>本文简单介绍了一种特殊的SQL注入，盲注</p>
+              <p>本文总结了python中进行加密的几个模块的使用</p>
 <a id="more"></a>
 
-<h1 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h1><p>盲注的原理是向数据库发送判断真假的语句，根据页面状态判断真假</p>
-<p>盲注可以分为基于布尔的盲注和基于时间的盲注，后者耗时较长</p>
-<h2 id="01-基于布尔的盲注"><a href="#01-基于布尔的盲注" class="headerlink" title="01 基于布尔的盲注"></a>01 基于布尔的盲注</h2><p>原理：根据页面显示的状态判断查询语句真假</p>
-<p>适用场景：网页会因为查询语句的真假而显示不同的状态</p>
-<p>例如一个网页在查询为真时，页面无显示，而查询为假时页面会有警告，这时就可以使用盲注进行注入，通常使用枚举的方法。</p>
-<p>常用的函数如substr(str,m,n)即从字符串str的第m个字符（从1开始计数，包括自身）向后取n个字符，substr(str,1,1)即取第一个字符。</p>
-<p>如获取数据库名：</p>
+<h1 id="Python中的RSA、DES、HASH加密"><a href="#Python中的RSA、DES、HASH加密" class="headerlink" title="Python中的RSA、DES、HASH加密"></a>Python中的RSA、DES、HASH加密</h1><h2 id="01-加密的分类"><a href="#01-加密的分类" class="headerlink" title="01 加密的分类"></a>01 加密的分类</h2><ol>
+<li><p>对称加密</p>
 <ul>
-<li>获取数据库长度<ul>
-<li>?id=1 and length(database())=1 –+ 页面显示为假</li>
-<li>?id=1 and length(database())=2 –+ 页面显示为假</li>
-<li>?id=1 and length(database())=3 –+ 页面显示为真，得到数据库名的长度为3</li>
+<li>加密和解密都使用相同的密钥</li>
+<li>密钥较短，加密处理简单，加解密速度快<br>适合于加密大量数据的场合</li>
+<li>举例：DES、AES</li>
 </ul>
 </li>
-<li>获取数据库名<ul>
-<li>?id=1 and ascii(substr(databse(),1,1))=97 –+ 页面显示为假</li>
-<li>?id=1 and ascii(substr(databse(),1,1))=98 –+ 页面显示为假</li>
-<li>?id=1 and ascii(substr(databse(),1,1))=99 –+ 页面显示为真，得到数据库名的第一个字符的ASCII码为99，即c</li>
-</ul>
-</li>
-</ul>
-<p>同理可以继续进行探测</p>
-<p><strong>为了避免次数过多，可以转换成ASCII码，然后使用位运算比较</strong></p>
-<h2 id="02-基于时间的盲注"><a href="#02-基于时间的盲注" class="headerlink" title="02 基于时间的盲注"></a>02 基于时间的盲注</h2><p>原理：根据页面延时判断查询语句真假</p>
-<p>适用场景：无论查询语句真假，网页显示的状态相同，此时我们可以使用sleep()函数构造查询语句，人为创造出页面显示的真假状态，即加载时长。</p>
-<p>常用语句if(exp,t,f)即当表达式exp为真时返回t，为假时返回f<br>if(ascII(substr(database(),1,1)=115,sleep(3),1))表示当数据库名第一个字符的ASCII码是115时就延时3s，否则返回1（正常显示无延时）</p>
-<p>如获取数据库名：</p>
+<li><p>非对称加密</p>
 <ul>
-<li>获取数据库长度<ul>
-<li>?id=1 and if(length(database())=1,sleep(5),1) –+ 页面正常加载</li>
-<li>?id=1 and if(length(database())=2,sleep(5),1) –+ 页面正常加载</li>
-<li>?id=1 and if(length(database())=3,sleep(5),1) –+ 页面加载延时5s，得到数据库名的长度为3</li>
+<li>加密使用公开的公钥，解密使用私钥</li>
+<li>密钥大，加解密速度慢<br>一般用于加密少量数据，适用于互联网传输公钥，应用于数字签名</li>
+<li>举例：RSA</li>
 </ul>
 </li>
-<li>获取数据库名<ul>
-<li>?id=1 and if(ascii(substr(databse(),1,1))=97,sleep(5),1) –+ 页面正常加载</li>
-<li>?id=1 and if(ascii(substr(databse(),1,1))=98,sleep(5),1) –+ 页面正常加载</li>
-<li>?id=1 and if(ascii(substr(databse(),1,1))=99,sleep(5),1) –+ 页面加载延时5s，得到数据库名的第一个字符的ASCII码为99，即c</li>
+<li><p>Hash算法/数字签名</p>
+<ul>
+<li>是一种单向算法，难以由密文得到明文，用于检查信息是否被篡改</li>
+<li>举例：MD5、SHA</li>
 </ul>
 </li>
-</ul>
-<p>除sleep外还可以使用benchmark函数<br>benchmark(n,exp)表示执行表达式exp n次，当n很大时就可以起到延时效果<br>如if(ascii(substr(databse(),1,1))=97,benchmark(md5(‘a’),1000000),1)</p>
-<h2 id="03-SQLmap盲注"><a href="#03-SQLmap盲注" class="headerlink" title="03 SQLmap盲注"></a>03 SQLmap盲注</h2><p>sqlmap -u url –technique T –dbs 指定-T为基于时间的盲注<br><strong>BEUSTQ B布尔 E错误 Uunion注入 S堆叠 T时间 Q查询</strong><br><strong>若不指定则使用全部技术，时间较长</strong></p>
+</ol>
+<h2 id="02-python中的pyDes"><a href="#02-python中的pyDes" class="headerlink" title="02 python中的pyDes"></a>02 python中的pyDes</h2><p>官方文档：</p>
+<pre><code class="hljs asciidoc">'''
+类初始化
+--------------------
+pyDes.des（key，[mode]，[IV]，[pad]，[padmode]）
+pyDes.triple<span class="hljs-emphasis">_des（key，[mode]，[IV]，[pad]，[padmode]）</span>
+<span class="hljs-emphasis"></span>
+<span class="hljs-emphasis">key-&gt;包含加密密钥的字节。DES 8个字节，16或24个字节</span>
+<span class="hljs-emphasis">       用于三重DES</span>
+<span class="hljs-emphasis">mode-&gt;加密类型的可选参数，可以是</span>
+<span class="hljs-emphasis">       pyDes.ECB（电子密码簿）或pyDes.CBC（密码块链接）</span>
+<span class="hljs-emphasis">如果使用CBC模式，则必须提供IV-&gt;可选的初始值字节。</span>
+<span class="hljs-emphasis">       长度必须为8个字节。</span>
+<span class="hljs-emphasis">pad-&gt;可选参数，设置填充字符（PAD_</span>NORMAL）以在
+<span class="hljs-code">       使用此实例完成的所有加密/解密操作。</span>
+padmode-&gt;可选参数，设置填充模式（PAD<span class="hljs-emphasis">_NORMAL或PAD_</span>PKCS5）
+<span class="hljs-code">       在对此实例执行的所有加密/解密操作期间使用。</span>
+
+我建议使用PAD<span class="hljs-emphasis">_PKCS5填充，因为这样您就不必担心任何</span>
+<span class="hljs-emphasis">填充问题，因为在解密时可以明确删除填充</span>
+<span class="hljs-emphasis">使用PAD_</span>PKCS5填充模式加密的数据。
+
+常用方法
+--------------
+加密（数据，[填充]，[填充模式]）
+解密（数据，[pad]，[padmode]）
+
+数据-&gt;要加密/解密的字节
+pad-&gt;可选参数。仅在使用PAD<span class="hljs-emphasis">_NORMAL的padmode时。对于</span>
+<span class="hljs-emphasis">       加密时，将以下字符添加到数据块的末尾</span>
+<span class="hljs-emphasis">       数据不是8个字节的倍数。对于解密，将删除</span>
+<span class="hljs-emphasis">       最后8个与此填充字符匹配的结尾字符</span>
+<span class="hljs-emphasis">       未加密数据块的字节。</span>
+<span class="hljs-emphasis">padmode-&gt;可选参数，设置填充模式，必须为PAD_</span>NORMAL之一
+<span class="hljs-code">       或PAD_PKCS5）。默认为PAD_NORMAL。</span>
+'''</code></pre>
+
+<p>示例程序：<br>python3中要使用字节</p>
+<pre><code class="hljs python"><span class="hljs-keyword">from</span> pyDes <span class="hljs-keyword">import</span> *
+
+<span class="hljs-keyword">if</span> __name__==<span class="hljs-string">'__main__'</span>:
+    Des_Key = <span class="hljs-string">"itsmykey"</span>
+    Des_IV = <span class="hljs-string">b"\x22\x33\x35\x81\xBC\x38\x5A\xE7"</span>
+    data=<span class="hljs-string">b'hello'</span>
+
+    k = des(Des_Key, CBC, Des_IV, pad=<span class="hljs-literal">None</span>, padmode=PAD_PKCS5)
+
+    d=k.encrypt(data)
+    print(<span class="hljs-string">'已加密'</span>,d)
+
+    t=k.decrypt(d)
+    text=str(t, encoding=<span class="hljs-string">'utf8'</span>)
+    print(<span class="hljs-string">'已解密'</span>,text)</code></pre>
+
+
+
+<h1 id="03-python中的rsa"><a href="#03-python中的rsa" class="headerlink" title="03 python中的rsa"></a>03 python中的rsa</h1><pre><code class="hljs python"><span class="hljs-keyword">import</span> rsa
+
+<span class="hljs-comment"># 生成密钥</span>
+(pubkey, privkey) = rsa.newkeys(<span class="hljs-number">1024</span>)
+
+<span class="hljs-comment"># 保存密钥</span>
+<span class="hljs-keyword">with</span> open(<span class="hljs-string">'public.pem'</span>, <span class="hljs-string">'w+'</span>) <span class="hljs-keyword">as</span> f:
+    f.write(pubkey.save_pkcs1().decode())
+
+<span class="hljs-keyword">with</span> open(<span class="hljs-string">'private.pem'</span>, <span class="hljs-string">'w+'</span>) <span class="hljs-keyword">as</span> f:
+    f.write(privkey.save_pkcs1().decode())
+
+<span class="hljs-comment"># 导入密钥</span>
+<span class="hljs-keyword">with</span> open(<span class="hljs-string">'public.pem'</span>, <span class="hljs-string">'r'</span>) <span class="hljs-keyword">as</span> f:
+    pubkey = rsa.PublicKey.load_pkcs1(f.read().encode())
+
+<span class="hljs-keyword">with</span> open(<span class="hljs-string">'private.pem'</span>, <span class="hljs-string">'r'</span>) <span class="hljs-keyword">as</span> f:
+    privkey = rsa.PrivateKey.load_pkcs1(f.read().encode())
+
+<span class="hljs-comment"># 明文</span>
+message = <span class="hljs-string">'hello'</span>
+
+<span class="hljs-comment"># 公钥加密</span>
+crypto = rsa.encrypt(message.encode(), pubkey)
+
+<span class="hljs-comment"># 私钥解密</span>
+message = rsa.decrypt(crypto, privkey).decode()
+print(message)
+
+<span class="hljs-comment"># 私钥签名</span>
+signature = rsa.sign(message.encode(), privkey, <span class="hljs-string">'SHA-1'</span>)
+
+<span class="hljs-comment"># 公钥验证</span>
+rsa.verify(message.encode(), signature, pubkey)</code></pre>
+
+
+
+<h2 id="04-python中的hashlib"><a href="#04-python中的hashlib" class="headerlink" title="04 python中的hashlib"></a>04 python中的hashlib</h2><ol>
+<li><p>md5<br>生成md5加密，由字符串生成摘要很容易，但由摘要回到字符串很难，因此可以用来检查信息是否被篡改</p>
+<p>md5是最常见的摘要算法，生成结果是固定的128bit字节，通常用一个32位的16进制字符串表示</p>
+<pre><code class="hljs python"><span class="hljs-keyword">import</span> hashlib
+
+text=<span class="hljs-string">'hello'</span>
+md5text=hashlib.md5(text.encode()).hexdigest()</code></pre>
+
+<p>数据量很大时，可以分段调用update</p>
+<pre><code class="hljs python"><span class="hljs-keyword">import</span> hashlib
+
+text=<span class="hljs-string">'hello python'</span>
+md5=hashlib.md5()
+md5.update(<span class="hljs-string">'hello'</span>.encode())
+md5.update(<span class="hljs-string">'python'</span>.encode())
+print(md5.hexdigest())</code></pre>
+</li>
+<li><p>sha1<br>sha1的结果是160bit字节，通常用40位的16进制字符串表示，更安全的算法时sha256和sha512，但更慢且更长</p>
+<pre><code class="hljs python">   <span class="hljs-keyword">import</span> hashlib
+   
+   text=<span class="hljs-string">'hello'</span>
+md5text=hashlib.sha1(text.encode()).hexdigest()</code></pre>
+</li>
+<li><p>两个不同的数据也可能算出相同的摘要，这称为碰撞<br>摘要算法通常用于数据库之中，黑客可以事先算出常见密码的摘要进行对比，为了更加安全，可以对原始字符串加一个复杂字符串来实现，俗称加盐</p>
+<pre><code class="hljs python">salt_md5=hashlib.md5(text+<span class="hljs-string">'salt'</span>.encode()).hexdigest()</code></pre></li>
+</ol>
 
             </article>
             <hr>
@@ -230,7 +328,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                      <a class="hover-with-bg" href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a>
                     
                   </div>
                 
@@ -238,9 +336,11 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                      <a class="hover-with-bg" href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a>
                     
-                      <a class="hover-with-bg" href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
+                      <a class="hover-with-bg" href="/tags/python/">python</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
                     
                   </div>
                 
@@ -253,9 +353,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E5%9F%BA%E4%BA%8E%E6%8A%A5%E9%94%99%E7%9A%84%E6%B3%A8%E5%85%A5/">
+                      <a href="/Python-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SQL注入 基于报错的注入</span>
+                        <span class="hidden-mobile">Python 正则表达式</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -263,8 +363,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5%E6%95%B4%E7%90%86/">
-                        <span class="hidden-mobile">SQL注入整理</span>
+                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99/">
+                        <span class="hidden-mobile">SQL注入 文件读写</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -404,7 +504,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "SQL注入 盲注&nbsp;",
+        "Python中的RSA、DES、HASH加密&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

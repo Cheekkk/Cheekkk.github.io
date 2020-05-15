@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#4a4770">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <title>BOM与DOM - Cheekkk&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/atelier-forest-light.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Cheekkk's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">
+              <i class="iconfont icon-category-fill"></i>
+              分类</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/bg.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    984 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    11
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>BOM与DOM的概念介绍</p>
+<a id="more"></a>
+
+<h1 id="BOM与DOM"><a href="#BOM与DOM" class="headerlink" title="BOM与DOM"></a>BOM与DOM</h1><h2 id="01-BOM"><a href="#01-BOM" class="headerlink" title="01 BOM"></a>01 BOM</h2><p>浏览器对象模型<br>浏览器中的一个窗口就是一个BOM</p>
+<p>![image-20200504151328074](/Users/zhangdexin/Library/Application Support/typora-user-images/image-20200504151328074.png)</p>
+<h3 id="window对象"><a href="#window对象" class="headerlink" title="window对象"></a>window对象</h3><p>一般情况下，window都可以省略<br>所有的属性、方法变量前都可以加上window，也可以省略</p>
+<ul>
+<li>window.alert(‘hello’);</li>
+<li>confirm(‘确认框’);<br>点击确认时返回ture，取消返回false</li>
+<li>prompt(‘输入框’);<br>第一个参数，面板上的显示内容<br>第二个参数（可选），默认值<br>返回值为输入的内容，无输入时返回null</li>
+<li>open(url, name, string)<br>第一个参数，跳转的URL<br>第二个参数，给打开的窗口命名<br>第三个参数，一个特殊的字符串，可以设置新打开窗口的属性</li>
+</ul>
+<h3 id="history对象"><a href="#history对象" class="headerlink" title="history对象"></a>history对象</h3><p>当前窗口（而非浏览器）的历史记录，不同URL会产生不同的历史记录</p>
+<ul>
+<li>属性<br>history.length 输出当前窗口历史记录的条数</li>
+<li>方法<ul>
+<li>history.back() 与在浏览器点击后退按钮相同</li>
+<li>history.forward() 与在浏览器点击后退按钮相同</li>
+<li>history.go()<br>参数 ：0 刷新当前页面<pre><code>正数 前进n页
+负数 后退n页</code></pre></li>
+</ul>
+</li>
+</ul>
+<h3 id="location对象"><a href="#location对象" class="headerlink" title="location对象"></a>location对象</h3><p><strong>URL 统一资源定位符</strong><br>协议://IP(域名)/:端口号/路径/?查询字符串#锚点<br>protocol://hostname:port/pathname/?search#hash</p>
+<ul>
+<li>属性<ul>
+<li>location.protocol 输出协议</li>
+<li>location.hostname 输出主机名</li>
+<li>location.pathname 输出路径和文件名</li>
+<li>location.port 输出端口，一般是隐藏的</li>
+<li>location.search 输出查询字符串，使用？开头，&amp;连接</li>
+<li>location.hash 输出锚点</li>
+</ul>
+</li>
+</ul>
+<p>使用location输出的是对象，location.href输出的是字符串</p>
+<p>window.location === window.document.location</p>
+<ul>
+<li>方法<ul>
+<li>location.assign(url) 在当前窗口跳转到URL</li>
+<li>location.replace(url) 在当前窗口替换成新的URL(不产生历史记录)</li>
+<li>location.reload() 刷新当前窗口，添加参数true时不经过缓存，强制从服务器重载</li>
+</ul>
+</li>
+</ul>
+<h2 id="02-DOM"><a href="#02-DOM" class="headerlink" title="02 DOM"></a>02 DOM</h2><p>文档对象模型 document object model</p>
+<p><img src="https://www.runoob.com/images/pic_htmltree.gif" srcset="/img/loading.gif" alt="DOM HTML tree"></p>
+<ul>
+<li>节点类型：<ul>
+<li>元素节点  <div></div></li>
+<li>属性节点 id=’div1’</li>
+<li>文本节点 div文本</li>
+</ul>
+</li>
+<li>节点的属性：<ul>
+<li>innerHTML - 节点（元素）的文本值</li>
+<li>parentNode - 节点（元素）的父节点</li>
+<li>childNodes - 节点（元素）的子节点</li>
+<li>attributes - 节点（元素）的属性节点</li>
+</ul>
+</li>
+<li>元素节点的获取<ul>
+<li>document .getElementById(“div1”);<br>功能：通过id获取符合条件的元素节点（id必须是唯一的）<br>返回值：符合条件的一个节点</li>
+<li>document .getElementByName(name属性的值);<br>功能：通过name属性的值获取符合条件的元素节点<br>只能从全局即document开始，一般用在表单元素中</li>
+<li>node.getElementByTagName(标签名);<br>功能：从node节点开始，通过标签名获取符合条件的元素节点<br>返回值：与数组类似，一般叫做伪数组或类数组</li>
+<li>node.getElementByClassName(class名);<br>功能：从node节点开始，通过class名获取符合条件的元素节点<br>IE8以下不兼容</li>
+<li>document.querySelector(字符串)<br>参数：css选择器格式字符串<br>返回值：符合条件的第一个节点</li>
+<li>document.querySelectorAll(字符串)<br>参数：css选择器格式字符串<br>返回值：伪数组</li>
+</ul>
+</li>
+<li>修改HTML元素<ul>
+<li>document.getElementById(“p1”).innerHTML=”新文本!”;<br>改变一个 &lt;p&gt; 元素的 HTML 内容</li>
+<li>document.getElementById(“p2”).style.color=”blue”;<br>改变一个段落的 HTML 样式</li>
+<li>var node=document.createTextNode(“这是一个新段落。”); para.appendChild(node);<br>如需向 HTML DOM 添加新元素，您首先必须创建该元素（元素节点），然后把它追加到已有的元素上。</li>
+<li>appendChild(node);<br>插入新的子节点（元素）</li>
+<li>removeChild(node);<br>删除子节点（元素）</li>
+</ul>
+</li>
+<li>DOM事件<ul>
+<li>onclick=<em>JavaScript</em><br>当点击时执行js代码</li>
+<li>onload=<em>JavaScript</em><br>当加载网页时执行js代码</li>
+<li>onunload=<em>JavaScript</em><br>当离开网页时执行js代码</li>
+<li>onchange=<em>JavaScript</em><br>当改变输入字段的内容时执行js代码</li>
+<li>onmouseover=<em>JavaScript</em><br>当鼠标悬浮在此处时执行js代码</li>
+<li>onmouseout=<em>JavaScript</em><br>当鼠标离开此处时执行js代码</li>
+<li>onmousedown=<em>JavaScript</em><br>当鼠标按下时执行js代码</li>
+<li>onmouseup=<em>JavaScript</em><br>当鼠标松开时执行js代码</li>
+</ul>
+</li>
+</ul>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/XSS/">XSS</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/">
+                        <span class="hidden-mobile">暴力破解</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "BOM与DOM&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

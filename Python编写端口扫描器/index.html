@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#4a4770">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <title>Python编写端口扫描器 - Cheekkk&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/atelier-forest-light.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Cheekkk's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">
+              <i class="iconfont icon-category-fill"></i>
+              分类</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/bg.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    964 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    17
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>使用scapy编写的扫描器，可以进行tcp与udp扫描</p>
+<a id="more"></a>
+
+<p>以命令行方式启动，多线程扫描</p>
+<p>可以同时进行ICMP、ACK、SYN、FIN、UDP多种扫描</p>
+<pre><code class="hljs python"><span class="hljs-keyword">import</span> argparse
+<span class="hljs-keyword">from</span> threading <span class="hljs-keyword">import</span> *
+<span class="hljs-keyword">from</span> scapy.all <span class="hljs-keyword">import</span> *
+<span class="hljs-keyword">import</span> re
+<span class="hljs-keyword">import</span> time
+
+screenLock=Semaphore(value=<span class="hljs-number">1</span>)
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">icmp_scan</span><span class="hljs-params">(ip)</span>:</span>
+    reply=sr1(IP(dst=ip)/ICMP(),timeout=<span class="hljs-number">5</span>)
+    <span class="hljs-keyword">if</span> reply:
+        <span class="hljs-keyword">if</span> reply[ICMP].type==<span class="hljs-number">0</span>:
+            print(<span class="hljs-string">'%s IMCP reply'</span>%ip)
+    <span class="hljs-keyword">else</span>:
+        print(<span class="hljs-string">'%s NO IMCP reply'</span>%ip)
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">syn_scan</span><span class="hljs-params">(ip,port)</span>:</span>
+    screenLock.acquire()
+    reply=sr1(IP(dst=ip)/TCP(sport=RandShort(),dport=port,flags=<span class="hljs-string">'S'</span>),timeout=<span class="hljs-number">5</span>)
+    <span class="hljs-keyword">if</span> (reply <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>):
+        print(<span class="hljs-string">'%s : %s Filtered'</span>%(ip,port))
+    <span class="hljs-keyword">elif</span>(reply.haslayer(TCP)):
+        <span class="hljs-keyword">if</span>(reply.getlayer(TCP).flags==<span class="hljs-string">'SA'</span>):
+            print(<span class="hljs-string">'%s : %s Open'</span>%(ip,port))
+        <span class="hljs-keyword">elif</span>(reply.getlayer(TCP).flags==<span class="hljs-string">'RA'</span>):
+            print(<span class="hljs-string">'%s : %s Closed'</span> % (ip, port))
+    <span class="hljs-keyword">elif</span> (reply.haslayer(ICMP)):
+        <span class="hljs-keyword">if</span> (int(reply.getlayer(ICMP).type) == <span class="hljs-number">3</span> <span class="hljs-keyword">and</span> int(reply.getlayer(ICMP).code) <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">9</span>, <span class="hljs-number">10</span>, <span class="hljs-number">13</span>]):
+            print(<span class="hljs-string">'%s : %s Filtered'</span> % (ip, port))
+    screenLock.release()
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ack_scan</span><span class="hljs-params">(ip,port)</span>:</span>
+    screenLock.acquire()
+    reply = sr1(IP(dst=ip) / TCP(sport=RandShort(), dport=port, flags=<span class="hljs-string">'A'</span>), timeout=<span class="hljs-number">5</span>)
+    <span class="hljs-keyword">if</span> (reply <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>):
+        print(<span class="hljs-string">'%s : %s Filtered'</span> % (ip, port))
+    <span class="hljs-keyword">elif</span> (reply.haslayer(TCP)):
+        <span class="hljs-keyword">if</span> (reply.getlayer(TCP).flags == <span class="hljs-string">'R'</span>):
+            print(<span class="hljs-string">'%s : %s Unfiltered'</span> % (ip, port))
+    <span class="hljs-keyword">elif</span>(reply.haslayer(ICMP)):
+        <span class="hljs-keyword">if</span>(int(reply.getlayer(ICMP).type)==<span class="hljs-number">3</span> <span class="hljs-keyword">and</span> int(reply.getlayer(ICMP).code) <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">9</span>, <span class="hljs-number">10</span>, <span class="hljs-number">13</span>]):
+            print(<span class="hljs-string">'%s : %s Filtered'</span> % (ip, port))
+    screenLock.release()
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fin_scan</span><span class="hljs-params">(ip,port)</span>:</span>
+    screenLock.acquire()
+    reply = sr1(IP(dst=ip) / TCP(sport=RandShort(), dport=port, flags=<span class="hljs-string">'F'</span>),timeout=<span class="hljs-number">5</span>)
+    <span class="hljs-keyword">if</span> (reply <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>):
+        print(<span class="hljs-string">'%s : %s Open or Filtered'</span> % (ip, port))
+    <span class="hljs-keyword">elif</span> (reply.haslayer(TCP)):
+        <span class="hljs-keyword">if</span> (reply.getlayer(TCP).flags == <span class="hljs-string">'RA'</span>):
+            print(<span class="hljs-string">'%s : %s Closed'</span> % (ip, port))
+    <span class="hljs-keyword">elif</span>(reply.haslayer(ICMP)):
+        <span class="hljs-keyword">if</span>(int(reply.getlayer(ICMP).type)==<span class="hljs-number">3</span> <span class="hljs-keyword">and</span> int(reply.getlayer(ICMP).code) <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">9</span>, <span class="hljs-number">10</span>, <span class="hljs-number">13</span>]):
+            print(<span class="hljs-string">'%s : %s Filtered'</span> % (ip, port))
+    screenLock.release()
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">udp_scan</span><span class="hljs-params">(ip,port)</span>:</span>
+    screenLock.acquire()
+    reply=sr1(IP(dst=ip) / UDP(dport=port),timeout=<span class="hljs-number">10</span>)
+    <span class="hljs-keyword">if</span>(str(type(reply)==<span class="hljs-string">''</span>)):
+        print(<span class="hljs-string">'%s : %s Open or Filtered'</span> % (ip, port))
+    <span class="hljs-keyword">elif</span>(reply.haslayer(UDP)):
+        print(<span class="hljs-string">'%s : %s Open'</span> % (ip, port))
+    <span class="hljs-keyword">elif</span> (reply.haslayer(ICMP)):
+        <span class="hljs-keyword">if</span> (int(reply.getlayer(ICMP).type) == <span class="hljs-number">3</span> <span class="hljs-keyword">and</span> int(reply.getlayer(ICMP).code)==<span class="hljs-number">3</span>):
+            print(<span class="hljs-string">'%s : %s Closed'</span> % (ip, port))
+        <span class="hljs-keyword">elif</span> (int(reply.getlayer(ICMP).type) == <span class="hljs-number">3</span> <span class="hljs-keyword">and</span> int(reply.getlayer(ICMP).code) <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">9</span>, <span class="hljs-number">10</span>, <span class="hljs-number">13</span>]):
+            print(<span class="hljs-string">'%s : %s Filtered'</span> % (ip, port))
+    screenLock.release()
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">banner</span><span class="hljs-params">()</span>:</span>
+    print(<span class="hljs-string">'''</span>
+<span class="hljs-string">    -----------------------</span>
+<span class="hljs-string">          My Scanner</span>
+<span class="hljs-string">    -----------------------</span>
+<span class="hljs-string">    -p/--port 指定端口</span>
+<span class="hljs-string">    未指定时扫描常用服务端口</span>
+<span class="hljs-string">    </span>
+<span class="hljs-string">    可同时使用多种技术进行扫描</span>
+<span class="hljs-string">    --icmp</span>
+<span class="hljs-string">    --syn/--ack/--fin</span>
+<span class="hljs-string">    --udp</span>
+<span class="hljs-string">    </span>
+<span class="hljs-string">    -h/--help 获取帮助</span>
+<span class="hljs-string">    -----------------------</span>
+<span class="hljs-string">    '''</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+    parser=argparse.ArgumentParser(description=banner())
+    <span class="hljs-comment"># 设置扫描ip地址和端口</span>
+    parser.add_argument(<span class="hljs-string">'ip'</span>,help=<span class="hljs-string">'设置目标IP'</span>)
+    parser.add_argument(<span class="hljs-string">'-p'</span>,<span class="hljs-string">'--port'</span>,dest=<span class="hljs-string">'port'</span>,action=<span class="hljs-string">'store'</span>,help=<span class="hljs-string">'设置目标端口,如80 80,81 80-90'</span>)
+
+    <span class="hljs-comment">#设置扫描类型</span>
+    parser.add_argument(<span class="hljs-string">'--icmp'</span>, dest=<span class="hljs-string">'icmp'</span>, default=<span class="hljs-number">0</span>, action=<span class="hljs-string">'store_true'</span>, help=<span class="hljs-string">'进行ICMP扫描'</span>)
+    parser.add_argument(<span class="hljs-string">'--syn'</span>, dest=<span class="hljs-string">'syn'</span>, default=<span class="hljs-number">0</span>, action=<span class="hljs-string">'store_true'</span>, help=<span class="hljs-string">'进行SYN扫描'</span>)
+    parser.add_argument(<span class="hljs-string">'--ack'</span>, dest=<span class="hljs-string">'ack'</span>, default=<span class="hljs-number">0</span>, action=<span class="hljs-string">'store_true'</span>, help=<span class="hljs-string">'进行ACK扫描'</span>)
+    parser.add_argument(<span class="hljs-string">'--fin'</span>, dest=<span class="hljs-string">'fin'</span>, default=<span class="hljs-number">0</span>, action=<span class="hljs-string">'store_true'</span>, help=<span class="hljs-string">'进行FIN扫描'</span>)
+    parser.add_argument(<span class="hljs-string">'--udp'</span>, dest=<span class="hljs-string">'udp'</span>, default=<span class="hljs-number">0</span>, action=<span class="hljs-string">'store_true'</span>, help=<span class="hljs-string">'进行UDP扫描'</span>)
+
+    args = parser.parse_args()
+
+    <span class="hljs-comment">#用正则表达式匹配输入的端口</span>
+    <span class="hljs-comment">#分别为指定单个端口，指定范围，用逗号分隔多个端口</span>
+    type1=<span class="hljs-string">r'\d&#123;1,5&#125;$'</span>                       <span class="hljs-comment"># -p 80</span>
+    type2=<span class="hljs-string">r'\d&#123;1,5&#125;-\d&#123;1,5&#125;$'</span>               <span class="hljs-comment"># -p 80-90</span>
+    type3=<span class="hljs-string">r'\d&#123;1,5&#125;(,\d&#123;1,5&#125;)+'</span>             <span class="hljs-comment"># -p 80,801</span>
+
+    port_list = list()
+    <span class="hljs-keyword">if</span> args.port:
+        <span class="hljs-keyword">if</span> re.match(type1,args.port):
+            port_list.append(args.port)
+        <span class="hljs-keyword">elif</span> re.match(type2,args.port):
+            temp_list=args.port.split(<span class="hljs-string">'-'</span>)
+            l=int(temp_list[<span class="hljs-number">0</span>])
+            r=int(temp_list[<span class="hljs-number">1</span>])
+            <span class="hljs-keyword">if</span> l&gt;r:
+                l,r=r,l
+            <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> range(l,r+<span class="hljs-number">1</span>):
+                port_list.append(int(p))
+        <span class="hljs-keyword">elif</span> re.match(type3,args.port):
+            temp_list=args.port.split(<span class="hljs-string">','</span>)
+            <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> temp_list:
+                port_list.append(p)
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-comment">#未指定端口时默认扫描的端口列表</span>
+        port_list=[<span class="hljs-number">21</span>,<span class="hljs-number">22</span>,<span class="hljs-number">25</span>,<span class="hljs-number">53</span>,<span class="hljs-number">80</span>,<span class="hljs-number">110</span>,<span class="hljs-number">443</span>,<span class="hljs-number">3306</span>,<span class="hljs-number">3389</span>,<span class="hljs-number">8080</span>]
+
+
+    threads_ack=[]
+    threads_syn = []
+    threads_fin = []
+    threads_udp = []
+    start_time = time.time()
+    print(<span class="hljs-string">'------ 开始扫描... ... ------'</span>)
+    <span class="hljs-keyword">if</span> args.icmp:
+        print(<span class="hljs-string">'---------- ICMP扫描 ----------'</span>)
+        icmp_scan(args.ip)
+        print(<span class="hljs-string">'----------------------------'</span>)
+    <span class="hljs-keyword">if</span> args.syn:
+        print(<span class="hljs-string">'---------- SYN扫描 ----------'</span>)
+        <span class="hljs-keyword">for</span> port <span class="hljs-keyword">in</span> port_list:
+            t=Thread(target=syn_scan,args=(args.ip,int(port)))
+            threads_syn.append(t)
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> threads_syn:
+            t.start()
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> threads_syn:
+            t.join()
+        print(<span class="hljs-string">'----------------------------'</span>)
+    <span class="hljs-keyword">if</span> args.ack:
+        print(<span class="hljs-string">'---------- ACK扫描 ----------'</span>)
+        <span class="hljs-keyword">for</span> port <span class="hljs-keyword">in</span> port_list:
+            t = Thread(target=ack_scan, args=(args.ip, int(port)))
+            threads_ack.append(t)
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> threads_ack:
+            t.start()
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> threads_ack:
+            t.join()
+        print(<span class="hljs-string">'----------------------------'</span>)
+    <span class="hljs-keyword">if</span> args.fin:
+        print(<span class="hljs-string">'---------- FIN扫描 ----------'</span>)
+        <span class="hljs-keyword">for</span> port <span class="hljs-keyword">in</span> port_list:
+            t = Thread(target=fin_scan, args=(args.ip, int(port)))
+            threads_fin.append(t)
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> threads_fin:
+            t.start()
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> threads_fin:
+            t.join()
+        print(<span class="hljs-string">'----------------------------'</span>)
+    <span class="hljs-keyword">if</span> args.udp:
+        print(<span class="hljs-string">'---------- UDP扫描 ----------'</span>)
+        <span class="hljs-keyword">for</span> port <span class="hljs-keyword">in</span> port_list:
+            t = Thread(target=udp_scan, args=(args.ip, int(port)))
+            threads_udp.append(t)
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> threads_udp:
+            t.start()
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> threads_udp:
+            t.join()
+        print(<span class="hljs-string">'----------------------------'</span>)
+    end_time = time.time()
+    print(<span class="hljs-string">'--------- 扫描已完成！---------'</span>)
+    print(<span class="hljs-string">'--------- 用时：%s s---------'</span>%(end_time-start_time))
+
+<span class="hljs-keyword">if</span> __name__==<span class="hljs-string">'__main__'</span>:
+    main()</code></pre>
+
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/python/">python</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/python/">python</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/">信息收集</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/%E5%87%A0%E7%A7%8D%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E6%96%B9%E5%BC%8F/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">几种信息收集方式</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/nmap%E5%B8%B8%E7%94%A8%E6%89%AB%E6%8F%8F%E5%91%BD%E4%BB%A4/">
+                        <span class="hidden-mobile">信息收集方法总结</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Python编写端口扫描器&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

