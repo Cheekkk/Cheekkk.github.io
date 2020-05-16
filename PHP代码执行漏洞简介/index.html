@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    268 字
+                    444 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    2
+                    5
                      分钟
                   </span>
                 
@@ -205,8 +205,41 @@
 <p><img src="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/1.png" srcset="/img/loading.gif" alt></p>
 <p><img src="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/2.png" srcset="/img/loading.gif" alt></p>
 </li>
-<li><p>preg_replace<br>preg_replace($pattern, $replacement, $subject)<br>正则替换的方法是搜索$subject，将符合$pattern的部分用$replacement进行替换，如果$pattern中含有参数/e，就将$replacement作为PHP代码执行</p>
+<li><p>preg_replace<br>preg_replace($pattern, $replacement, $subject)<br>正则替换的方法是搜索$subject，将符合$pattern的部分用$replacement进行替换，如果$pattern中含有参数/e，就将$replacement作为PHP代码执行<br>测试代码</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'code'</span>]))&#123;
+        $code=$_GET[<span class="hljs-string">'code'</span>];
+        preg_replace(<span class="hljs-string">"/\[(.*)\]/e"</span>,<span class="hljs-string">'\\1'</span>,$code);
+    &#125;<span class="hljs-keyword">else</span>&#123;
+        <span class="hljs-keyword">echo</span> <span class="hljs-string">"?code=[phpinfo()]"</span>;
+    &#125;
+<span class="hljs-meta">?&gt;</span></code></pre>
+
+<p>测试失败，传入?code=[phpinfo()]之后，页面仍未执行代码</p>
 </li>
+<li><p>回调函数<br>call_user_func()具有两个参数，第一个参数是要执行的函数，第二个参数是要执行的函数的参数</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">myeval</span><span class="hljs-params">($cmd)</span></span>&#123;
+        <span class="hljs-keyword">eval</span>($cmd);
+    &#125;
+    $c=$_GET[<span class="hljs-string">'cmd'</span>];
+    call_user_func(<span class="hljs-string">'myeval'</span>,$c);
+<span class="hljs-meta">?&gt;</span></code></pre>
+
+<p>可以传入?cmd=phpinfo(); 成功执行</p>
+</li>
+<li><p>动态函数<br>PHP中，函数可以直接由字符串拼接</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+    $_GET[<span class="hljs-string">'a'</span>]($_GET[<span class="hljs-string">'b'</span>]);
+<span class="hljs-meta">?&gt;</span></code></pre>
+
+<p>?a=assert&amp;b=phpinfo()</p>
+</li>
+</ol>
+<h2 id="03-漏洞防范"><a href="#03-漏洞防范" class="headerlink" title="03 漏洞防范"></a>03 漏洞防范</h2><ol>
+<li>尽量不使用eval、assert等函数，在disable_funtions中禁止</li>
+<li>对输入进行严格的限制</li>
+<li>preg_replace不使用/e修饰符</li>
 </ol>
 
             </article>
