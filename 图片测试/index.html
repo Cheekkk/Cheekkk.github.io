@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>SQL注入 漏洞防范 - Cheekkk&#39;s Blog</title>
+  <title>图片测试 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    365 字
+                    0 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    4
+                    1
                      分钟
                   </span>
                 
@@ -175,72 +175,13 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>PHP中几种防范SQL注入的函数</p>
-<a id="more"></a>
-
-<h1 id="SQL注入漏洞防范"><a href="#SQL注入漏洞防范" class="headerlink" title="SQL注入漏洞防范"></a>SQL注入漏洞防范</h1><h2 id="01-GPC-runtime-魔术引号"><a href="#01-GPC-runtime-魔术引号" class="headerlink" title="01 GPC/runtime 魔术引号"></a>01 GPC/runtime 魔术引号</h2><p>magic_quotes_gpc()对GET、POST、COOKIE的值进行过滤</p>
-<p>magic_quotes_runtime()对从数据库或者文件中获取的数据进行过滤</p>
-<p>这两个函数只能对单引号、双引号、反斜杠、空字符进行过滤，对int型的注入作用不大</p>
-<p>PHP4.2.3之前可以在任何地方设置开启，之后的版本可以在php.ini、httpd.conf、.htaccess中开启</p>
-<h2 id="02-过滤类"><a href="#02-过滤类" class="headerlink" title="02 过滤类"></a>02 过滤类</h2><ol>
-<li><p>addslashes<br>对单引号、双引号、反斜杠、空字符进行转义，参数必须是string类型</p>
-</li>
-<li><p>mysql_escape_string<br>转义字符有\x00, \n, \r, , ‘, “, \x1a</p>
-</li>
-<li><p>mysql_real_escape_string（更推荐）</p>
-<p>过滤字符同上，不同之处在于接受的是一个连接句柄，并根据当前字符集转义字符串</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-  $con = mysql_connect(<span class="hljs-string">"localhost"</span>,<span class="hljs-string">"root"</span>,<span class="hljs-string">"123456"</span>);
-	$id = mysql_real_escape_string($_GET[<span class="hljs-string">'id'</span>],$con);
-	$sql = <span class="hljs-string">"select * from table where id='"</span>.$id.<span class="hljs-string">"'"</span>;
-	<span class="hljs-keyword">echo</span> $sql;
-<span class="hljs-meta">?&gt;</span></code></pre>
-</li>
-<li><p>intval<br>将变量转换成int类型，适用于int型注入</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-  $id = intval(<span class="hljs-string">"1 union select"</span>);
-	<span class="hljs-keyword">echo</span> $id;
-<span class="hljs-meta">?&gt;</span></code></pre>
-
-<p>输出结果为 1 </p>
-<p>类似的还有floatval等函数</p>
-</li>
-</ol>
-<h2 id="03-PDO-prepare预编译"><a href="#03-PDO-prepare预编译" class="headerlink" title="03 PDO prepare预编译"></a>03 PDO prepare预编译</h2><p>将sql参数使用？代替，作为占位符</p>
-<p>输入的值只作为参数，而不去拼接SQL语句</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-  dbh = <span class="hljs-keyword">new</span> PDO(<span class="hljs-string">"mysql:host=localhost; dbname=demo"</span>, <span class="hljs-string">"user"</span>, <span class="hljs-string">"pass"</span>);
-	$dbh-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,<span class="hljs-keyword">false</span>);
-	$dbh-&gt;exec(<span class="hljs-string">"set names 'gbk'"</span>);
-	$sql = <span class="hljs-string">"select * from test where name = ? and password = ? "</span>;
-	$stmt = $dbh-&gt;prepare($sql);
-	$exeres = $stmt-&gt;execute(<span class="hljs-keyword">array</span>($name,$pass));</code></pre>
-
-<p>预编译除了可以避免SQL注入，还可以提高SQL语句的复用</p>
+              <p><img src="/%E5%9B%BE%E7%89%87%E6%B5%8B%E8%AF%95/1.png" srcset="/img/loading.gif" alt></p>
 
             </article>
             <hr>
             <div>
               <div class="post-metas mb-3">
                 
-                  <div class="post-meta mr-3">
-                    <i class="iconfont icon-category"></i>
-                    
-                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
-                    
-                  </div>
-                
-                
-                  <div class="post-meta">
-                    <i class="iconfont icon-tags"></i>
-                    
-                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
-                    
-                      <a class="hover-with-bg" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
-                    
-                      <a class="hover-with-bg" href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
-                    
-                  </div>
                 
               </div>
               
@@ -251,18 +192,12 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">PHP代码执行漏洞简介</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
-                        <span class="hidden-mobile">PHP命令执行漏洞简介</span>
+                      <a href="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
+                        <span class="hidden-mobile">PHP代码执行漏洞简介</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -402,7 +337,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "SQL注入 漏洞防范&nbsp;",
+        "图片测试&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

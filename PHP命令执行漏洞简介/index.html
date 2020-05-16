@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>命令执行漏洞简介 - Cheekkk&#39;s Blog</title>
+  <title>PHP命令执行漏洞简介 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -206,8 +206,8 @@
 &#125;
 <span class="hljs-meta">?&gt;</span></code></pre>
 
-<p>GET方式传入参数cmd=whoami，成功执行命令<br>   <img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516143156179.png" srcset="/img/loading.gif" alt="image-20200516143156179"></p>
-<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516143212602.png" srcset="/img/loading.gif" alt="image-20200516143212602"></p>
+<p>GET方式传入参数cmd=whoami，成功执行命令<br>   <img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/1.png" srcset="/img/loading.gif" alt></p>
+<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/2.png" srcset="/img/loading.gif" alt></p>
 <ol start="2">
 <li><p>shell_exec()<br>将字符串作为系统命令执行，不输出结果<br>测试代码如下：</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
@@ -233,8 +233,8 @@
 <p>执行whoami命令结果如下</p>
 </li>
 </ol>
-<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516144405758.png" srcset="/img/loading.gif" alt="image-20200516144405758"></p>
-<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516144414753.png" srcset="/img/loading.gif" alt="image-20200516144414753"></p>
+<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/1.png" srcset="/img/loading.gif" alt></p>
+<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/3.png" srcset="/img/loading.gif" alt></p>
 <ol start="4">
 <li><p>passthru()<br>与system()类似，将字符串作为系统命令执行，并且输出结果<br>无返回值，可以输出二进制数据<br>测试代码如下：</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
@@ -255,7 +255,7 @@
 &#125;
 <span class="hljs-meta">?&gt;</span></code></pre>
 
-<p>执行whoami命令之后，生成了一个1.TXT文件，内容为命令结果<br><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516145808368.png" srcset="/img/loading.gif" alt="image-20200516145808368"></p>
+<p>执行whoami命令之后，生成了一个1.TXT文件，内容为命令结果<br><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/4.png" srcset="/img/loading.gif" alt></p>
 </li>
 <li><p>反引号<br>反引号``内的字符串会被当做系统命令执行</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
@@ -271,10 +271,10 @@
 </li>
 </ol>
 <h2 id="03-DVWA中的命令执行漏洞"><a href="#03-DVWA中的命令执行漏洞" class="headerlink" title="03 DVWA中的命令执行漏洞"></a>03 DVWA中的命令执行漏洞</h2><p>输入一个IP地址，即可执行ping命令</p>
-<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516150820684.png" srcset="/img/loading.gif" alt="image-20200516150820684"></p>
-<p>源码：<br><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516150843164.png" srcset="/img/loading.gif" alt="image-20200516150843164"></p>
+<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/5.png" srcset="/img/loading.gif" alt></p>
+<p>源码：<br><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/6.png" srcset="/img/loading.gif" alt></p>
 <p>我们可以使用拼接的方法执行其他命令<br>如图，同时执行了ping和whoami命令</p>
-<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516150910068.png" srcset="/img/loading.gif" alt="image-20200516150910068"></p>
+<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/7.png" srcset="/img/loading.gif" alt></p>
 <p>可以使用自动化工具commix直接获取网站shell<br>commix -u “<a href="http://127.0.0.1/cmd.php?cmd=127.0.0.1&quot;" target="_blank" rel="noopener">http://127.0.0.1/cmd.php?cmd=127.0.0.1&quot;</a></p>
 <h2 id="04-拼接符介绍"><a href="#04-拼接符介绍" class="headerlink" title="04 拼接符介绍"></a>04 拼接符介绍</h2><ul>
 <li>windows下的拼接符：<ul>
@@ -318,9 +318,9 @@
                     
                       <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
                     
-                      <a class="hover-with-bg" href="/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/">命令执行</a>
-                    
                       <a class="hover-with-bg" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/">命令执行</a>
                     
                   </div>
                 
@@ -484,7 +484,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "命令执行漏洞简介&nbsp;",
+        "PHP命令执行漏洞简介&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
