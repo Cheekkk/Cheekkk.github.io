@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    1.1k 字
+                    1k 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    15
+                    13
                      分钟
                   </span>
                 
@@ -179,7 +179,7 @@
 <a id="more"></a>
 
 <h1 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h1><h2 id="01-字符含义"><a href="#01-字符含义" class="headerlink" title="01 字符含义"></a>01 字符含义</h2><ol>
-<li><p>普通字符和11个元字符<br>![image-20200227092934274](/Users/zhangdexin/Library/Application Support/typora-user-images/image-20200227092934274.png)<br>python中默认采用的是贪婪匹配，会输出最长的子串，添加？可以变成非贪婪匹配，输出最短子串</p>
+<li><p>普通字符和11个元字符<br><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200227092934274.png" srcset="/img/loading.gif" alt="image-20200227092934274"><br>python中默认采用的是贪婪匹配，会输出最长的子串，添加？可以变成非贪婪匹配，输出最短子串</p>
 <pre><code class="hljs python">a = re.match(<span class="hljs-string">'&lt;(.*)&gt;'</span>,<span class="hljs-string">'&lt;11&gt;&lt;22&gt;&lt;33&gt;'</span>).group()
 print(a)
 b = re.match(<span class="hljs-string">'&lt;(.*?)&gt;'</span>,<span class="hljs-string">'&lt;11&gt;&lt;22&gt;&lt;33&gt;'</span>).group()
@@ -202,9 +202,9 @@ print(d)
 </li>
 </ol>
 <ol start="2">
-<li><p>预定义字符集（可以写在字符集[…]中）<br>![image-20200227093654011](/Users/zhangdexin/Library/Application Support/typora-user-images/image-20200227093654011.png)</p>
+<li><p>预定义字符集（可以写在字符集[…]中）<br><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200227093654011.png" srcset="/img/loading.gif" alt="image-20200227093654011"></p>
 </li>
-<li><p>特殊分组用法<br>![image-20200227094443332](/Users/zhangdexin/Library/Application Support/typora-user-images/image-20200227094443332.png)</p>
+<li><p>特殊分组用法<br><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200227094443332.png" srcset="/img/loading.gif" alt="image-20200227094443332"></p>
 </li>
 <li><p>常用表达式</p>
 <p>IPv4地址：^((25[0-5]|2[0-4]\d|[01]?\d\d?).){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$</p>
@@ -214,7 +214,7 @@ print(d)
 <h2 id="02-re常用函数"><a href="#02-re常用函数" class="headerlink" title="02 re常用函数"></a>02 re常用函数</h2><ol>
 <li><p><strong>compile(pattern,flags=0)</strong><br>编译正则表达式模式，返回一个对象的模式。（可以把常用的正则表达式编译成正则表达式对象，提高效率）</p>
 <p>pattern: 编译时用的表达式字符串。</p>
-<p>flags 编译标志位，用于修改正则表达式的匹配方式，如：是否区分大小写，多行匹配等。常用的flags有：<br>![image-20200227095401091](/Users/zhangdexin/Library/Application Support/typora-user-images/image-20200227095401091.png)</p>
+<p>flags 编译标志位，用于修改正则表达式的匹配方式，如：是否区分大小写，多行匹配等。常用的flags有：<br><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200227095401091.png" srcset="/img/loading.gif" alt="image-20200227095401091"></p>
 </li>
 <li><p><strong>match(pattern, string,flags=0)</strong><br>尝试从字符串的起始位置匹配一个模式，如果不是起始位置匹配成功的话，就返回None<br><strong>span表示只返回结果中的span元组，表示起始位置和结束位置，从0开始计数</strong></p>
 <pre><code class="hljs python"><span class="hljs-keyword">import</span> re

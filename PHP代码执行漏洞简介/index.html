@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>标签 - WEB安全 - Cheekkk&#39;s Blog</title>
+  <title>PHP代码执行漏洞简介 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -46,7 +46,7 @@
 
 
 <body>
-  <header style="height: 80vh;">
+  <header style="height: 70vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -129,6 +129,31 @@
             </span>
 
             
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    294 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    3
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
           </div>
 
           
@@ -139,103 +164,119 @@
 
   <main>
     
-      <div class="container nopadding-md">
-        <div class="py-5" id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
-
-<div class="list-group">
-<!--  <p class="h4">共计 10 篇文章</p>-->
-  <hr>
-  
-    
       
-      <p class="h5">2020</p>
-    
-    <a href="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">PHP代码执行漏洞简介</span>
-      <span style="float: right;">05-16</span>
-    </a>
-  
-    
-    <a href="/SQL%E6%B3%A8%E5%85%A5-%E6%BC%8F%E6%B4%9E%E9%98%B2%E8%8C%83/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">SQL注入 漏洞防范</span>
-      <span style="float: right;">05-16</span>
-    </a>
-  
-    
-    <a href="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">命令执行漏洞简介</span>
-      <span style="float: right;">05-16</span>
-    </a>
-  
-    
-    <a href="/BOM%E4%B8%8EDOM/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">BOM与DOM</span>
-      <span style="float: right;">05-15</span>
-    </a>
-  
-    
-    <a href="/%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">暴力破解</span>
-      <span style="float: right;">05-15</span>
-    </a>
-  
-    
-    <a href="/%E5%87%A0%E7%A7%8D%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E6%96%B9%E5%BC%8F/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">几种信息收集方式</span>
-      <span style="float: right;">05-15</span>
-    </a>
-  
-    
-    <a href="/Python%E7%BC%96%E5%86%99%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F%E5%99%A8/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">Python编写端口扫描器</span>
-      <span style="float: right;">05-15</span>
-    </a>
-  
-    
-    <a href="/nmap%E5%B8%B8%E7%94%A8%E6%89%AB%E6%8F%8F%E5%91%BD%E4%BB%A4/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">信息收集方法总结</span>
-      <span style="float: right;">05-15</span>
-    </a>
-  
-    
-    <a href="/SQL%E6%B3%A8%E5%85%A5-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">SQL注入 文件读写</span>
-      <span style="float: right;">05-15</span>
-    </a>
-  
-    
-    <a href="/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5%E3%80%81%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">SQL注入 几种特殊的注入</span>
-      <span style="float: right;">05-15</span>
-    </a>
-  
-</div>
 
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/tags/WEB%E5%AE%89%E5%85%A8/page/2/">2</a><a class="extend next" rel="next" href="/tags/WEB%E5%AE%89%E5%85%A8/page/2/"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
-  
-  <script>
-    for (ele of document.getElementById("pagination").getElementsByTagName("a")) {
-      ele.href += '#board';
-    }
-  </script>
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>简单总结PHP中的代码执行漏洞</p>
+<a id="more"></a>
 
+<h1 id="PHP代码执行漏洞"><a href="#PHP代码执行漏洞" class="headerlink" title="PHP代码执行漏洞"></a>PHP代码执行漏洞</h1><h2 id="01-代码执行简介"><a href="#01-代码执行简介" class="headerlink" title="01 代码执行简介"></a>01 代码执行简介</h2><ol>
+<li><p>代码执行指的是执行PHP代码，而命令执行指的是执行系统命令或应用指令</p>
+</li>
+<li><p>代码执行是由于应用程序过滤不严，用户可以通过请求将代码注入到应用程序中执行，造成漏洞的原因有两点：</p>
+<ul>
+<li>程序中含有可执行PHP代码的函数</li>
+<li>传入函数的参数客户端可控，可以直接修改或者影响</li>
+</ul>
+</li>
+<li><p>漏洞危害：</p>
+<ul>
+<li><p>继承web服务器权限，执行任意代码</p>
+</li>
+<li><p>如果web服务器权限较高，可以读写文件，控制网络和服务器</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="02-代码执行的相关函数"><a href="#02-代码执行的相关函数" class="headerlink" title="02 代码执行的相关函数"></a>02 代码执行的相关函数</h2><ol>
+<li><p>eval和assert<br>将参数作为PHP代码执行<br>参数必须是完整的php语句，包括分号</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+    @<span class="hljs-keyword">eval</span>($_GET[<span class="hljs-string">'cmd'</span>]);
+<span class="hljs-meta">?&gt;</span></code></pre>
 
+<p>![image-20200516161640918](/Users/zhangdexin/Library/Application Support/typora-user-images/image-20200516161640918.png)</p>
+<p>![image-20200516161652104](/Users/zhangdexin/Library/Application Support/typora-user-images/image-20200516161652104.png)</p>
+</li>
+<li><p>preg_replace<br>preg_replace($pattern, $replacement, $subject)<br>正则替换的方法是搜索$subject，将符合$pattern的部分用$replacement进行替换，如果$pattern中含有参数/e，就将$replacement作为PHP代码执行</p>
+</li>
+</ol>
 
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C/">代码执行</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C/">代码执行</a>
+                    
+                  </div>
+                
               </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E6%BC%8F%E6%B4%9E%E9%98%B2%E8%8C%83/">
+                        <span class="hidden-mobile">SQL注入 漏洞防范</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
             </div>
+
+            
           </div>
         </div>
       </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
     
   </main>
 
@@ -299,6 +340,34 @@
 
 
 
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
 
 
   <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
@@ -318,7 +387,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "标签 - WEB安全&nbsp;",
+        "PHP代码执行漏洞简介&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
@@ -361,6 +430,20 @@
   </script>
 
 
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
 
 
 

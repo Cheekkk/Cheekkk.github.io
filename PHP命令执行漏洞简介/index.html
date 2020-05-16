@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>SQL注入 SQLmap的使用方法 - Cheekkk&#39;s Blog</title>
+  <title>命令执行漏洞简介 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    1.1k 字
+                    940 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    12
+                    11
                      分钟
                   </span>
                 
@@ -175,129 +175,129 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>本文介绍了自动化注入工具SQLmap常用的命令和脚本</p>
+              <p>简单总结并验证命令执行漏洞</p>
 <a id="more"></a>
 
-<h1 id="sqlmap"><a href="#sqlmap" class="headerlink" title="sqlmap"></a>sqlmap</h1><p>半自动化注入：burpsuite</p>
-<p>自动化注入：sqlmap</p>
-<p><strong>sqlmap需要使用python2环境</strong></p>
-<h2 id="01-基本探测参数"><a href="#01-基本探测参数" class="headerlink" title="01 基本探测参数"></a>01 基本探测参数</h2><ol>
-<li><p>-u “url” 设定注入点</p>
+<h1 id="PHP命令执行漏洞"><a href="#PHP命令执行漏洞" class="headerlink" title="PHP命令执行漏洞"></a>PHP命令执行漏洞</h1><h2 id="01-命令执行简介"><a href="#01-命令执行简介" class="headerlink" title="01 命令执行简介"></a>01 命令执行简介</h2><ol>
+<li>命令执行的原理及成因<br>程序员使用脚本语言（如PHP）进行开发时，需要调用一些外部程序（系统命令或可执行文件），在调用这些命令时，如果将用户的输入作为系统命令的参数拼接到命令行中，并且没有对用户的输入进行过滤，就会造成命令执行漏洞。<br>可以总结为两点：<ul>
+<li>用户输入拼接到系统命令中执行</li>
+<li>用户输入未经过过滤(命令不再执行)或净化(去除敏感字,命令继续执行)</li>
+</ul>
 </li>
-<li><p>–dbs 列出所有数据库名</p>
-<p>–current-db 列出当前数据库</p>
-<p>-D 指定一个数据库</p>
-</li>
-<li><p>–tables 列出所有表名</p>
-<p>–T 指定一个表</p>
-</li>
-<li><p>–columns 列出所有字段名</p>
-<p>-C 指定字段</p>
-</li>
-<li><p>–dump 列出字段内容</p>
+<li>漏洞危害<ul>
+<li>继承web服务器权限，执行系统命令</li>
+<li>继承web服务器权限，读写文件</li>
+<li>反弹shell</li>
+<li>控制网站和服务器</li>
+</ul>
 </li>
 </ol>
-<p>示例：</p>
+<h2 id="02-命令执行的相关函数"><a href="#02-命令执行的相关函数" class="headerlink" title="02 命令执行的相关函数"></a>02 命令执行的相关函数</h2><p>测试前，首先要检查以下函数是否在php.ini中被’disable_functions=’禁止</p>
 <ol>
-<li>sqlmap -u url –dbs –batch<br>得到数据库有information_schema、security等</li>
-<li>sqlmap -u url -D security –tables –batch<br>得到表有users</li>
-<li>sqlmap -u url -D security -T users –columns –batch<br>得到username和password</li>
-<li>sqlmap -u url -D security -T users -C username,password –dump –batch<br>得到具体值</li>
+<li>system()<br>将字符串作为系统命令执行，并且输出结果</li>
 </ol>
-<p>-v 输出级别分为0-6，默认为1 ：<br>0：只显示Python的tracebacks信息、错误信息和关键信息<br>1：同时显示普通信息[INFO]和警告信息[WARNING]；<br>2：同时显示调试信息[DEBUG]；<br>3：同时显示注入使用的攻击荷载；<br>4：同时显示HTTP请求；<br>5：同时显示HTTP响应头；<br>6：同时显示HTTP响应体。</p>
-<p>-d 直接连接数据库</p>
-<h2 id="02-获取目标参数"><a href="#02-获取目标参数" class="headerlink" title="02 获取目标参数"></a>02 获取目标参数</h2><ol>
-<li><p>–batch 所有交互选项使用默认选项</p>
+<p>执行命令成功则返回true，否则返回false<br>   测试代码如下：</p>
+   <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'cmd'</span>]))&#123;
+    <span class="hljs-keyword">echo</span> <span class="hljs-string">'&lt;pre&gt;'</span>;
+    system($_GET[<span class="hljs-string">'cmd'</span>]);
+&#125;<span class="hljs-keyword">else</span>&#123;
+    <span class="hljs-keyword">echo</span> <span class="hljs-string">'no cmd input !'</span>;
+&#125;
+<span class="hljs-meta">?&gt;</span></code></pre>
+
+<p>GET方式传入参数cmd=whoami，成功执行命令<br>   <img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516143156179.png" srcset="/img/loading.gif" alt="image-20200516143156179"></p>
+<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516143212602.png" srcset="/img/loading.gif" alt="image-20200516143212602"></p>
+<ol start="2">
+<li><p>shell_exec()<br>将字符串作为系统命令执行，不输出结果<br>测试代码如下：</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'cmd'</span>]))&#123;
+    <span class="hljs-keyword">print</span> shell_exec($_GET[<span class="hljs-string">'cmd'</span>]);
+&#125;<span class="hljs-keyword">else</span>&#123;
+    <span class="hljs-keyword">echo</span> <span class="hljs-string">'no cmd input !'</span>;
+&#125;
+<span class="hljs-meta">?&gt;</span></code></pre>
+
+<p>结果与system()，但没有使用&lt;pre&gt;标签，格式有所不同</p>
 </li>
-<li><p>–banner 返回banner信息</p>
-</li>
-<li><p>对单一url探测 sqlmap -u url </p>
-</li>
-<li><p>从文件中读取目标：</p>
-<ul>
-<li>-l 从burpsuite proxy 或者webscarab proxy中读取http请求日志文件<br>burpsuite==&gt;Project options==&gt;Logging==&gt;Proxy==&gt;Requests</li>
-</ul>
-<ul>
-<li><p>-x 从sitemap.xml站点地图文件中读取目标探测</p>
-</li>
-<li><p>-m 从多行文本格式文件中读取多个目标，对多个目标进行探测</p>
-</li>
-<li><p>-r 从文本文件中读取http请求作为sql注入的探测目标</p>
-</li>
-<li><p>-c 从配置文件 sqlmap.conf中读取目标探测</p>
-</li>
-</ul>
-</li>
-<li><p>-g 自动利用google获取指定的googlehack等目标，然后利用交互向导模式进行探测</p>
-</li>
-<li><p>-f fingerprint</p>
-</li>
-</ol>
-<h2 id="设置请求参数"><a href="#设置请求参数" class="headerlink" title="设置请求参数"></a>设置请求参数</h2><ol>
-<li><p>设置http方法<br>一般情况下会自动使用合适的方法，但是PUT方法不会自动使用 –method=PUT</p>
-</li>
-<li><p>设置post提交参数</p>
-<p>默认方法是GET，可以提供POST请求中的数据将其隐性改变成POST<br>Sqlmap -u url –data=”data” </p>
-<p>使用burpsuite抓包，保存为1.txt<br>sqlmap -r 1.txt</p>
-</li>
-<li><p>设置参数分隔符<br>默认分隔符为&amp;，也可以指定 –param-del=”分隔符”</p>
-</li>
-<li><p>设置cookie –cookie</p>
-<p>使用场景：web应用有基于cookie验证的过程 想用cookie的值进行注入</p>
-<p>web应用程序使用set-cookie进行响应，sqlmap将在所有进一步http请求中自动使用其值作为cookie标头。可以使用–drop-set-cookie将忽略任何即将到来的set-cookie头</p>
-<p>load-cookie 可以用来提供包含Netscape/wget格式的cookie的特殊文件</p>
-<p><strong>注意：如果对http cookie值进行探测，需要设置–level 2及以上</strong></p>
-</li>
-<li><p>设置user-agent<br>设置为指定值 –user-agent=””<br>设置为随机值 –random-agent<br>target.txt中在user-agent后边加一个*，表示对user-agent进行探测</p>
-<p><strong>注意：如果对user-agent值进行探测，需要设置–level 3及以上</strong></p>
-</li>
-<li><p>设置host</p>
-<p><strong>注意：如果对host值进行探测，需要设置–level 5</strong></p>
-</li>
-<li><p>设置referer<br><strong>注意：如果对referer值进行探测，需要设置–level 3及以上</strong></p>
-</li>
-<li><p>额外的http头<br>一个头 -H或–header<br>多个头 –headers=”Host:www,target.com\nUser-agent:Firefox” -v 5<br>多个标头用换行分隔<br>也可以在配置文件中进行设置<br>-v 5 是为了现实输出结果</p>
-</li>
-<li><p>读文件<br>–file-read ‘文件绝对路径’</p>
-</li>
-<li><p>写入文件<br>  –file-write ‘本地绝对路径’ –file-dest ‘目标绝对路径’</p>
-</li>
-<li><p>设定探测类型<br>–technique BEUSTQ </p>
-<ul>
-<li>B 布尔类型 </li>
-<li>E 基于错误</li>
-<li>U union查询</li>
-<li>S 堆叠查询</li>
-<li>T 基于时间的查询</li>
-<li>Q 查询</li>
-</ul>
-<p>若不指定则使用全部技术</p>
+<li><p>exec()<br>将字符串作为系统命令执行，返回结果最后一行<br>如果添加第二个参数$array，就将每一行结果存入数组之中<br>测试代码如下：</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'cmd'</span>]))&#123;
+    exec($_GET[<span class="hljs-string">'cmd'</span>],$array);
+    print_r($array);
+&#125;<span class="hljs-keyword">else</span>&#123;
+    <span class="hljs-keyword">echo</span> <span class="hljs-string">'no cmd input !'</span>;
+&#125;
+<span class="hljs-meta">?&gt;</span></code></pre>
+
+<p>执行whoami命令结果如下</p>
 </li>
 </ol>
-<h2 id="使用tamper脚本"><a href="#使用tamper脚本" class="headerlink" title="使用tamper脚本"></a>使用tamper脚本</h2><p>sqlmap … –tamper ‘脚本名’</p>
-<p>常见的tamper有：</p>
-<ol>
-<li><p>apostrophemask.py<br>将单引号URL编码，避免被过滤</p>
+<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516144405758.png" srcset="/img/loading.gif" alt="image-20200516144405758"></p>
+<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516144414753.png" srcset="/img/loading.gif" alt="image-20200516144414753"></p>
+<ol start="4">
+<li><p>passthru()<br>与system()类似，将字符串作为系统命令执行，并且输出结果<br>无返回值，可以输出二进制数据<br>测试代码如下：</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'cmd'</span>]))&#123;
+    passthru($_GET[<span class="hljs-string">'cmd'</span>]);
+&#125;<span class="hljs-keyword">else</span>&#123;
+    <span class="hljs-keyword">echo</span> <span class="hljs-string">'no cmd input !'</span>;
+&#125;
+<span class="hljs-meta">?&gt;</span></code></pre>
 </li>
-<li><p>apostrophenullencode.py</p>
-<p>将单引号替换为宽字节编码，避免被过滤</p>
+<li><p>popen()<br>执行命令不返回命令结果，而是返回一个文件指针（需要有写权限）<br>测试代码如下：</p>
+ <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'cmd'</span>]))&#123;
+    $cmd=$_GET[<span class="hljs-string">'cmd'</span>].<span class="hljs-string">"&gt;&gt; 1.txt"</span>;
+    popen($cmd,r);
+&#125;<span class="hljs-keyword">else</span>&#123;
+    <span class="hljs-keyword">echo</span> <span class="hljs-string">'no cmd input !'</span>;
+&#125;
+<span class="hljs-meta">?&gt;</span></code></pre>
+
+<p>执行whoami命令之后，生成了一个1.TXT文件，内容为命令结果<br><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516145808368.png" srcset="/img/loading.gif" alt="image-20200516145808368"></p>
 </li>
-<li><p>base64encode.py<br>进行base64编码</p>
+<li><p>反引号<br>反引号``内的字符串会被当做系统命令执行</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'cmd'</span>]))&#123;
+    $cmd=$_GET[<span class="hljs-string">'cmd'</span>];
+  	<span class="hljs-keyword">print</span> `$cmd`;
+&#125;<span class="hljs-keyword">else</span>&#123;
+    <span class="hljs-keyword">echo</span> <span class="hljs-string">'no cmd input !'</span>;
+&#125;
+<span class="hljs-meta">?&gt;</span></code></pre>
+
+<p>同样可以执行系统命令</p>
 </li>
-<li><p>between.py<br>将大于号和等号替换为between</p>
+</ol>
+<h2 id="03-DVWA中的命令执行漏洞"><a href="#03-DVWA中的命令执行漏洞" class="headerlink" title="03 DVWA中的命令执行漏洞"></a>03 DVWA中的命令执行漏洞</h2><p>输入一个IP地址，即可执行ping命令</p>
+<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516150820684.png" srcset="/img/loading.gif" alt="image-20200516150820684"></p>
+<p>源码：<br><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516150843164.png" srcset="/img/loading.gif" alt="image-20200516150843164"></p>
+<p>我们可以使用拼接的方法执行其他命令<br>如图，同时执行了ping和whoami命令</p>
+<p><img src="/Users/zhangdexin/hexoblog/source/_posts/images/image-20200516150910068.png" srcset="/img/loading.gif" alt="image-20200516150910068"></p>
+<p>可以使用自动化工具commix直接获取网站shell<br>commix -u “<a href="http://127.0.0.1/cmd.php?cmd=127.0.0.1&quot;" target="_blank" rel="noopener">http://127.0.0.1/cmd.php?cmd=127.0.0.1&quot;</a></p>
+<h2 id="04-拼接符介绍"><a href="#04-拼接符介绍" class="headerlink" title="04 拼接符介绍"></a>04 拼接符介绍</h2><ul>
+<li>windows下的拼接符：<ul>
+<li>&amp; 前面语句为假则直接执行后边的</li>
+<li>&amp;&amp; 前面的语句为假就终止执行</li>
+<li>| 直接执行后边的语句</li>
+<li>|| 前面出错执行后边的</li>
+</ul>
 </li>
-<li><p>equaltolike.py<br>将=替换为like</p>
+<li>linux下的拼接符：<ul>
+<li>；前面执行完执行后边的</li>
+<li>&amp; 无论前边的语句真假都会执行</li>
+<li>&amp;&amp; 只有前面语句为真，才会执行后边语句</li>
+<li>|显示后边的执行结果</li>
+<li>|| 前面出错执行后边的</li>
+</ul>
 </li>
-<li><p>space2comment.py<br>将空格替换为/**/</p>
-</li>
-<li><p>space2randomblank.py<br>将空格替换为随机的空白字符</p>
-</li>
-<li><p>space2plus.py<br>将空格替换为+</p>
-</li>
-<li><p>space2mysqldash.py<br>将空格替换为–\n</p>
-</li>
-<li><p>bluecoat.py<br>替换sql关键字后边的空格，并且将=替换为like</p>
-</li>
+</ul>
+<h2 id="05-漏洞防范"><a href="#05-漏洞防范" class="headerlink" title="05 漏洞防范"></a>05 漏洞防范</h2><ol>
+<li>减少相关函数的使用，并在disable_functions中禁用函数</li>
+<li>执行命令前对参数进行过滤如escapeshellcmd(),escapeshellarg()</li>
+<li>参数的值使用引号包裹，并使用addslashes函数转义</li>
+<li>对参数设置白名单</li>
 </ol>
 
             </article>
@@ -308,7 +308,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                      <a class="hover-with-bg" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
                     
                   </div>
                 
@@ -318,9 +318,9 @@
                     
                       <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
                     
-                      <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+                      <a class="hover-with-bg" href="/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/">命令执行</a>
                     
-                      <a class="hover-with-bg" href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
+                      <a class="hover-with-bg" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
                     
                   </div>
                 
@@ -333,9 +333,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5%E3%80%81%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/">
+                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E6%BC%8F%E6%B4%9E%E9%98%B2%E8%8C%83/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SQL注入 几种特殊的注入</span>
+                        <span class="hidden-mobile">SQL注入 漏洞防范</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -343,8 +343,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E5%9F%BA%E4%BA%8E%E6%8A%A5%E9%94%99%E7%9A%84%E6%B3%A8%E5%85%A5/">
-                        <span class="hidden-mobile">SQL注入 基于报错的注入</span>
+                      <a href="/BOM%E4%B8%8EDOM/">
+                        <span class="hidden-mobile">BOM与DOM</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -484,7 +484,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "SQL注入 SQLmap的使用方法&nbsp;",
+        "命令执行漏洞简介&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

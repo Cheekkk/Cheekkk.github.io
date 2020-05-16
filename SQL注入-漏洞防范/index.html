@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>SQL注入 SQLmap的使用方法 - Cheekkk&#39;s Blog</title>
+  <title>SQL注入 漏洞防范 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    1.1k 字
+                    365 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    12
+                    4
                      分钟
                   </span>
                 
@@ -175,130 +175,48 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>本文介绍了自动化注入工具SQLmap常用的命令和脚本</p>
+              <p>PHP中几种防范SQL注入的函数</p>
 <a id="more"></a>
 
-<h1 id="sqlmap"><a href="#sqlmap" class="headerlink" title="sqlmap"></a>sqlmap</h1><p>半自动化注入：burpsuite</p>
-<p>自动化注入：sqlmap</p>
-<p><strong>sqlmap需要使用python2环境</strong></p>
-<h2 id="01-基本探测参数"><a href="#01-基本探测参数" class="headerlink" title="01 基本探测参数"></a>01 基本探测参数</h2><ol>
-<li><p>-u “url” 设定注入点</p>
+<h1 id="SQL注入漏洞防范"><a href="#SQL注入漏洞防范" class="headerlink" title="SQL注入漏洞防范"></a>SQL注入漏洞防范</h1><h2 id="01-GPC-runtime-魔术引号"><a href="#01-GPC-runtime-魔术引号" class="headerlink" title="01 GPC/runtime 魔术引号"></a>01 GPC/runtime 魔术引号</h2><p>magic_quotes_gpc()对GET、POST、COOKIE的值进行过滤</p>
+<p>magic_quotes_runtime()对从数据库或者文件中获取的数据进行过滤</p>
+<p>这两个函数只能对单引号、双引号、反斜杠、空字符进行过滤，对int型的注入作用不大</p>
+<p>PHP4.2.3之前可以在任何地方设置开启，之后的版本可以在php.ini、httpd.conf、.htaccess中开启</p>
+<h2 id="02-过滤类"><a href="#02-过滤类" class="headerlink" title="02 过滤类"></a>02 过滤类</h2><ol>
+<li><p>addslashes<br>对单引号、双引号、反斜杠、空字符进行转义，参数必须是string类型</p>
 </li>
-<li><p>–dbs 列出所有数据库名</p>
-<p>–current-db 列出当前数据库</p>
-<p>-D 指定一个数据库</p>
+<li><p>mysql_escape_string<br>转义字符有\x00, \n, \r, , ‘, “, \x1a</p>
 </li>
-<li><p>–tables 列出所有表名</p>
-<p>–T 指定一个表</p>
+<li><p>mysql_real_escape_string（更推荐）</p>
+<p>过滤字符同上，不同之处在于接受的是一个连接句柄，并根据当前字符集转义字符串</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+  $con = mysql_connect(<span class="hljs-string">"localhost"</span>,<span class="hljs-string">"root"</span>,<span class="hljs-string">"123456"</span>);
+	$id = mysql_real_escape_string($_GET[<span class="hljs-string">'id'</span>],$con);
+	$sql = <span class="hljs-string">"select * from table where id='"</span>.$id.<span class="hljs-string">"'"</span>;
+	<span class="hljs-keyword">echo</span> $sql;
+<span class="hljs-meta">?&gt;</span></code></pre>
 </li>
-<li><p>–columns 列出所有字段名</p>
-<p>-C 指定字段</p>
-</li>
-<li><p>–dump 列出字段内容</p>
-</li>
-</ol>
-<p>示例：</p>
-<ol>
-<li>sqlmap -u url –dbs –batch<br>得到数据库有information_schema、security等</li>
-<li>sqlmap -u url -D security –tables –batch<br>得到表有users</li>
-<li>sqlmap -u url -D security -T users –columns –batch<br>得到username和password</li>
-<li>sqlmap -u url -D security -T users -C username,password –dump –batch<br>得到具体值</li>
-</ol>
-<p>-v 输出级别分为0-6，默认为1 ：<br>0：只显示Python的tracebacks信息、错误信息和关键信息<br>1：同时显示普通信息[INFO]和警告信息[WARNING]；<br>2：同时显示调试信息[DEBUG]；<br>3：同时显示注入使用的攻击荷载；<br>4：同时显示HTTP请求；<br>5：同时显示HTTP响应头；<br>6：同时显示HTTP响应体。</p>
-<p>-d 直接连接数据库</p>
-<h2 id="02-获取目标参数"><a href="#02-获取目标参数" class="headerlink" title="02 获取目标参数"></a>02 获取目标参数</h2><ol>
-<li><p>–batch 所有交互选项使用默认选项</p>
-</li>
-<li><p>–banner 返回banner信息</p>
-</li>
-<li><p>对单一url探测 sqlmap -u url </p>
-</li>
-<li><p>从文件中读取目标：</p>
-<ul>
-<li>-l 从burpsuite proxy 或者webscarab proxy中读取http请求日志文件<br>burpsuite==&gt;Project options==&gt;Logging==&gt;Proxy==&gt;Requests</li>
-</ul>
-<ul>
-<li><p>-x 从sitemap.xml站点地图文件中读取目标探测</p>
-</li>
-<li><p>-m 从多行文本格式文件中读取多个目标，对多个目标进行探测</p>
-</li>
-<li><p>-r 从文本文件中读取http请求作为sql注入的探测目标</p>
-</li>
-<li><p>-c 从配置文件 sqlmap.conf中读取目标探测</p>
-</li>
-</ul>
-</li>
-<li><p>-g 自动利用google获取指定的googlehack等目标，然后利用交互向导模式进行探测</p>
-</li>
-<li><p>-f fingerprint</p>
+<li><p>intval<br>将变量转换成int类型，适用于int型注入</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+  $id = intval(<span class="hljs-string">"1 union select"</span>);
+	<span class="hljs-keyword">echo</span> $id;
+<span class="hljs-meta">?&gt;</span></code></pre>
+
+<p>输出结果为 1 </p>
+<p>类似的还有floatval等函数</p>
 </li>
 </ol>
-<h2 id="设置请求参数"><a href="#设置请求参数" class="headerlink" title="设置请求参数"></a>设置请求参数</h2><ol>
-<li><p>设置http方法<br>一般情况下会自动使用合适的方法，但是PUT方法不会自动使用 –method=PUT</p>
-</li>
-<li><p>设置post提交参数</p>
-<p>默认方法是GET，可以提供POST请求中的数据将其隐性改变成POST<br>Sqlmap -u url –data=”data” </p>
-<p>使用burpsuite抓包，保存为1.txt<br>sqlmap -r 1.txt</p>
-</li>
-<li><p>设置参数分隔符<br>默认分隔符为&amp;，也可以指定 –param-del=”分隔符”</p>
-</li>
-<li><p>设置cookie –cookie</p>
-<p>使用场景：web应用有基于cookie验证的过程 想用cookie的值进行注入</p>
-<p>web应用程序使用set-cookie进行响应，sqlmap将在所有进一步http请求中自动使用其值作为cookie标头。可以使用–drop-set-cookie将忽略任何即将到来的set-cookie头</p>
-<p>load-cookie 可以用来提供包含Netscape/wget格式的cookie的特殊文件</p>
-<p><strong>注意：如果对http cookie值进行探测，需要设置–level 2及以上</strong></p>
-</li>
-<li><p>设置user-agent<br>设置为指定值 –user-agent=””<br>设置为随机值 –random-agent<br>target.txt中在user-agent后边加一个*，表示对user-agent进行探测</p>
-<p><strong>注意：如果对user-agent值进行探测，需要设置–level 3及以上</strong></p>
-</li>
-<li><p>设置host</p>
-<p><strong>注意：如果对host值进行探测，需要设置–level 5</strong></p>
-</li>
-<li><p>设置referer<br><strong>注意：如果对referer值进行探测，需要设置–level 3及以上</strong></p>
-</li>
-<li><p>额外的http头<br>一个头 -H或–header<br>多个头 –headers=”Host:www,target.com\nUser-agent:Firefox” -v 5<br>多个标头用换行分隔<br>也可以在配置文件中进行设置<br>-v 5 是为了现实输出结果</p>
-</li>
-<li><p>读文件<br>–file-read ‘文件绝对路径’</p>
-</li>
-<li><p>写入文件<br>  –file-write ‘本地绝对路径’ –file-dest ‘目标绝对路径’</p>
-</li>
-<li><p>设定探测类型<br>–technique BEUSTQ </p>
-<ul>
-<li>B 布尔类型 </li>
-<li>E 基于错误</li>
-<li>U union查询</li>
-<li>S 堆叠查询</li>
-<li>T 基于时间的查询</li>
-<li>Q 查询</li>
-</ul>
-<p>若不指定则使用全部技术</p>
-</li>
-</ol>
-<h2 id="使用tamper脚本"><a href="#使用tamper脚本" class="headerlink" title="使用tamper脚本"></a>使用tamper脚本</h2><p>sqlmap … –tamper ‘脚本名’</p>
-<p>常见的tamper有：</p>
-<ol>
-<li><p>apostrophemask.py<br>将单引号URL编码，避免被过滤</p>
-</li>
-<li><p>apostrophenullencode.py</p>
-<p>将单引号替换为宽字节编码，避免被过滤</p>
-</li>
-<li><p>base64encode.py<br>进行base64编码</p>
-</li>
-<li><p>between.py<br>将大于号和等号替换为between</p>
-</li>
-<li><p>equaltolike.py<br>将=替换为like</p>
-</li>
-<li><p>space2comment.py<br>将空格替换为/**/</p>
-</li>
-<li><p>space2randomblank.py<br>将空格替换为随机的空白字符</p>
-</li>
-<li><p>space2plus.py<br>将空格替换为+</p>
-</li>
-<li><p>space2mysqldash.py<br>将空格替换为–\n</p>
-</li>
-<li><p>bluecoat.py<br>替换sql关键字后边的空格，并且将=替换为like</p>
-</li>
-</ol>
+<h2 id="03-PDO-prepare预编译"><a href="#03-PDO-prepare预编译" class="headerlink" title="03 PDO prepare预编译"></a>03 PDO prepare预编译</h2><p>将sql参数使用？代替，作为占位符</p>
+<p>输入的值只作为参数，而不去拼接SQL语句</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+  dbh = <span class="hljs-keyword">new</span> PDO(<span class="hljs-string">"mysql:host=localhost; dbname=demo"</span>, <span class="hljs-string">"user"</span>, <span class="hljs-string">"pass"</span>);
+	$dbh-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,<span class="hljs-keyword">false</span>);
+	$dbh-&gt;exec(<span class="hljs-string">"set names 'gbk'"</span>);
+	$sql = <span class="hljs-string">"select * from test where name = ? and password = ? "</span>;
+	$stmt = $dbh-&gt;prepare($sql);
+	$exeres = $stmt-&gt;execute(<span class="hljs-keyword">array</span>($name,$pass));</code></pre>
+
+<p>预编译除了可以避免SQL注入，还可以提高SQL语句的复用</p>
 
             </article>
             <hr>
@@ -318,7 +236,7 @@
                     
                       <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
                     
-                      <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+                      <a class="hover-with-bg" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
                     
                       <a class="hover-with-bg" href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
                     
@@ -333,9 +251,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5%E3%80%81%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/">
+                      <a href="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SQL注入 几种特殊的注入</span>
+                        <span class="hidden-mobile">PHP代码执行漏洞简介</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -343,8 +261,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E5%9F%BA%E4%BA%8E%E6%8A%A5%E9%94%99%E7%9A%84%E6%B3%A8%E5%85%A5/">
-                        <span class="hidden-mobile">SQL注入 基于报错的注入</span>
+                      <a href="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
+                        <span class="hidden-mobile">命令执行漏洞简介</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -484,7 +402,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "SQL注入 SQLmap的使用方法&nbsp;",
+        "SQL注入 漏洞防范&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

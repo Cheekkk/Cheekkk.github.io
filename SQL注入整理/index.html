@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    1.6k 字
+                    1.7k 字
                   </span>
                 
 
@@ -177,11 +177,11 @@
             <article class="markdown-body">
               <p>本文整理了SQL注入的原理、分类等基础知识</p>
 <a id="more"></a>
-<h1 id="01-SQL注入简介"><a href="#01-SQL注入简介" class="headerlink" title="01 SQL注入简介"></a>01 SQL注入简介</h1><h2 id="SQL注入的原因"><a href="#SQL注入的原因" class="headerlink" title="SQL注入的原因"></a>SQL注入的原因</h2><ol>
+<h1 id="SQL注入简介"><a href="#SQL注入简介" class="headerlink" title="SQL注入简介"></a>SQL注入简介</h1><h2 id="01-SQL注入的原因"><a href="#01-SQL注入的原因" class="headerlink" title="01 SQL注入的原因"></a>01 SQL注入的原因</h2><ol>
 <li>程序编写者在处理程序和数据库交互时，使用字符串拼接的方式构造SQL语句</li>
 <li>未对用户可控参数进行足够的过滤便将参数内容拼接进入到SQL语句中</li>
 </ol>
-<h2 id="可能存在SQL注入的位置"><a href="#可能存在SQL注入的位置" class="headerlink" title="可能存在SQL注入的位置"></a>可能存在SQL注入的位置</h2><p>web应用在获取用户数据的地方，只要带入数据库查询，就可能存在注入</p>
+<h2 id="02-可能存在SQL注入的位置"><a href="#02-可能存在SQL注入的位置" class="headerlink" title="02 可能存在SQL注入的位置"></a>02 可能存在SQL注入的位置</h2><p>web应用在获取用户数据的地方，只要带入数据库查询，就可能存在注入</p>
 <p>常见的地方包括：</p>
 <ol>
 <li>GET数据</li>
@@ -190,14 +190,14 @@
 <li>COOKIE数据</li>
 </ol>
 <p>…</p>
-<h2 id="SQL注入的危害"><a href="#SQL注入的危害" class="headerlink" title="SQL注入的危害"></a>SQL注入的危害</h2><ol>
+<h2 id="03-SQL注入的危害"><a href="#03-SQL注入的危害" class="headerlink" title="03 SQL注入的危害"></a>03 SQL注入的危害</h2><ol>
 <li>获取管理员的账号密码</li>
 <li>获取数据库中内容</li>
 <li>修改或插入数据到数据库内</li>
 <li>利用注入漏洞获得webshell</li>
 <li>mof提权、udf提权</li>
 </ol>
-<h1 id="02-SQL注入原理"><a href="#02-SQL注入原理" class="headerlink" title="02 SQL注入原理"></a>02 SQL注入原理</h1><h2 id="简单案例讲解"><a href="#简单案例讲解" class="headerlink" title="简单案例讲解"></a>简单案例讲解</h2><ol>
+<h1 id="SQL注入原理"><a href="#SQL注入原理" class="headerlink" title="SQL注入原理"></a>SQL注入原理</h1><h2 id="01-简单案例讲解"><a href="#01-简单案例讲解" class="headerlink" title="01 简单案例讲解"></a>01 简单案例讲解</h2><ol>
 <li><p>在常见的登录页面，通常使用如下SQL语句：<br>select * from admin where username=’输入的用户名’ and password=’输入的密码’</p>
 <p>如果用户输入的用户名为’ or 1=1 –  <strong>注意最后需要有一个空格</strong><br>拼接起来的SQL语句为<br>select * from admin where username=’ <strong>‘ or 1=1 –</strong> <del>‘ and password=’输入的密码’</del></p>
 <p>使用单引号提前闭合，or 1=1永远为真，–将后边的内容注释掉，即完成查询，实现了登录，我们输入的’ or 1=1 –  就可以看作为一个万能密码</p>
@@ -248,7 +248,7 @@ a<span class="hljs-symbol">'or</span>'<span class="hljs-number">1</span>=<span c
 or1=<span class="hljs-number">1</span><span class="hljs-comment">--</span></code></pre>
 
 <p>可以将以上密码作为字典，使用burpsuite用枚举的方法进行测试</p>
-<h2 id="简单注入漏洞探测"><a href="#简单注入漏洞探测" class="headerlink" title="简单注入漏洞探测"></a>简单注入漏洞探测</h2><p>一般网页的CMS逻辑为：CMS逻辑：index.php首页展示内容，具有文章列表（链接具有文章id）、articles.php文章详细页，URL中article.php?id=文章id读取id对应文章<br>可以利用Google Hacking寻找可能存在漏洞的URL</p>
+<h2 id="02-简单注入漏洞探测"><a href="#02-简单注入漏洞探测" class="headerlink" title="02 简单注入漏洞探测"></a>02 简单注入漏洞探测</h2><p>一般网页的CMS逻辑为：CMS逻辑：index.php首页展示内容，具有文章列表（链接具有文章id）、articles.php文章详细页，URL中article.php?id=文章id读取id对应文章<br>可以利用Google Hacking寻找可能存在漏洞的URL</p>
 <p>简单验证方法，如在URL中?id=1 后边添加内容：</p>
 <ol>
 <li>单引号 ‘</li>
@@ -258,7 +258,7 @@ or1=<span class="hljs-number">1</span><span class="hljs-comment">--</span></code
 <p>*<em>逻辑运算<br>在SQL语句中，and比or的优先级高<br>select 1=2 and 1=2 or 1=1<br>返回的结果为1 *</em></p>
 <p>如果页面中mysql报错，证明存在sql注入漏洞<br>如果报错信息中存在自己输入的值，就是字符型注入，否则是数字型注入    </p>
 <p>根据页面显示的内容，可以分为报错注入、盲注等</p>
-<h2 id="SQL注入的分类"><a href="#SQL注入的分类" class="headerlink" title="SQL注入的分类"></a>SQL注入的分类</h2><ol>
+<h2 id="03-SQL注入的分类"><a href="#03-SQL注入的分类" class="headerlink" title="03 SQL注入的分类"></a>03 SQL注入的分类</h2><ol>
 <li>根据输入数据的分类：<ul>
 <li>数字型 select * from table where id=@id</li>
 <li>字符型 select * from table where id=’@id’</li>
@@ -276,7 +276,7 @@ or1=<span class="hljs-number">1</span><span class="hljs-comment">--</span></code
 <li>POST型 需要抓包进行参数修改</li>
 </ul>
 </li>
-<li>一些特殊的注入：宽字节注入、二次注入<h2 id="sql注入常用的函数"><a href="#sql注入常用的函数" class="headerlink" title="sql注入常用的函数"></a>sql注入常用的函数</h2><ul>
+<li>一些特殊的注入：宽字节注入、二次注入<h2 id="04-sql注入常用的函数"><a href="#04-sql注入常用的函数" class="headerlink" title="04 sql注入常用的函数"></a>04 sql注入常用的函数</h2><ul>
 <li>select user()查看当前用户名</li>
 <li>select database()查看当前数据库</li>
 <li>select version()查看当前版本</li>
@@ -296,7 +296,7 @@ or1=<span class="hljs-number">1</span><span class="hljs-comment">--</span></code
 </ul>
 </li>
 </ol>
-<h2 id="SQL注入绕过方式"><a href="#SQL注入绕过方式" class="headerlink" title="SQL注入绕过方式"></a>SQL注入绕过方式</h2><ol>
+<h2 id="05-SQL注入绕过方式"><a href="#05-SQL注入绕过方式" class="headerlink" title="05 SQL注入绕过方式"></a>05 SQL注入绕过方式</h2><ol>
 <li><p>大小写绕过，sql语句对大小写不敏感</p>
 <p>如：AnD、ORdeR</p>
 </li>
@@ -312,20 +312,27 @@ or1=<span class="hljs-number">1</span><span class="hljs-comment">--</span></code
 <li><p>注释被过滤时，要闭合后边 </p>
 </li>
 </ol>
-<h1 id="03-Mysql注入有关知识点"><a href="#03-Mysql注入有关知识点" class="headerlink" title="03 Mysql注入有关知识点"></a>03 Mysql注入有关知识点</h1><h2 id="Mysql-5-x数据结构"><a href="#Mysql-5-x数据结构" class="headerlink" title="Mysql 5.x数据结构"></a>Mysql 5.x数据结构</h2><p>在5.0以上版本中，默认定义了infomation数据库，用来存储数据库元信息。期中有表schemata（数据库名）、tables（表名）、columns（列名）</p>
+<h2 id="06-SQL注入的防御"><a href="#06-SQL注入的防御" class="headerlink" title="06 SQL注入的防御"></a>06 SQL注入的防御</h2><ol>
+<li>对用户输入的值进行过滤</li>
+<li>规范页面输出的错误提示</li>
+<li>使用预编译</li>
+<li>管理好数据库账号的权限</li>
+<li>对数据库内敏感信息进行加密</li>
+</ol>
+<h1 id="Mysql注入有关知识点"><a href="#Mysql注入有关知识点" class="headerlink" title="Mysql注入有关知识点"></a>Mysql注入有关知识点</h1><h2 id="01-Mysql-5-x数据结构"><a href="#01-Mysql-5-x数据结构" class="headerlink" title="01 Mysql 5.x数据结构"></a>01 Mysql 5.x数据结构</h2><p>在5.0以上版本中，默认定义了infomation数据库，用来存储数据库元信息。期中有表schemata（数据库名）、tables（表名）、columns（列名）</p>
 <p>在schemata表中，schema_name字段用来存储数据库名</p>
 <p>在tables表中，table_schema和table_name分别用来存储数据库名和表名</p>
 <p>在columns表中，table_schema(数据库名)、table_name(表名)、column_name(字段名)</p>
 <p>![image-20200515165613428](/Users/zhangdexin/Library/Application Support/typora-user-images/image-20200515165613428.png)</p>
-<h2 id="SQL增删改查"><a href="#SQL增删改查" class="headerlink" title="SQL增删改查"></a>SQL增删改查</h2><p>Insert into values</p>
+<h2 id="02-SQL增删改查"><a href="#02-SQL增删改查" class="headerlink" title="02 SQL增删改查"></a>02 SQL增删改查</h2><p>Insert into values</p>
 <p>delete from</p>
 <p>Update set where</p>
 <p>Select from where</p>
-<h2 id="Mysql常用聚合函数"><a href="#Mysql常用聚合函数" class="headerlink" title="Mysql常用聚合函数"></a>Mysql常用聚合函数</h2><p>select user()查看当前用户名</p>
+<h2 id="03-Mysql常用聚合函数"><a href="#03-Mysql常用聚合函数" class="headerlink" title="03 Mysql常用聚合函数"></a>03 Mysql常用聚合函数</h2><p>select user()查看当前用户名</p>
 <p>select database()查看当前数据库</p>
 <p>select version()查看当前版本</p>
 <p>Limit m,n 从第m行开始到第m+n行（从0开始索引）</p>
-<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><h1 id=""><a href="#" class="headerlink" title=""></a></h1><p>–➕空格       <strong>空格可能被过滤，可以用%20代替</strong></p>
+<h2 id="04-注释"><a href="#04-注释" class="headerlink" title="04 注释"></a>04 注释</h2><h1 id=""><a href="#" class="headerlink" title=""></a></h1><p>–➕空格       <strong>空格可能被过滤，可以用%20代替</strong></p>
 <p>/**/</p>
 <p>内联注释 ： /<em>!SQL语句\</em>/   只有Mysql可以识别，常用来绕过waf</p>
 <p>如：select * from articles where id=id</p>
