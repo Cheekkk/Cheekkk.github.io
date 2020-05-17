@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>PHP代码执行漏洞简介 - Cheekkk&#39;s Blog</title>
+  <title>PHP文件包含漏洞 - Cheekkk&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    444 字
+                    812 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    5
+                    9
                      分钟
                   </span>
                 
@@ -175,71 +175,112 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>简单总结PHP中的代码执行漏洞</p>
+              <p>文件包含漏洞的原理及利用</p>
 <a id="more"></a>
 
-<h1 id="PHP代码执行漏洞"><a href="#PHP代码执行漏洞" class="headerlink" title="PHP代码执行漏洞"></a>PHP代码执行漏洞</h1><h2 id="01-代码执行简介"><a href="#01-代码执行简介" class="headerlink" title="01 代码执行简介"></a>01 代码执行简介</h2><ol>
-<li><p>代码执行指的是执行PHP代码，而命令执行指的是执行系统命令或应用指令</p>
-</li>
-<li><p>代码执行是由于应用程序过滤不严，用户可以通过请求将代码注入到应用程序中执行，造成漏洞的原因有两点：</p>
+<h1 id="PHP文件包含漏洞"><a href="#PHP文件包含漏洞" class="headerlink" title="PHP文件包含漏洞"></a>PHP文件包含漏洞</h1><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><p>开发PHP程序时，通常将可复用的函数写入文件中，在使用这个函数时直接调用文件，不用重新编写函数，可以使程序更加灵活。如果动态包含的参数没有严格过滤，就会产生文件包含漏洞。</p>
+<ol>
+<li><p>文件包含漏洞的原因可以总结为以下两点：</p>
 <ul>
-<li>程序中含有可执行PHP代码的函数</li>
-<li>传入函数的参数客户端可控，可以直接修改或者影响</li>
+<li>程序使用了动态包含</li>
+<li>包含的文件路径参数客户端可控</li>
 </ul>
 </li>
-<li><p>漏洞危害：</p>
+<li><p>PHP中的相关配置</p>
 <ul>
-<li><p>继承web服务器权限，执行任意代码</p>
+<li>allow_url_fopen=On/Off         本地文件包含（LFI）</li>
+<li>allow_url_include=On/Off       远程文件包含（RFI）</li>
+</ul>
 </li>
-<li><p>如果web服务器权限较高，可以读写文件，控制网络和服务器</p>
+<li><p>PHP中常用文件包含的函数有四个：</p>
+<ul>
+<li>include()                    文件包含失败时会继续执行</li>
+<li>include_once()         文件包含失败时会继续执行，只会包含一次</li>
+<li>require()                    文件包含失败时会直接结束</li>
+<li>require_once()          文件包含失败时会直接结束，只会包含一次</li>
+</ul>
 </li>
+<li><p>特点</p>
+<ul>
+<li>无视扩展名读取文件<br>包含文件时会读取文件的源码，打开图片时不是图像，而是图片源码</li>
+<li>无条件解析PHP代码<br>遇到符合PHP语法规范的代码时，无论后缀名，都会执行PHP代码</li>
 </ul>
 </li>
 </ol>
-<h2 id="02-代码执行的相关函数"><a href="#02-代码执行的相关函数" class="headerlink" title="02 代码执行的相关函数"></a>02 代码执行的相关函数</h2><ol>
-<li><p>eval和assert<br>将参数作为PHP代码执行<br>参数必须是完整的php语句，包括分号</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-    @<span class="hljs-keyword">eval</span>($_GET[<span class="hljs-string">'cmd'</span>]);
-<span class="hljs-meta">?&gt;</span></code></pre>
-
-<p><img src="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/1.png" srcset="/img/loading.gif" alt></p>
-<p><img src="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/2.png" srcset="/img/loading.gif" alt></p>
+<h2 id="02-利用"><a href="#02-利用" class="headerlink" title="02 利用"></a>02 利用</h2><ol>
+<li><p>危害</p>
+<ul>
+<li>读取敏感文件<br>需要文件存在，且具有可读权限</li>
+<li>包含木马</li>
+</ul>
 </li>
-<li><p>preg_replace<br>preg_replace($pattern, $replacement, $subject)<br>正则替换的方法是搜索$subject，将符合$pattern的部分用$replacement进行替换，如果$pattern中含有参数/e，就将$replacement作为PHP代码执行<br>测试代码</p>
+<li><p>截断方式</p>
+<ol>
+<li><p>00截断<br>需要关闭PHP的魔术引号，PHP版本小于5.3.4</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'code'</span>]))&#123;
-        $code=$_GET[<span class="hljs-string">'code'</span>];
-        preg_replace(<span class="hljs-string">"/\[(.*)\]/e"</span>,<span class="hljs-string">'\\1'</span>,$code);
-    &#125;<span class="hljs-keyword">else</span>&#123;
-        <span class="hljs-keyword">echo</span> <span class="hljs-string">"?code=[phpinfo()]"</span>;
-    &#125;
-<span class="hljs-meta">?&gt;</span></code></pre>
+  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'path'</span>]))&#123;
+    <span class="hljs-keyword">include</span> $_GET[<span class="hljs-string">'path'</span>].<span class="hljs-string">".html"</span>;
+  &#125;<span class="hljs-keyword">else</span>&#123;
+    <span class="hljs-keyword">echo</span> <span class="hljs-string">"?path=[path]"</span>;
+  &#125;</code></pre>
 
-<p>测试失败，传入?code=[phpinfo()]之后，页面仍未执行代码</p>
-</li>
-<li><p>回调函数<br>call_user_func()具有两个参数，第一个参数是要执行的函数，第二个参数是要执行的函数的参数</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">myeval</span><span class="hljs-params">($cmd)</span></span>&#123;
-        <span class="hljs-keyword">eval</span>($cmd);
-    &#125;
-    $c=$_GET[<span class="hljs-string">'cmd'</span>];
-    call_user_func(<span class="hljs-string">'myeval'</span>,$c);
-<span class="hljs-meta">?&gt;</span></code></pre>
-
-<p>可以传入?cmd=phpinfo(); 成功执行</p>
-</li>
-<li><p>动态函数<br>PHP中，函数可以直接由字符串拼接</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-    $_GET[<span class="hljs-string">'a'</span>]($_GET[<span class="hljs-string">'b'</span>]);
-<span class="hljs-meta">?&gt;</span></code></pre>
-
-<p>?a=assert&amp;b=phpinfo()</p>
 </li>
 </ol>
-<h2 id="03-漏洞防范"><a href="#03-漏洞防范" class="headerlink" title="03 漏洞防范"></a>03 漏洞防范</h2><ol>
-<li>尽量不使用eval、assert等函数，在disable_funtions中禁止</li>
-<li>对输入进行严格的限制</li>
-<li>preg_replace不使用/e修饰符</li>
+<p>​    在以上的代码中，规定了包含文件的后缀名是html，可以使用00截断来包含其他类型的文件，提交变量?path=info.php%00即可</p>
+<ol start="2">
+<li><p>./截断<br>不受GPC限制，PHP版本需要小于5.3</p>
+<ul>
+<li><p>在文件名之后加上./可以进行截断，如info.php……….</p>
+<p>在Windows下240个.或者240个./可以截断，在Linux下，2038个/.可以截断</p>
+</li>
+<li><p>在文件可以使用../来移动目录，从而读取其他目录下的文件</p>
+</li>
+</ul>
+</li>
+<li><p>？伪截断<br>不受GPC和PHP版本的限制<br>新建一个1.txt，输入 this is 1.txt</p>
+<p>在上述代码中提交 ?path=<a href="http://127.0.0.1/1.txt" target="_blank" rel="noopener">http://127.0.0.1/1.txt</a>?</p>
+<p>拼接结果为?path=<a href="http://127.0.0.1/1.txt?.html" target="_blank" rel="noopener">http://127.0.0.1/1.txt?.html</a><br>?.html被当做请求参数，实际请求对象是1.txt<br>执行后成功输出1.txt中的内容</p>
+</li>
+</ol>
+</li>
+<li><p>Windows下的敏感目录</p>
+<ul>
+<li>C:\boot.ini            //查看系统版本</li>
+<li>C:\windows\system32\inetsrv\MetaBase.xml    //iis配置文件</li>
+<li>C:\windows\repair\same    //存储windows初次安装密码</li>
+<li>C:\ProgramFiles\mysql\my.ini    //mysql配置信息</li>
+<li>C:\ProgramFiles\mysql\data\mysql\user.MYD    //mysql root密码</li>
+<li>C:\windows\php.ini    //php配置信息</li>
+</ul>
+</li>
+<li><p>Linux\Unix下的敏感目录</p>
+<ul>
+<li>/etc/passwd    //账户信息</li>
+<li>/etc/shadow    //账户密码文件</li>
+<li>/usr/local/app/apache2/conf/httpd.conf    //Apache2默认配置文件</li>
+<li>/usr/local/app/apache2/conf/extra/httpd-vhost.conf //虚拟网站配置</li>
+<li>/usr/local/app/php5/lib/php.ini    //php配置</li>
+<li>/etc/httpd/conf/httpd.conf    //Apache配置</li>
+<li>/etc/my.conf    //mysql配置</li>
+</ul>
+</li>
+<li><p>相关协议</p>
+<ul>
+<li>file://      访问本地系统文件</li>
+<li>http://    访问HTTP(S)网址</li>
+<li>ftp://       访问FTP(S)网址</li>
+<li>php://     访问输入输出流</li>
+<li>zlib://      压缩流</li>
+<li>data://    数据</li>
+<li>glob://     查找匹配的文件路径模式</li>
+<li>phar://     PHP归档</li>
+<li>ssh2://      Secure Shell 2</li>
+<li>rar://         RAR压缩文件</li>
+<li>ogg://        音频流</li>
+<li>expect://   交互式的流</li>
+</ul>
+<p><img src="/PHP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/1.png" srcset="/img/loading.gif" alt></p>
+</li>
 </ol>
 
             </article>
@@ -260,8 +301,6 @@
                     
                       <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
                     
-                      <a class="hover-with-bg" href="/tags/%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C/">代码执行</a>
-                    
                       <a class="hover-with-bg" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
                     
                   </div>
@@ -275,18 +314,12 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/PHP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">PHP文件包含漏洞</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E6%BC%8F%E6%B4%9E%E9%98%B2%E8%8C%83/">
-                        <span class="hidden-mobile">SQL注入 漏洞防范</span>
+                      <a href="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
+                        <span class="hidden-mobile">PHP代码执行漏洞简介</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -426,7 +459,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "PHP代码执行漏洞简介&nbsp;",
+        "PHP文件包含漏洞&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

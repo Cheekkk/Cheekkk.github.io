@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>PHP文件包含漏洞</title>
+    <link href="/PHP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/"/>
+    <url>/PHP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/</url>
+    
+    <content type="html"><![CDATA[<p>文件包含漏洞的原理及利用</p><a id="more"></a><h1 id="PHP文件包含漏洞"><a href="#PHP文件包含漏洞" class="headerlink" title="PHP文件包含漏洞"></a>PHP文件包含漏洞</h1><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><p>开发PHP程序时，通常将可复用的函数写入文件中，在使用这个函数时直接调用文件，不用重新编写函数，可以使程序更加灵活。如果动态包含的参数没有严格过滤，就会产生文件包含漏洞。</p><ol><li><p>文件包含漏洞的原因可以总结为以下两点：</p><ul><li>程序使用了动态包含</li><li>包含的文件路径参数客户端可控</li></ul></li><li><p>PHP中的相关配置</p><ul><li>allow_url_fopen=On/Off         本地文件包含（LFI）</li><li>allow_url_include=On/Off       远程文件包含（RFI）</li></ul></li><li><p>PHP中常用文件包含的函数有四个：</p><ul><li>include()                    文件包含失败时会继续执行</li><li>include_once()         文件包含失败时会继续执行，只会包含一次</li><li>require()                    文件包含失败时会直接结束</li><li>require_once()          文件包含失败时会直接结束，只会包含一次</li></ul></li><li><p>特点</p><ul><li>无视扩展名读取文件<br>包含文件时会读取文件的源码，打开图片时不是图像，而是图片源码</li><li>无条件解析PHP代码<br>遇到符合PHP语法规范的代码时，无论后缀名，都会执行PHP代码</li></ul></li></ol><h2 id="02-利用"><a href="#02-利用" class="headerlink" title="02 利用"></a>02 利用</h2><ol><li><p>危害</p><ul><li>读取敏感文件<br>需要文件存在，且具有可读权限</li><li>包含木马</li></ul></li><li><p>截断方式</p><ol><li><p>00截断<br>需要关闭PHP的魔术引号，PHP版本小于5.3.4</p><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'path'</span>]))&#123;    <span class="hljs-keyword">include</span> $_GET[<span class="hljs-string">'path'</span>].<span class="hljs-string">".html"</span>;  &#125;<span class="hljs-keyword">else</span>&#123;    <span class="hljs-keyword">echo</span> <span class="hljs-string">"?path=[path]"</span>;  &#125;</code></pre></li></ol><p>​    在以上的代码中，规定了包含文件的后缀名是html，可以使用00截断来包含其他类型的文件，提交变量?path=info.php%00即可</p><ol start="2"><li><p>./截断<br>不受GPC限制，PHP版本需要小于5.3</p><ul><li><p>在文件名之后加上./可以进行截断，如info.php……….</p><p>在Windows下240个.或者240个./可以截断，在Linux下，2038个/.可以截断</p></li><li><p>在文件可以使用../来移动目录，从而读取其他目录下的文件</p></li></ul></li><li><p>？伪截断<br>不受GPC和PHP版本的限制<br>新建一个1.txt，输入 this is 1.txt</p><p>在上述代码中提交 ?path=<a href="http://127.0.0.1/1.txt" target="_blank" rel="noopener">http://127.0.0.1/1.txt</a>?</p><p>拼接结果为?path=<a href="http://127.0.0.1/1.txt?.html" target="_blank" rel="noopener">http://127.0.0.1/1.txt?.html</a><br>?.html被当做请求参数，实际请求对象是1.txt<br>执行后成功输出1.txt中的内容</p></li></ol></li><li><p>Windows下的敏感目录</p><ul><li>C:\boot.ini            //查看系统版本</li><li>C:\windows\system32\inetsrv\MetaBase.xml    //iis配置文件</li><li>C:\windows\repair\same    //存储windows初次安装密码</li><li>C:\ProgramFiles\mysql\my.ini    //mysql配置信息</li><li>C:\ProgramFiles\mysql\data\mysql\user.MYD    //mysql root密码</li><li>C:\windows\php.ini    //php配置信息</li></ul></li><li><p>Linux\Unix下的敏感目录</p><ul><li>/etc/passwd    //账户信息</li><li>/etc/shadow    //账户密码文件</li><li>/usr/local/app/apache2/conf/httpd.conf    //Apache2默认配置文件</li><li>/usr/local/app/apache2/conf/extra/httpd-vhost.conf //虚拟网站配置</li><li>/usr/local/app/php5/lib/php.ini    //php配置</li><li>/etc/httpd/conf/httpd.conf    //Apache配置</li><li>/etc/my.conf    //mysql配置</li></ul></li><li><p>相关协议</p><ul><li>file://      访问本地系统文件</li><li>http://    访问HTTP(S)网址</li><li>ftp://       访问FTP(S)网址</li><li>php://     访问输入输出流</li><li>zlib://      压缩流</li><li>data://    数据</li><li>glob://     查找匹配的文件路径模式</li><li>phar://     PHP归档</li><li>ssh2://      Secure Shell 2</li><li>rar://         RAR压缩文件</li><li>ogg://        音频流</li><li>expect://   交互式的流</li></ul><p><img src="/PHP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/1.png" srcset="/img/loading.gif" alt></p></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>代码审计</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>代码审计</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>PHP代码执行漏洞简介</title>
     <link href="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/"/>
     <url>/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/</url>
