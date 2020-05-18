@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>PHP配置中的安全选项</title>
+    <link href="/PHP%E9%85%8D%E7%BD%AE%E4%B8%AD%E7%9A%84%E5%AE%89%E5%85%A8%E9%80%89%E9%A1%B9/"/>
+    <url>/PHP%E9%85%8D%E7%BD%AE%E4%B8%AD%E7%9A%84%E5%AE%89%E5%85%A8%E9%80%89%E9%A1%B9/</url>
+    
+    <content type="html"><![CDATA[<p>PHP的一些安全配置</p><a id="more"></a><h1 id="PHP配置中的安全选项"><a href="#PHP配置中的安全选项" class="headerlink" title="PHP配置中的安全选项"></a>PHP配置中的安全选项</h1><h2 id="01-PHP-INI-常量定义"><a href="#01-PHP-INI-常量定义" class="headerlink" title="01 PHP_INI_*常量定义"></a>01 PHP_INI_*常量定义</h2><table><thead><tr><th>常量</th><th>含义</th></tr></thead><tbody><tr><td>PHP_INI_USER</td><td>该配置选项可以在PHP脚本或者Windows注册表配置</td></tr><tr><td>PHP_INI_PREDIR</td><td>该配置选项可以在php.ini, .htaccess或httpd.conf中配置</td></tr><tr><td>PHP_INI_SYSTEM</td><td>该配置选项可以在php.ini, 或httpd.conf中配置</td></tr><tr><td>PHP_INI_ALL</td><td>该配置选项可以在任何地方配置</td></tr><tr><td>php.ini only</td><td>该配置选项仅在php.ini中配置</td></tr></tbody></table><p>PHP配置指令修改范围决定了PHP指令在何时何地及是否可被更改。手册中的每个指令都有其所属的模式。例如有些指令可以在 PHP 脚本中用 ini_set()来设定，而有些则只能在 php.ini 或 httpd.conf 中</p><h2 id="02-相关配置"><a href="#02-相关配置" class="headerlink" title="02 相关配置"></a>02 相关配置</h2><ol><li><p>register_globals(全局变量注册开关)</p><p>PHP版本：&lt; 4.2.3 : 设置为PHP_INI_ALL</p><p>​                    5.3.0起不推荐使用</p><p>​                    5.4.0起被移除<br>当选项为On，会将GET、POST等方式提交的参数注册成全局变量并且初始化值为该参数对应的值</p><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'cmd'</span>]))&#123;      <span class="hljs-keyword">if</span>($cmd==<span class="hljs-string">'whoami'</span>)&#123;        <span class="hljs-keyword">echo</span> <span class="hljs-string">'True'</span>      &#125;    &#125;<span class="hljs-keyword">else</span>&#123;      <span class="hljs-keyword">echo</span> <span class="hljs-string">"?cmd=whoami"</span>;<span class="hljs-meta">?&gt;</span></code></pre><p>通过GET方式在URL中提交?cmd=whoami ,网页输出True</p></li><li><p>allow_url_include(允许包含远程文件)<br>PHP版本： 5.2.0之后被默认设置为off，配置范围是PHP_INI_ALL<br>当选项为On时可以直接包含远程文件，造成文件包含漏洞</p><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>  <span class="hljs-keyword">include</span> $_GET[<span class="hljs-string">'file'</span>];<span class="hljs-meta">?&gt;</span></code></pre><p>通过GET方式在URL中提交?file=<a href="http://xxx.com/file.txt就可以读取文件" target="_blank" rel="noopener">http://xxx.com/file.txt就可以读取文件</a><br>即使后缀名不是PHP，也可以执行其中的PHP代码</p><p>类似的还有allow_url_fopen(),配置是否允许打开远程文件,影响较小</p></li><li><p>magic_quotes_gpc(魔术引号自动过滤)</p><p>PHP版本：5.3之后不推荐使用，5.4之后被取消</p><p>​                   &lt; 4.2.3时配置范围是PHP_INI_ALL</p><p>​                    &gt; 4.2.3时配置范围是PHP_INI_PREDIR<br>当选项为On时，会自动在GET、POST、COOKIE变量中的单引号、双引号、反斜杠和空字符前加上反斜杠进行转义</p><p>在PHP5中不过滤$_SERVER变量，因此client-ip、referer等漏洞能被利用</p><p>开启时，如果不存在编码（如宽字节注入）或其他特殊绕过，很多漏洞就无法使用</p><pre><code class="hljs php"><span class="hljs-meta">&lt;?</span>  <span class="hljs-keyword">echo</span> $_GET[<span class="hljs-string">'a'</span>]<span class="hljs-meta">?&gt;</span></code></pre><p>传入 ?a=1’<br>输出位1\‘</p></li><li><p>magic_quotes_runtime(魔术引号自动过滤)</p><p>PHP版本：5.4之后被取消，配置范围是PHP_INI_ALL<br>类似，在单引号、双引号、反斜杠和空字符前加上反斜杠进行转义<br>但它的处理对象时从数据库或文件中读取的数据</p><pre><code class="hljs txt">&#x2F;&#x2F; test.txt1&#39;2&quot;3\4</code></pre><pre><code class="hljs php"><span class="hljs-comment">// mqr.php</span><span class="hljs-meta">&lt;?php</span>  <span class="hljs-keyword">echo</span> file_get_contents(<span class="hljs-string">"test.txt"</span>);<span class="hljs-meta">?&gt;</span></code></pre><p>输出结果为 1\‘2\“3\\4</p></li><li><p>magic_quotes_sybase(魔术引号自动过滤)</p><p>PHP版本：5.4之后被取消，配置范围是PHP_INI_ALL</p><p>当选项为On时，会自动在GET、POST、COOKIE变量中的空字符前加上反斜杠进行转义，会将单引号变成双引号</p><p>此选项开启时，会覆盖magic_quotes_gpc=on</p> <pre><code class="hljs php"><span class="hljs-meta">&lt;?</span>  <span class="hljs-keyword">echo</span> $_GET[<span class="hljs-string">'a'</span>]<span class="hljs-meta">?&gt;</span></code></pre><p>传入 ?a=1’2”3\4%005<br>输出位1’’2”3\4\05</p></li><li><p>safe_mode(安全模式)</p><p>PHP版本：5.4之后被取消，配置范围是PHP_INI_ALL</p><p>当选项为On时，会有两中限制：</p><ul><li>用户无法对其他所有者所有的文件进行包含、删除等操作<br>可以通过配置safe_mode_include_dir和safe_mode_exec_dir来设置允许操作的路径</li><li>无法通过system()、popen()、exec()、反引号来执行命令或程序<br>可以将需要使用的脚本放在同一目录下，并使用safe_mode_exec_dir配置可以执行的目录</li></ul></li><li><p>open_basedir(可访问目录)<br>PHP版本：&lt; 5.2.3 : 设置为PHP_INI_SYSTEM</p><pre><code>\&gt;=5.2.3 : 设置为PHP_INI_SYSTEM</code></pre><p>用于设置PHP可访问的目录，可以用分号分隔多个目录<br>如果设置为 open_basedir=/www/a ，/www/a 和 /www/ab 都可以访问<br>因此需要设置为 open_basedir=/www/a/</p></li><li><p>disable_functions(禁用函数)<br>配置范围是php.ini only，用逗号分隔多个函数名</p></li><li><p>display_errors、error_reporting(错误显示)<br>配置范围是PHP_INI_ALL<br>display_errors用于配置是否显示错误信息<br>当display_errors开启时，可以用error_reporting设置显示的级别</p><p><img src="/PHP%E9%85%8D%E7%BD%AE%E4%B8%AD%E7%9A%84%E5%AE%89%E5%85%A8%E9%80%89%E9%A1%B9/1.png" srcset="/img/loading.gif" alt></p><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><span class="hljs-comment">// 关闭所有PHP错误报告</span>error_reporting(<span class="hljs-number">0</span>);<span class="hljs-comment">// Report simple running errors</span>error_reporting(E_ERROR | E_WARNING | E_PARSE);<span class="hljs-comment">// 报告 E_NOTICE也挺好 (报告未初始化的变量</span><span class="hljs-comment">// 或者捕获变量名的错误拼写)</span>error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);<span class="hljs-comment">// 除了 E_NOTICE，报告其他所有错误</span>error_reporting(E_ALL ^ E_NOTICE);<span class="hljs-comment">// 报告所有 PHP 错误 (参见 changelog)</span>error_reporting(E_ALL);<span class="hljs-comment">// 报告所有 PHP 错误</span>error_reporting(<span class="hljs-number">-1</span>);<span class="hljs-comment">// 和 error_reporting(E_ALL); 一样</span>ini_set(<span class="hljs-string">'error_reporting'</span>, E_ALL);<span class="hljs-meta">?&gt;</span></code></pre></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>代码审计</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>代码审计</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>PHP文件上传漏洞</title>
     <link href="/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/"/>
     <url>/PHP%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/</url>
