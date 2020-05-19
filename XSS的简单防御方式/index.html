@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    691 字
+                    819 字
                   </span>
                 
 
@@ -179,13 +179,11 @@
 <a id="more"></a>
 
 <h1 id="XSS的简单防御方式"><a href="#XSS的简单防御方式" class="headerlink" title="XSS的简单防御方式"></a>XSS的简单防御方式</h1><h2 id="01-输入检查"><a href="#01-输入检查" class="headerlink" title="01 输入检查"></a>01 输入检查</h2><ol>
-<li><p>检查用户的输入是否含有敏感字符</p>
-</li>
-<li><p>对于用户名、手机号码、邮件、生日等信息的输入进行检查，检查是否符合常见格式</p>
-</li>
-<li><p>输入检查一般在客户端JavaScript和服务端代码实现相同的检查，客户端单一的检查很容易被绕过</p>
-</li>
+<li>检查用户的输入是否含有敏感字符</li>
+<li>对于用户名、手机号码、邮件、生日等信息的输入进行检查，检查是否符合常见格式</li>
+<li>检查输入字符串是否超过最大长度限制</li>
 </ol>
+<p>输入检查一般在客户端JavaScript和服务端代码实现相同的检查，客户端单一的检查很容易被绕过</p>
 <h2 id="02-输出检查"><a href="#02-输出检查" class="headerlink" title="02 输出检查"></a>02 输出检查</h2><ol>
 <li>对一些特殊字符需要过滤：</li>
 </ol>
@@ -251,6 +249,24 @@
 </ul>
 <h2 id="06-CSP"><a href="#06-CSP" class="headerlink" title="06 CSP"></a>06 CSP</h2><p>内容安全策略（<a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP" target="_blank" rel="noopener">CSP</a>，Content Security Policy）用于指定哪些内容可执行。将用户输入的部分标为不可执行，就不会产生实际的危害。</p>
 <p>为使CSP可用，需要配置HTTP响应头<a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy" target="_blank" rel="noopener">Content-Security-Policy</a>，它的值可以是connect-src、default-src、script-src等</p>
+<h2 id="07-常用过滤函数"><a href="#07-常用过滤函数" class="headerlink" title="07 常用过滤函数"></a>07 常用过滤函数</h2><pre><code class="hljs php">strip_tags($str, [允许标签])     <span class="hljs-comment">#从字符串中去除 HTML 和 PHP 标记</span>
+
+htmlentities($str)           	<span class="hljs-comment">#转义html实体</span>
+
+html_entity_decode($str)     	<span class="hljs-comment">#反转义html实体</span>
+
+addcslashes($str, <span class="hljs-string">'字符'</span>)     	<span class="hljs-comment">#给某些字符加上反斜杠</span>
+
+stripcslashes($str)          	<span class="hljs-comment">#去掉反斜杠</span>
+
+addslashes ($str )              <span class="hljs-comment">#单引号、双引号、反斜线与 NULL加反斜杠</span>
+
+stripslashes($str)              <span class="hljs-comment">#去掉反斜杠</span>
+
+htmlspecialchars()              <span class="hljs-comment">#特殊字符转换为HTML实体</span>
+
+htmlspecialchars_decode()       <span class="hljs-comment">#将特殊的 HTML 实体转换回普通字符</span></code></pre>
+
 
             </article>
             <hr>
@@ -282,6 +298,12 @@
                 <div class="post-prevnext row">
                   <div class="post-prev col-6">
                     
+                    
+                      <a href="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">生成webshell的三个工具</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </div>
                   <div class="post-next col-6">
