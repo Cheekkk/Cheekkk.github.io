@@ -4,6 +4,62 @@
   
   
   <entry>
+    <title>CSRF漏洞简介</title>
+    <link href="/CSRF%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/"/>
+    <url>/CSRF%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/</url>
+    
+    <content type="html"><![CDATA[<p>CSRF原理的简单整理</p><a id="more"></a><h1 id="CSRF漏洞简介"><a href="#CSRF漏洞简介" class="headerlink" title="CSRF漏洞简介"></a>CSRF漏洞简介</h1><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><ol><li><p><strong>定义</strong><br>CSRF（跨站请求伪造）使已经登陆浏览器的用户执行非本意的操作，如诱使受害者点击发送请求的链接，由于浏览器通常会保存用户的信息，请求就会在用户未知的情况下被执行</p></li><li><p><strong>关键点</strong><br>浏览器会记录用户会话的cookie，IP地址等，继承受害者的身份和特权，攻击者只能冒充受害者的身份发送请求，而不能直接获取身份信息<br>如果用户当前对该站点已经进行了身份认证，该站点就无法区分受害者发送的合法请求和攻击者伪造的请求</p></li><li><p><strong>必要条件</strong></p><ol><li>用户已经登陆了系统，并且浏览器自动记录了用户的凭证</li><li>用户点击了伪造的URL</li></ol></li></ol><h2 id="02-应用"><a href="#02-应用" class="headerlink" title="02 应用"></a>02 应用</h2><ol><li><p><strong>目标</strong></p><p>CSRF攻击的目标是能够改变服务器状态或数据的业务或功能，如更改受害者的电子邮件地址、密码、购买商品等</p><p>对攻击者来说，CSRF无法获得服务器的响应，因此，CSRF针对引起状态变化的请求</p><p>可以与XSS相结合，形成存储型的CSRF，攻击性会被放大</p></li><li><p><strong>实际场景</strong></p><p>例如在转账的场景中：<br>正常链接：<a href="http://www.xxx.com/pay.php?target=xx&amp;money=100">www.xxx.com/pay.php?target=xx&amp;money=100</a><br>用户正常转账操作需要目标与金额两个参数，攻击者可以根据这两个参数伪造链接，并通过社工等一些方法诱使受害者点击伪造的链接<br>恶意链接：<a href="http://www.com/pay.php?target=hacker&amp;money=100000">www.com/pay.php?target=hacker&amp;money=100000</a><br>用户就将在不知情的情况下将钱转给攻击者</p></li><li><p><strong>攻击方式</strong></p><ol><li><p>GET型<br>可以与XSS结合，加载网页后就自动发送了GET请求<br>&lt;img src=<a href="http://www.xxx.com/pay.php?target=xx&amp;money=100\&gt;">www.xxx.com/pay.php?target=xx&amp;money=100\&gt;</a></p></li><li><p>POST型<br>在网页中构造一个表单，打开网页后就自动向目标提交了表单</p><pre><code class="hljs php+HTML">&lt;form action&#x3D;&quot;http:&#x2F;&#x2F;www.xxx.com&quot; method&#x3D;POST&gt;    &lt;input type&#x3D;&quot;hidden&quot; name&#x3D;&quot;target&quot; value&#x3D;&quot;hacker&quot; &#x2F;&gt;    &lt;input type&#x3D;&quot;hidden&quot; name&#x3D;&quot;money&quot; value&#x3D;&quot;100&quot; &#x2F;&gt;&lt;&#x2F;form&gt;</code></pre></li><li><p>链接型<br>以广告等形式诱使受害者点开链接</p></li></ol></li></ol><h2 id="03-防御"><a href="#03-防御" class="headerlink" title="03 防御"></a>03 防御</h2><h3 id="无效的防御措施"><a href="#无效的防御措施" class="headerlink" title="无效的防御措施"></a>无效的防御措施</h3><ol><li>使用秘密cookie<br>所有的cookie，包括秘密cookie也会随着每个请求提交，无法防御</li><li>仅接受POST请求<br>尽管攻击者无法构造GET型的恶意链接，但仍可以在网页中构造POST的表单，通过JavaScript进行发送</li><li>多步交易<br>只要攻击者掌握了每一步，就可以实现CSRF攻击</li></ol><h3 id="有效防御措施"><a href="#有效防御措施" class="headerlink" title="有效防御措施"></a>有效防御措施</h3><p>有效的防御可以从两个方面来入手：</p><ul><li>阻止外域的访问</li><li>添加本域才能获得的验证信息</li></ul><ol><li><p>同源检测<br>可以通过HTTP请求头中的origin和referer字段来确定来源，如果来源不可信，就直接阻止请求</p><ul><li><p>origin<br>如果origin存在，直接就可以确定来源，但是在IE11的同源策略和302重定向中不存在origin字段</p></li><li><p>referer<br>对于Ajax请求，图片和script等资源请求，Referer为发起请求的页面地址。对于页面跳转，Referer为打开页面历史记录的前一个页面地址</p><p>但是验证referer完全依赖与浏览器，而浏览器自身可能有漏洞，同时攻击者可以隐藏或者修改referer<br>从HTTPS页面跳转到HTTP页面时，referer也会丢失</p></li></ul><p>同源检测并非万无一失，攻击者仍有修改的可能<br>CSRF大多来自第三方域名，但攻击者也有在本域发起攻击的可能</p></li><li><p>CSRF Token</p><p>设置一个token来区分正常请求和非法请求</p><p>Token要放在Session而不能再放在cookie中，服务器对客户端提交的Token进行解密，检查是否一致和是否过期</p><p>一个生成Token的例子</p><pre><code class="hljs php+HTML">&lt;?phpfunction generateToken()&#123;$salt&#x3D;&quot;test&quot;.date(&quot;Y:M:D&quot;);&#x2F;&#x2F;随机字符串与当前时间拼接  $token&#x3D;md5($salt);&#x2F;&#x2F;加密  return $token;&#125;$token&#x3D;generateToken();session_start();$_SESSION[&quot;user_token&quot;]&#x3D;$token;?&gt;&lt;html&gt;  &lt;head&gt;    &lt;meta charset&#x3D;&quot;utf-8&quot;&gt;    &lt;title&gt;CSRF_TOKEN&lt;&#x2F;title&gt;  &lt;&#x2F;head&gt;  &lt;body&gt;    &lt;h1&gt;      CSRF_TOKEN    &lt;&#x2F;h1&gt;    &lt;form action&#x3D;&quot;check.php&quot; method&#x3D;&quot;post&quot;&gt;      &lt;input type&#x3D;&quot;text&quot; value&#x3D;&quot;我提交了&quot;&gt;      &lt;input type&#x3D;&quot;hidden&quot; name&#x3D;&quot;user_token&quot; value&#x3D;&quot;&lt;?php echo $token; ?&gt;&quot;&gt;      &lt;input type&#x3D;&quot;submit&quot; name&#x3D;&quot;submit&quot; value&#x3D;&quot;提交&quot;&gt;    &lt;&#x2F;form&gt;  &lt;&#x2F;body&gt;&lt;&#x2F;html&gt;</code></pre><p>检查Token是否一致</p><pre><code class="hljs php+HTML">&lt;?php  session_start();  $token1&#x3D;$_POST[&quot;user_token&quot;];  $token2&#x3D;$_SESSION[&quot;user_token&quot;];  echo $token1;  echo PHP_EOL;  echo $token2;  echo PHP_EOL;if($token1&#x3D;&#x3D;$token2)&#123;echo &quot;success!&quot;;  &#125;else&#123;    echo &quot;fail&quot;;  &#125;?&gt;</code></pre></li><li><p>双重cookie</p><p>利用了CSRF无法获取cookie的特点</p><p>用户访问网页时获得一个cookie，向后端发送请求时将cookie添加到url中，后端验证cookie与URL中的参数是否一致</p><p>但如果存在XSS使得cookie泄露，就无法实现防护</p></li><li><p>Samesite cookie属性</p><ul><li>Samesite=Strict<br>严格模式，Cookie 在任何情况下都不可能作为第三方 Cookie</li><li>Samesite=Lax<br>宽松模式，如果请求改变了当前页面或者打开了新页面，且同时是个GET请求，则这个Cookie可以作为第三方Cookie</li></ul><p>严格模式安全性很高，但用户每次都要重新登陆，体验较差<br>宽松模式时通过页面跳转过来的时候可以使用Cookie，可以保障外域连接打开页面时用户的登录状态，安全性较低</p><p>Samesite cookie对浏览器兼容还不够好，且不支持子域，每个子域名用户都需要重新登陆</p></li><li><p>二次验证<br>对于敏感操作需要用户重新输入密码和验证码</p></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>CSRF</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>CRLF注入漏洞</title>
+    <link href="/CRLF%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/"/>
+    <url>/CRLF%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/</url>
+    
+    <content type="html"><![CDATA[<p>CRLF注入漏洞简介</p><a id="more"></a><h1 id="CRLF注入漏洞"><a href="#CRLF注入漏洞" class="headerlink" title="CRLF注入漏洞"></a>CRLF注入漏洞</h1><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><p>CRLF是”回车 + 换行”（\r\n）的简称，回车符（CR，ASCII 13，\r，%0d），换行符(LF，ASCII 10，\n，%0a)</p><p>回车使光标移动到行首，源自于打字机的概念<br>换行使光标垂直移动到下一行</p><p>在HTTP协议中，HTTP Header与HTTP Body是用两个CRLF分隔的，浏览器就是根据这两个CRLF来取出HTTP 内容并显示出来</p><p>所以，一旦我们能够控制HTTP 消息头中的字符，注入一些恶意的换行，这样我们就能注入一些会话Cookie或者HTML代码，所以CRLF Injection又叫HTTP Response Splitting，简称HRS</p><h2 id="02-危害"><a href="#02-危害" class="headerlink" title="02 危害"></a>02 危害</h2><ol><li>修改cookie</li><li>反射型XSS</li><li>跳转劫持</li><li>钓鱼</li></ol><h2 id="03-利用"><a href="#03-利用" class="headerlink" title="03 利用"></a>03 利用</h2><h3 id="固定会话漏洞"><a href="#固定会话漏洞" class="headerlink" title="固定会话漏洞"></a>固定会话漏洞</h3><p>假设一个网页具有跳转功能，代码如下：</p><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>  $url=$_GET[<span class="hljs-string">'url'</span>];header(<span class="hljs-string">"Location:$url"</span>);<span class="hljs-meta">?&gt;</span></code></pre><p>可以在URL中传参进行跳转 ?url=<a href="http://www.baidu.com" target="_blank" rel="noopener">http://www.baidu.com</a></p><p>正常的响应包如下:</p><pre><code class="hljs groovy">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">302</span> Moved Temporarily <span class="hljs-string">Date:</span> xxxContent-<span class="hljs-string">Type:</span> text/html Content-<span class="hljs-string">Length:</span> <span class="hljs-number">154</span> <span class="hljs-string">Connection:</span> close <span class="hljs-string">Location:</span> <span class="hljs-string">http:</span><span class="hljs-comment">//www.baidu.com</span></code></pre><p>如果在传参时使用CRLF注入指定cookie<br>?url=<a href="http://www.baidu.com%0d%0aSet-cookie:JSPSESSID%3Dcrlftest">http://www.baidu.com%0d%0aSet-cookie:JSPSESSID%3Dcrlftest</a></p><p>检测到%0d%0a后，就认为Location首部字段这行结束了，Set-Cookie就会被认为是下一行</p><p>响应如下：</p><pre><code class="hljs groovy">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">302</span> Moved Temporarily <span class="hljs-string">Date:</span> xxxContent-<span class="hljs-string">Type:</span> text/html Content-<span class="hljs-string">Length:</span> <span class="hljs-number">154</span> <span class="hljs-string">Connection:</span> close <span class="hljs-string">Location:</span> <span class="hljs-string">http:</span><span class="hljs-comment">//www.baidu.com</span>Set-<span class="hljs-string">cookie:</span> JSPSESSID=crlftest</code></pre><p>此时我们成功设置了一个Session，造成了固定会话漏洞</p><h3 id="绕过XSSFilter"><a href="#绕过XSSFilter" class="headerlink" title="绕过XSSFilter"></a>绕过XSSFilter</h3><p>利用CRLF还可以绕过浏览器的保护，造成XSS</p><p>原因是当HTTP头中含有X-XSS-Protection并且值为0时，浏览器不会开启Filter，我们可以利用CRLF注入为HTTP头添加这一字段</p><p>?url=%0aX-XSS-Protection:%200%0d%0a%0d%0a&lt;img%20src=1%20onerror=alert(1)&gt;</p><p>此时就成功注入了</p><pre><code class="hljs angelscript">X-XSS-Protection：<span class="hljs-number">0</span></code></pre><p>关闭了浏览器的Filter</p><p>同时注入</p><pre><code class="hljs routeros">&lt;img <span class="hljs-attribute">src</span>=1 <span class="hljs-attribute">onerror</span>=alert(1)&gt;</code></pre><p>实现了XSS</p><h2 id="04-修复"><a href="#04-修复" class="headerlink" title="04 修复"></a>04 修复</h2><p>对用户输入的数据的合法性进行校验，限制用户输入CR和LF，或者在数据返回到响应头之前删除所有的换行符</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>CRLF</tag>
+      
+      <tag>XSS</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>生成webshell的三个工具</title>
     <link href="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/"/>
     <url>/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/</url>
@@ -549,11 +605,11 @@
     
     <tags>
       
-      <tag>密码学</tag>
-      
       <tag>python</tag>
       
       <tag>工具使用</tag>
+      
+      <tag>密码学</tag>
       
     </tags>
     

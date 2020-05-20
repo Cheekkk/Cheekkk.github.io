@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>Python中的RSA、DES、HASH加密 - Cheekkk&#39;s Anti-Gravity Space</title>
+  <title>CRLF注入漏洞 - Cheekkk&#39;s Anti-Gravity Space</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    980 字
+                    526 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    12
+                    6
                      分钟
                   </span>
                 
@@ -175,150 +175,58 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>本文总结了python中进行加密的几个模块的使用</p>
+              <p>CRLF注入漏洞简介</p>
 <a id="more"></a>
 
-<h1 id="Python中的RSA、DES、HASH加密"><a href="#Python中的RSA、DES、HASH加密" class="headerlink" title="Python中的RSA、DES、HASH加密"></a>Python中的RSA、DES、HASH加密</h1><h2 id="01-加密的分类"><a href="#01-加密的分类" class="headerlink" title="01 加密的分类"></a>01 加密的分类</h2><ol>
-<li><p>对称加密</p>
-<ul>
-<li>加密和解密都使用相同的密钥</li>
-<li>密钥较短，加密处理简单，加解密速度快<br>适合于加密大量数据的场合</li>
-<li>举例：DES、AES</li>
-</ul>
-</li>
-<li><p>非对称加密</p>
-<ul>
-<li>加密使用公开的公钥，解密使用私钥</li>
-<li>密钥大，加解密速度慢<br>一般用于加密少量数据，适用于互联网传输公钥，应用于数字签名</li>
-<li>举例：RSA</li>
-</ul>
-</li>
-<li><p>Hash算法/数字签名</p>
-<ul>
-<li>是一种单向算法，难以由密文得到明文，用于检查信息是否被篡改</li>
-<li>举例：MD5、SHA</li>
-</ul>
-</li>
+<h1 id="CRLF注入漏洞"><a href="#CRLF注入漏洞" class="headerlink" title="CRLF注入漏洞"></a>CRLF注入漏洞</h1><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><p>CRLF是”回车 + 换行”（\r\n）的简称，回车符（CR，ASCII 13，\r，%0d），换行符(LF，ASCII 10，\n，%0a)</p>
+<p>回车使光标移动到行首，源自于打字机的概念<br>换行使光标垂直移动到下一行</p>
+<p>在HTTP协议中，HTTP Header与HTTP Body是用两个CRLF分隔的，浏览器就是根据这两个CRLF来取出HTTP 内容并显示出来</p>
+<p>所以，一旦我们能够控制HTTP 消息头中的字符，注入一些恶意的换行，这样我们就能注入一些会话Cookie或者HTML代码，所以CRLF Injection又叫HTTP Response Splitting，简称HRS</p>
+<h2 id="02-危害"><a href="#02-危害" class="headerlink" title="02 危害"></a>02 危害</h2><ol>
+<li>修改cookie</li>
+<li>反射型XSS</li>
+<li>跳转劫持</li>
+<li>钓鱼</li>
 </ol>
-<h2 id="02-python中的pyDes"><a href="#02-python中的pyDes" class="headerlink" title="02 python中的pyDes"></a>02 python中的pyDes</h2><p>官方文档：</p>
-<pre><code class="hljs asciidoc">'''
-类初始化
---------------------
-pyDes.des（key，[mode]，[IV]，[pad]，[padmode]）
-pyDes.triple<span class="hljs-emphasis">_des（key，[mode]，[IV]，[pad]，[padmode]）</span>
-<span class="hljs-emphasis"></span>
-<span class="hljs-emphasis">key-&gt;包含加密密钥的字节。DES 8个字节，16或24个字节</span>
-<span class="hljs-emphasis">       用于三重DES</span>
-<span class="hljs-emphasis">mode-&gt;加密类型的可选参数，可以是</span>
-<span class="hljs-emphasis">       pyDes.ECB（电子密码簿）或pyDes.CBC（密码块链接）</span>
-<span class="hljs-emphasis">如果使用CBC模式，则必须提供IV-&gt;可选的初始值字节。</span>
-<span class="hljs-emphasis">       长度必须为8个字节。</span>
-<span class="hljs-emphasis">pad-&gt;可选参数，设置填充字符（PAD_</span>NORMAL）以在
-<span class="hljs-code">       使用此实例完成的所有加密/解密操作。</span>
-padmode-&gt;可选参数，设置填充模式（PAD<span class="hljs-emphasis">_NORMAL或PAD_</span>PKCS5）
-<span class="hljs-code">       在对此实例执行的所有加密/解密操作期间使用。</span>
+<h2 id="03-利用"><a href="#03-利用" class="headerlink" title="03 利用"></a>03 利用</h2><h3 id="固定会话漏洞"><a href="#固定会话漏洞" class="headerlink" title="固定会话漏洞"></a>固定会话漏洞</h3><p>假设一个网页具有跳转功能，代码如下：</p>
+<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
+  $url=$_GET[<span class="hljs-string">'url'</span>];
+	header(<span class="hljs-string">"Location:$url"</span>);
+<span class="hljs-meta">?&gt;</span></code></pre>
 
-我建议使用PAD<span class="hljs-emphasis">_PKCS5填充，因为这样您就不必担心任何</span>
-<span class="hljs-emphasis">填充问题，因为在解密时可以明确删除填充</span>
-<span class="hljs-emphasis">使用PAD_</span>PKCS5填充模式加密的数据。
+<p>可以在URL中传参进行跳转 ?url=<a href="http://www.baidu.com" target="_blank" rel="noopener">http://www.baidu.com</a></p>
+<p>正常的响应包如下:</p>
+<pre><code class="hljs groovy">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">302</span> Moved Temporarily 
+<span class="hljs-string">Date:</span> xxx
+Content-<span class="hljs-string">Type:</span> text/html 
+Content-<span class="hljs-string">Length:</span> <span class="hljs-number">154</span> 
+<span class="hljs-string">Connection:</span> close 
+<span class="hljs-string">Location:</span> <span class="hljs-string">http:</span><span class="hljs-comment">//www.baidu.com</span></code></pre>
 
-常用方法
---------------
-加密（数据，[填充]，[填充模式]）
-解密（数据，[pad]，[padmode]）
+<p>如果在传参时使用CRLF注入指定cookie<br>?url=<a href="http://www.baidu.com%0d%0aSet-cookie:JSPSESSID%3Dcrlftest">http://www.baidu.com%0d%0aSet-cookie:JSPSESSID%3Dcrlftest</a></p>
+<p>检测到%0d%0a后，就认为Location首部字段这行结束了，Set-Cookie就会被认为是下一行</p>
+<p>响应如下：</p>
+<pre><code class="hljs groovy">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">302</span> Moved Temporarily 
+<span class="hljs-string">Date:</span> xxx
+Content-<span class="hljs-string">Type:</span> text/html 
+Content-<span class="hljs-string">Length:</span> <span class="hljs-number">154</span> 
+<span class="hljs-string">Connection:</span> close 
+<span class="hljs-string">Location:</span> <span class="hljs-string">http:</span><span class="hljs-comment">//www.baidu.com</span>
+Set-<span class="hljs-string">cookie:</span> JSPSESSID=crlftest</code></pre>
 
-数据-&gt;要加密/解密的字节
-pad-&gt;可选参数。仅在使用PAD<span class="hljs-emphasis">_NORMAL的padmode时。对于</span>
-<span class="hljs-emphasis">       加密时，将以下字符添加到数据块的末尾</span>
-<span class="hljs-emphasis">       数据不是8个字节的倍数。对于解密，将删除</span>
-<span class="hljs-emphasis">       最后8个与此填充字符匹配的结尾字符</span>
-<span class="hljs-emphasis">       未加密数据块的字节。</span>
-<span class="hljs-emphasis">padmode-&gt;可选参数，设置填充模式，必须为PAD_</span>NORMAL之一
-<span class="hljs-code">       或PAD_PKCS5）。默认为PAD_NORMAL。</span>
-'''</code></pre>
+<p>此时我们成功设置了一个Session，造成了固定会话漏洞</p>
+<h3 id="绕过XSSFilter"><a href="#绕过XSSFilter" class="headerlink" title="绕过XSSFilter"></a>绕过XSSFilter</h3><p>利用CRLF还可以绕过浏览器的保护，造成XSS</p>
+<p>原因是当HTTP头中含有X-XSS-Protection并且值为0时，浏览器不会开启Filter，我们可以利用CRLF注入为HTTP头添加这一字段</p>
+<p>?url=%0aX-XSS-Protection:%200%0d%0a%0d%0a&lt;img%20src=1%20onerror=alert(1)&gt;</p>
+<p>此时就成功注入了</p>
+<pre><code class="hljs angelscript">X-XSS-Protection：<span class="hljs-number">0</span></code></pre>
 
-<p>示例程序：<br>python3中要使用字节</p>
-<pre><code class="hljs python"><span class="hljs-keyword">from</span> pyDes <span class="hljs-keyword">import</span> *
+<p>关闭了浏览器的Filter</p>
+<p>同时注入</p>
+<pre><code class="hljs routeros">&lt;img <span class="hljs-attribute">src</span>=1 <span class="hljs-attribute">onerror</span>=alert(1)&gt;</code></pre>
 
-<span class="hljs-keyword">if</span> __name__==<span class="hljs-string">'__main__'</span>:
-    Des_Key = <span class="hljs-string">"itsmykey"</span>
-    Des_IV = <span class="hljs-string">b"\x22\x33\x35\x81\xBC\x38\x5A\xE7"</span>
-    data=<span class="hljs-string">b'hello'</span>
-
-    k = des(Des_Key, CBC, Des_IV, pad=<span class="hljs-literal">None</span>, padmode=PAD_PKCS5)
-
-    d=k.encrypt(data)
-    print(<span class="hljs-string">'已加密'</span>,d)
-
-    t=k.decrypt(d)
-    text=str(t, encoding=<span class="hljs-string">'utf8'</span>)
-    print(<span class="hljs-string">'已解密'</span>,text)</code></pre>
-
-
-
-<h1 id="03-python中的rsa"><a href="#03-python中的rsa" class="headerlink" title="03 python中的rsa"></a>03 python中的rsa</h1><pre><code class="hljs python"><span class="hljs-keyword">import</span> rsa
-
-<span class="hljs-comment"># 生成密钥</span>
-(pubkey, privkey) = rsa.newkeys(<span class="hljs-number">1024</span>)
-
-<span class="hljs-comment"># 保存密钥</span>
-<span class="hljs-keyword">with</span> open(<span class="hljs-string">'public.pem'</span>, <span class="hljs-string">'w+'</span>) <span class="hljs-keyword">as</span> f:
-    f.write(pubkey.save_pkcs1().decode())
-
-<span class="hljs-keyword">with</span> open(<span class="hljs-string">'private.pem'</span>, <span class="hljs-string">'w+'</span>) <span class="hljs-keyword">as</span> f:
-    f.write(privkey.save_pkcs1().decode())
-
-<span class="hljs-comment"># 导入密钥</span>
-<span class="hljs-keyword">with</span> open(<span class="hljs-string">'public.pem'</span>, <span class="hljs-string">'r'</span>) <span class="hljs-keyword">as</span> f:
-    pubkey = rsa.PublicKey.load_pkcs1(f.read().encode())
-
-<span class="hljs-keyword">with</span> open(<span class="hljs-string">'private.pem'</span>, <span class="hljs-string">'r'</span>) <span class="hljs-keyword">as</span> f:
-    privkey = rsa.PrivateKey.load_pkcs1(f.read().encode())
-
-<span class="hljs-comment"># 明文</span>
-message = <span class="hljs-string">'hello'</span>
-
-<span class="hljs-comment"># 公钥加密</span>
-crypto = rsa.encrypt(message.encode(), pubkey)
-
-<span class="hljs-comment"># 私钥解密</span>
-message = rsa.decrypt(crypto, privkey).decode()
-print(message)
-
-<span class="hljs-comment"># 私钥签名</span>
-signature = rsa.sign(message.encode(), privkey, <span class="hljs-string">'SHA-1'</span>)
-
-<span class="hljs-comment"># 公钥验证</span>
-rsa.verify(message.encode(), signature, pubkey)</code></pre>
-
-
-
-<h2 id="04-python中的hashlib"><a href="#04-python中的hashlib" class="headerlink" title="04 python中的hashlib"></a>04 python中的hashlib</h2><ol>
-<li><p>md5<br>生成md5加密，由字符串生成摘要很容易，但由摘要回到字符串很难，因此可以用来检查信息是否被篡改</p>
-<p>md5是最常见的摘要算法，生成结果是固定的128bit字节，通常用一个32位的16进制字符串表示</p>
-<pre><code class="hljs python"><span class="hljs-keyword">import</span> hashlib
-
-text=<span class="hljs-string">'hello'</span>
-md5text=hashlib.md5(text.encode()).hexdigest()</code></pre>
-
-<p>数据量很大时，可以分段调用update</p>
-<pre><code class="hljs python"><span class="hljs-keyword">import</span> hashlib
-
-text=<span class="hljs-string">'hello python'</span>
-md5=hashlib.md5()
-md5.update(<span class="hljs-string">'hello'</span>.encode())
-md5.update(<span class="hljs-string">'python'</span>.encode())
-print(md5.hexdigest())</code></pre>
-</li>
-<li><p>sha1<br>sha1的结果是160bit字节，通常用40位的16进制字符串表示，更安全的算法时sha256和sha512，但更慢且更长</p>
-<pre><code class="hljs python">   <span class="hljs-keyword">import</span> hashlib
-   
-   text=<span class="hljs-string">'hello'</span>
-md5text=hashlib.sha1(text.encode()).hexdigest()</code></pre>
-</li>
-<li><p>两个不同的数据也可能算出相同的摘要，这称为碰撞<br>摘要算法通常用于数据库之中，黑客可以事先算出常见密码的摘要进行对比，为了更加安全，可以对原始字符串加一个复杂字符串来实现，俗称加盐</p>
-<pre><code class="hljs python">salt_md5=hashlib.md5(text+<span class="hljs-string">'salt'</span>.encode()).hexdigest()</code></pre></li>
-</ol>
+<p>实现了XSS</p>
+<h2 id="04-修复"><a href="#04-修复" class="headerlink" title="04 修复"></a>04 修复</h2><p>对用户输入的数据的合法性进行校验，限制用户输入CR和LF，或者在数据返回到响应头之前删除所有的换行符</p>
 
             </article>
             <hr>
@@ -328,7 +236,7 @@ md5text=hashlib.sha1(text.encode()).hexdigest()</code></pre>
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a>
+                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
                     
                   </div>
                 
@@ -336,11 +244,11 @@ md5text=hashlib.sha1(text.encode()).hexdigest()</code></pre>
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/python/">python</a>
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
                     
-                      <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+                      <a class="hover-with-bg" href="/tags/CRLF/">CRLF</a>
                     
-                      <a class="hover-with-bg" href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a>
+                      <a class="hover-with-bg" href="/tags/XSS/">XSS</a>
                     
                   </div>
                 
@@ -353,9 +261,9 @@ md5text=hashlib.sha1(text.encode()).hexdigest()</code></pre>
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/Python-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+                      <a href="/CSRF%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Python 正则表达式</span>
+                        <span class="hidden-mobile">CSRF漏洞简介</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -363,8 +271,8 @@ md5text=hashlib.sha1(text.encode()).hexdigest()</code></pre>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/SQL%E6%B3%A8%E5%85%A5-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99/">
-                        <span class="hidden-mobile">SQL注入 文件读写</span>
+                      <a href="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/">
+                        <span class="hidden-mobile">生成webshell的三个工具</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -504,7 +412,7 @@ md5text=hashlib.sha1(text.encode()).hexdigest()</code></pre>
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Python中的RSA、DES、HASH加密&nbsp;",
+        "CRLF注入漏洞&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,
