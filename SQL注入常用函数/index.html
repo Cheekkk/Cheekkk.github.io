@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    726 字
+                    865 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    8
+                    10
                      分钟
                   </span>
                 
@@ -194,12 +194,19 @@
 <li>version()<br>查看数据库版本</li>
 </ol>
 <h2 id="03-字符截取函数"><a href="#03-字符截取函数" class="headerlink" title="03 字符截取函数"></a>03 字符截取函数</h2><ol>
-<li>mid(s,m[,n])<br>s：必需，要截取的字段<br>m：必需，起始位置，从1开始计数，也可从最后一位开始从-1开始计数<br>n：可选，要截取的长度，若省略则返回剩余全部文本</li>
-<li>substr(s,m[,n]) / substring(s,m[,n])<br>s：必需，要截取的字段<br>m：必需，起始位置，从1开始计数，也可从最后一位开始从-1开始计数<br>n：可选，要截取的长度，若省略则返回剩余全部文本<br>也可以写为substr(s FROM m FOR n)</li>
-<li>left(s,n)<br>截取字符串s左边n位<br>类似的还有right()</li>
-<li>length()<br>获取字符串长度</li>
-<li>ELT(N,str1,str2,str3,…)<br>如果N =1返回str1，如果N= 2返回str2，等等<br>如果N&lt;1或者N大于参数的数量，就返回NULL</li>
-<li>limit m,n<br>从第m行开始，截取n行（从0开始计数）</li>
+<li><p>mid(s,m[,n])<br>s：必需，要截取的字段<br>m：必需，起始位置，从1开始计数，也可从最后一位开始从-1开始计数<br>n：可选，要截取的长度，若省略则返回剩余全部文本</p>
+<p>逗号被过滤时可以使用mid(s from m for n )</p>
+</li>
+<li><p>substr(s,m[,n]) / substring(s,m[,n])<br>s：必需，要截取的字段<br>m：必需，起始位置，从1开始计数，也可从最后一位开始从-1开始计数<br>n：可选，要截取的长度，若省略则返回剩余全部文本<br>也可以写为substr(s FROM m FOR n)</p>
+</li>
+<li><p>left(s,n)<br>截取字符串s左边n位<br>类似的还有right()</p>
+</li>
+<li><p>length()<br>获取字符串长度</p>
+</li>
+<li><p>ELT(N,str1,str2,str3,…)<br>如果N =1返回str1，如果N= 2返回str2，等等<br>如果N&lt;1或者N大于参数的数量，就返回NULL</p>
+</li>
+<li><p>limit m,n<br>从第m行开始，截取n行（从0开始计数）<br>逗号被过滤时可以使用 limit m offset n</p>
+</li>
 </ol>
 <h2 id="04-字符串拼接函数"><a href="#04-字符串拼接函数" class="headerlink" title="04 字符串拼接函数"></a>04 字符串拼接函数</h2><ol>
 <li>concat(str1,str2…)<br>拼接字符串，无分隔符</li>
@@ -228,12 +235,15 @@
 <li>if(e,t,f)<br>如果表达式e为真，就执行t，否则执行f</li>
 <li>sleep(n)<br>延时n秒</li>
 <li>benchmark(n,e)<br>将表达式e执行n次</li>
+<li>get_lock(key,time)<br>给key加锁，如果失败就延时time s，可以进行两次加锁，第二次就可能出现延时</li>
+<li>笛卡尔积<br>将多个表合成一张表耗时较长，达到延时的效果</li>
 </ol>
 <h2 id="07-information-schema"><a href="#07-information-schema" class="headerlink" title="07 information_schema"></a>07 information_schema</h2><p>在5.0以上版本中，默认定义了infomation数据库，用来存储数据库元信息。其中有表schemata（数据库名）、tables（表名）、columns（列名）</p>
 <p>在schemata表中，schema_name字段用来存储数据库名</p>
 <p>在tables表中，table_schema和table_name分别用来存储数据库名和表名</p>
 <p>在columns表中，table_schema(数据库名)、table_name(表名)、column_name(字段名)</p>
 <p><img src="/SQL%E6%B3%A8%E5%85%A5%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/1.png" srcset="/img/loading.gif" alt></p>
+<h2 id="08-innodb-table-stats"><a href="#08-innodb-table-stats" class="headerlink" title="08 innodb_table_stats"></a>08 innodb_table_stats</h2><p>在MySQL5.6之后，默认引擎是innodb，有一个表是innodb_table_stats，保存了表的修改记录，有database_name,table_name,last_update等字段<br>但是无法查到字段信息，而且需要root权限</p>
 
             </article>
             <hr>

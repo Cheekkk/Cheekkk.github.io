@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    366 字
+                    433 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    4
+                    5
                      分钟
                   </span>
                 
@@ -218,6 +218,7 @@
 <span class="hljs-meta">?&gt;</span></code></pre>
 
 <p>预编译除了可以避免SQL注入，还可以提高SQL语句的复用</p>
+<p>但是预编译并不能完全防止SQL注入<br>因为SQL语句中的表名和列名、ORDER BY后的ASC/DESC无法使用占位符替代，如果涉及到表为变量，用户可以控制排序方式，就可能出现SQL注入</p>
 
             </article>
             <hr>
