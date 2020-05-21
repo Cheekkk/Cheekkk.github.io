@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>SSRF漏洞简介 - Cheekkk&#39;s Anti-Gravity Space</title>
+  <title>同源策略与跨域资源访问 - Cheekkk&#39;s Anti-Gravity Space</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -136,7 +136,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    1.1k 字
+                    978 字
                   </span>
                 
 
@@ -146,7 +146,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    14
+                    12
                      分钟
                   </span>
                 
@@ -175,147 +175,94 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>SSRF和gopher协议的简单整理</p>
+              <p>SOP、CORS、JSONP</p>
 <a id="more"></a>
 
-<h1 id="SSRF漏洞简介"><a href="#SSRF漏洞简介" class="headerlink" title="SSRF漏洞简介"></a>SSRF漏洞简介</h1><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><ol>
-<li><p><strong>简介</strong></p>
-<p>SSRF，服务端请求伪造，是一种构造请求，由服务端发起请求的安全漏洞</p>
-<p>客户端利用SSRF发送请求到服务端，服务端与内网通讯，将内网资源发给客户端</p>
-<p>对比：CSRF发生在客户端，SSRF发生在服务器</p>
+<h1 id="同源策略与跨域资源访问"><a href="#同源策略与跨域资源访问" class="headerlink" title="同源策略与跨域资源访问"></a>同源策略与跨域资源访问</h1><h2 id="01-同源策略（SOP）"><a href="#01-同源策略（SOP）" class="headerlink" title="01 同源策略（SOP）"></a>01 同源策略（SOP）</h2><ol>
+<li><p><strong>定义</strong></p>
+<p>同源策略（Same-Origin Policy，SOP）<br>如果两个URL的协议、端口和主机都相同，两个URL就是同源</p>
+<p>如与 <a href="http://a.xxx.com/dir1/test.txt" target="_blank" rel="noopener">http://a.xxx.com/dir1/test.txt</a> 同源的情况：</p>
+<p><a href="http://a.xxx.com/dir2/test.txt" target="_blank" rel="noopener">http://a.xxx.com/dir2/test.txt</a>          路径不同，同源</p>
+<p> <a href="http://a.xxx.com/dir3/test.txt" target="_blank" rel="noopener">http://a.xxx.com/dir3/test.txt</a>         协议不同，不同源</p>
+<p> <a href="http://a.xxx.com:90/dir1/test.txt" target="_blank" rel="noopener">http://a.xxx.com:90/dir1/test.txt</a>    端口不同，不同源</p>
+<p> <a href="http://b.xxx.com/dir1/test.txt" target="_blank" rel="noopener">http://b.xxx.com/dir1/test.txt</a>         主机不同，不同源</p>
+<p><a href="http://xxx.com/dir1/test.txt" target="_blank" rel="noopener">http://xxx.com/dir1/test.txt</a>         主机不同，不同源</p>
 </li>
-<li><p><strong>原理</strong><br>服务端提供了从其他服务器获取数据的功能，没有对内网目标地址做过滤与限制</p>
-<p>相关函数：</p>
+<li><p><strong>作用</strong></p>
 <ul>
-<li>file_get_contents<br>用于获得文件内容</li>
-<li>fsockopen<br>用于获取URL的数据，会使用socket建立tcp服务器来传输原始数据</li>
-<li>curl_exec<br>使用curl发送请求获取数据</li>
+<li><p>非同源会受到以下限制：</p>
+<ul>
+<li>cookie、LocalStorage 和 IndexDB不能读取<br>如果两个页面一级域名相同而二级域名不同，可以通过document.domain设置成相同的域名，两个页面 就可以共享cookie，但仍然无法共享LocalStorage和IndexDB</li>
+<li>Dom无法获得</li>
+<li>Ajax请求无法发送</li>
 </ul>
 </li>
-<li><p><strong>常见地点</strong></p>
+<li><p>不受到限制的：</p>
 <ul>
-<li>WEB功能：<br>对外发起网络请求的地方都可能存在SSRF漏洞，如图片下载，转码，分享页面，在线翻译，文章图片收藏，未公开的API等，如果提交不同的URL回显不同，就可能存在SSRF漏洞</li>
-<li>URL关键字：<br>url、link、src、source、target、share、sourceURL、imageURL、domain等</li>
+<li>页面中的链接，重定向以及表单提交是不会受到同源策略限制的</li>
+<li>js/css/jpg/png等静态文件不会受限制</li>
 </ul>
-</li>
-</ol>
-<h2 id="02-应用"><a href="#02-应用" class="headerlink" title="02 应用"></a>02 应用</h2><ol>
-<li><p><strong>危害</strong></p>
-<ul>
-<li><p>读取文件<br>?url=<a href="http://www.baidu.com/robots.txt" target="_blank" rel="noopener">http://www.baidu.com/robots.txt</a></p>
-</li>
-<li><p>端口扫描（可以扫描内网，因为服务器就在内网）<br>?url:=dict://127.0.0.1:1234/</p>
-<p>访问未开放端口，脚本会显示空白或者报错<br>当访问开放端口，会显示banner信息</p>
-</li>
-<li><p>判断主机是否存活</p>
-</li>
-<li><p>读取系统本地文件<br>?url:=file://路径/file</p>
-</li>
-<li><p>内网web应用指纹识别<br>大多数web应用框架都有一些独特的文件和目录 ，可以通过这些文件识别出应用的类型甚至详细版本，如判断cms<br>?url:=<a href="http://localhost/phpmyadmin/README" target="_blank" rel="noopener">http://localhost/phpmyadmin/README</a></p>
-</li>
-<li><p>攻击内网应用<br>可以实现对内网的访问，从而可以攻击内网应用或本地机器获得shell</p>
-</li>
-<li><p>DOS攻击<br>请求内网的大文件</p>
-</li>
-<li><p>万金油协议gopher<br>gopher协议支持发出GET、POST请求：可以先截获get请求包和post请求包，再构造成符合gopher协议的请求。gopher协议是ssrf利用中一个最强大的协议（俗称万能协议）</p>
 </li>
 </ul>
 </li>
-<li><p><strong>简单举例</strong></p>
-<p>代码如下</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-$url = $_GET[<span class="hljs-string">'url'</span>];
-$curlobj = curl_init($url);
-curl_exec($curlobj);
-<span class="hljs-meta">?&gt;</span></code></pre>
+<li><p><strong>跨域的标签</strong></p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"..."</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"..."</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">video</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"..."</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">video</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">audio</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"..."</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">audio</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">embed</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"..."</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">frame</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"..."</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">iframe</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"..."</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">iframe</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"..."</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">applet</span> <span class="hljs-attr">code</span>=<span class="hljs-string">"..."</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">applet</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">object</span> <span class="hljs-attr">data</span>=<span class="hljs-string">"..."</span> &gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">object</span>&gt;</span></code></pre>
 
-<p>扫描3306端口，发现返回了mysql的版本信息</p>
-<p><img src="/SSRF%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/1.png" srcset="/img/loading.gif" alt></p>
-<p><img src="/SSRF%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/2.png" srcset="/img/loading.gif" alt></p>
-</li>
-<li><p><strong>防御方法</strong></p>
-<ul>
-<li>限制协议<br>仅允许http和https请求</li>
-</ul>
 </li>
 </ol>
-<ul>
-<li>限制IP<br>   发送的请求的IP不能是内网IP<br> 几个内网IP的正则表达式<ul>
-<li>^10(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){3}$<ul>
-<li>^172.([1][6-9]|[2]\d|3[01])(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$</li>
-<li>^192.168(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>限制端口<br>   限制请求的端口为http常用的端口</li>
-<li>过滤返回信息<ul>
-<li>统一错误信息</li>
-</ul>
-</li>
-</ul>
-<ol start="4">
-<li><p><strong>绕过方法</strong></p>
-<ul>
-<li><p><a href="http://www.A.com@1.2.3.4" target="_blank" rel="noopener">www.A.com@1.2.3.4</a> 真正访问的地址是@后的IP地址</p>
-</li>
-<li><p>xip.io<br>xip.io这个网站的子域名会解析到对应的IP，例如192.168.0.1.xip.io，解析到192.168.0.1</p>
-</li>
-<li><p>IP地址转化为进制</p>
-<p>对于内网IP的过滤可以采用改编IP的写法的方式进行绕过<br>例如192.168.0.1这个IP地址可以被改写成：</p>
-<ul>
-<li>8进制格式：0300.0250.0.1</li>
-<li>16进制格式：0xC0.0xA8.0.1</li>
-<li>10进制整数格式：3232235521</li>
-<li>16进制整数格式：0xC0A80001</li>
-<li>合并后两位：1.1.278 / 1.1.755</li>
-<li>合并后三位：1.278 / 1.755 / 3.14159267</li>
-</ul>
-<p>IP中的每一位，各个进制可以混用</p>
-<p>Apache会报400 Bad Request，但Nginx、MySQL等其他服务仍能正常工作</p>
-</li>
-<li><p>使用短地址</p>
-</li>
-<li><p>使用IDN<br>IDN是域名国际化，是指部分或完全使用特殊的文字或字母组成的互联网域名</p>
-</li>
-</ul>
-</li>
+<h2 id="02-CORS"><a href="#02-CORS" class="headerlink" title="02 CORS"></a>02 CORS</h2><p>跨域资源共享（Cross-origin Resource Sharing，CORS）</p>
+<ol>
+<li><strong>实现过程</strong></li>
 </ol>
-<h2 id="03-gopher"><a href="#03-gopher" class="headerlink" title="03 gopher"></a>03 gopher</h2><ol>
-<li><p><strong>简介</strong></p>
-<p>gopher协议支持发出GET、POST请求：可以先截获get请求包和post请求包，再构造成符合gopher协议的请求。gopher协议是ssrf利用中一个最强大的协议（俗称万能协议）</p>
-<p>可以使用curl进行发送gopher</p>
+<p>WEB应用程序可以添加HTTP字段确定哪些非同源服务器可以共享资源<br>如请求头中：Origin: <a href="http://a.com" target="_blank" rel="noopener">http://a.com</a> 指明了协议、域名和端口</p>
+<p>如果origin的源在许可范围内，服务器就返回一个响应，包含三个字段：<br>Access-Control-Allow-Origin                   内容是请求origin的值或者*<br>Access-Control-Allow-Credenntials        一个布尔值，是否允许发送cookie<br>Access-Control-Expose-Headers            可选，指定可以得到的额外字段</p>
+<p>如果origin的源不在许可范围内，服务器返回的响应就不包含以上字段，说明请求出错，但状态码仍有可能是200</p>
+<ol start="2">
+<li><strong>漏洞</strong></li>
+</ol>
+<p>如果服务器Access-Control-Allow-Origin配置不当可以被绕过，就可能造成漏洞，可以修改请求中的origin字段进行检测<br>存在兼容问题——仅支持 IE10 以上</p>
+<h2 id="03-JSONP"><a href="#03-JSONP" class="headerlink" title="03 JSONP"></a>03 JSONP</h2><ol>
+<li><p><strong>定义</strong></p>
+<p>JSON（JavaScript Object Notation），是一种数据交换格式</p>
+<p>JSONP（JSON with Padding）是用于传递JSON的一种方式，可用于解决主流浏览器的跨域数据访问的问题</p>
+<p>另一种解释：JSONP 是一种非正式传输协议，该协议的一个要点就是允许用户传递一个 callback 参数给服务端，然后服务端返回数据时会将这个 callback 参数作为函数名来包裹住 JSON 数据，这样客户端就可以随意定制自己的函数来自动处理返回数据了</p>
+<p>因需使用 URL 引入资源，JSONP只支持GET，CORS支持所有请求方式</p>
 </li>
-<li><p><strong>格式</strong><br>gopher://127.0.0.1:70/_ + TCP/IP数据<br>默认端口为70，TCP/IP数据需要URL编码</p>
-</li>
-<li><p><strong>一个生成gopher的payload的脚本</strong></p>
-<pre><code class="hljs python"><span class="hljs-comment">#coding: utf-8</span>
-<span class="hljs-comment">#author: JoyChou</span>
-<span class="hljs-keyword">import</span> sys
-exp = <span class="hljs-string">''</span>
-<span class="hljs-keyword">with</span> open(sys.argv[<span class="hljs-number">1</span>]) <span class="hljs-keyword">as</span> f:
-    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> f.readlines():
-        <span class="hljs-keyword">if</span> line[<span class="hljs-number">0</span>] <span class="hljs-keyword">in</span> <span class="hljs-string">'&gt;&lt;+'</span>:
-            <span class="hljs-keyword">continue</span>
-        <span class="hljs-comment"># 判断倒数第2、3字符串是否为\r</span>
-        <span class="hljs-keyword">elif</span> line[<span class="hljs-number">-3</span>:<span class="hljs-number">-1</span>] == <span class="hljs-string">r'\r'</span>:
-            <span class="hljs-comment"># 如果该行只有\r，将\r替换成%0a%0d%0a</span>
-            <span class="hljs-keyword">if</span> len(line) == <span class="hljs-number">3</span>:
-                exp = exp + <span class="hljs-string">'%0a%0d%0a'</span>
-            <span class="hljs-keyword">else</span>:
-                line = line.replace(<span class="hljs-string">r'\r'</span>, <span class="hljs-string">'%0d%0a'</span>)
-                <span class="hljs-comment"># 去掉最后的换行符</span>
-                line = line.replace(<span class="hljs-string">'\n'</span>, <span class="hljs-string">''</span>)
-                exp = exp + line
-        <span class="hljs-comment"># 判断是否是空行，空行替换为%0a</span>
-        <span class="hljs-keyword">elif</span> line == <span class="hljs-string">'\x0a'</span>:
-            exp = exp + <span class="hljs-string">'%0a'</span>
-        <span class="hljs-keyword">else</span>:
-            line = line.replace(<span class="hljs-string">'\n'</span>, <span class="hljs-string">''</span>)
-            exp = exp + line
-<span class="hljs-keyword">print</span> exp</code></pre>
+<li><p><strong>实现过程</strong></p>
+<p>假如在remote.com存在一个json数据</p>
+<pre><code class="hljs json">&#123;<span class="hljs-attr">"id"</span>:<span class="hljs-string">"1"</span>,<span class="hljs-attr">"name"</span>:<span class="hljs-string">"test"</span>&#125;</code></pre>
 
-<p>抓包后进行编码即可</p>
+<p>服务端json.php代码<br>接收一个函数名，用这个函数返回json值</p>
+<pre><code class="hljs php+HTML">&lt;?php
+	header(&#39;Content-type: application&#x2F;json&#39;);
+	$callback&#x3D;$_GET[&#39;callback&#39;];
+	print $callback.&#39;(&#123;&quot;id&quot;:&quot;1&quot;,&quot;name&quot;:&quot;test&quot;&#125;);&#39;;
+?&gt;</code></pre>
+
+<p>客户端请求代码<br>定义一个获取json的函数，并将函数名作为参数发送到客户端</p>
+<pre><code class="hljs php+HTML">&lt;script&gt;
+  function mygetjson(json)&#123;
+    alert(json.name)
+  &#125;
+&lt;&#x2F;script&gt;
+&lt;script src&#x3D;&quot;http:&#x2F;&#x2F;remote.com&#x2F;json.php?callback&#x3D;mygetjson&quot;&gt;&lt;&#x2F;script&gt;</code></pre>
+
+<p>打开客户端页面后，可以看到弹出了test即json中name的值</p>
+</li>
+<li><p><strong>漏洞</strong></p>
+<ul>
+<li>由于script是跨域的，使攻击者得到了敏感的json值<br>防御方法：验证referer、添加token</li>
+<li>由于callback参数可以自定义，攻击者可以插入xss代码<br>防御方法：严格定义 Content-Type: application / json<pre><code>过滤 callback 以及 JSON 数据输出</code></pre></li>
+</ul>
 </li>
 </ol>
 
@@ -337,8 +284,6 @@ exp = <span class="hljs-string">''</span>
                     
                       <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
                     
-                      <a class="hover-with-bg" href="/tags/SSRF/">SSRF</a>
-                    
                   </div>
                 
               </div>
@@ -350,18 +295,12 @@ exp = <span class="hljs-string">''</span>
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E4%B8%8E%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E8%AE%BF%E9%97%AE/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">同源策略与跨域资源访问</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/CSRF%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
-                        <span class="hidden-mobile">CSRF漏洞简介</span>
+                      <a href="/SSRF%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
+                        <span class="hidden-mobile">SSRF漏洞简介</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -501,7 +440,7 @@ exp = <span class="hljs-string">''</span>
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "SSRF漏洞简介&nbsp;",
+        "同源策略与跨域资源访问&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,
