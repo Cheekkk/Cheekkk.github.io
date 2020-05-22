@@ -4,6 +4,35 @@
   
   
   <entry>
+    <title>DDoS攻防简介</title>
+    <link href="/DDoS%E6%94%BB%E9%98%B2%E7%AE%80%E4%BB%8B/"/>
+    <url>/DDoS%E6%94%BB%E9%98%B2%E7%AE%80%E4%BB%8B/</url>
+    
+    <content type="html"><![CDATA[<p>SYN Flood、ACK Flood、CC攻击等</p><a id="more"></a><h1 id="DDoS攻防简介"><a href="#DDoS攻防简介" class="headerlink" title="DDoS攻防简介"></a>DDoS攻防简介</h1><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><ol><li><p><strong>简介</strong></p><p>DoS（拒绝服务，Denial of Service）就是利用合理的服务请求来占用过多的服务资源，从而使合法用户无法得到服务的响应。这是早期非常基本的网络攻击方式</p><p>DDoS（分布式拒绝服务，Distributed Denial of Service）利用大量主机发送请求进行DoS攻击</p><p>DoS针对的是信息安全三要素（保密性、完整性、可用性）中的可用性</p></li><li><p><strong>分类</strong></p><ul><li>网络层DDoS攻击<br>SYN Flood、UDP Flood、ICMP Flood等，利用了TCP/IP协议的缺陷</li><li>应用层DDoS攻击<br>发生在应用层，TCP三次握手之后，更难以防御</li></ul></li><li><p><strong>危害</strong></p><ul><li>受害主机无法正常与外界通信，无法处理正常请求，严重时系统死机</li><li>用户无法访问网站，无法正常使用网站提供的服务</li></ul></li></ol><h2 id="02-攻击"><a href="#02-攻击" class="headerlink" title="02 攻击"></a>02 攻击</h2><ol><li><p><strong>网络层DDoS攻击</strong></p><ul><li>SYN Flood<br>发生在三次握手的第一次和第二次，攻击者伪造IP发送大量的SYN包，服务器返回ACK/SYN包，但是攻击者并不会回复，服务器就会重试并等待一段时间，最终服务器的资源就被这些半连接耗尽</li><li>ACK Flood<br>发生在TCP连接建立之后，所有TCP报文都带有ACK标志位，服务器收到包后，会检查该数据包所表示的连接四元组是否存在，这一过程会消耗一定的资源，但是负载很小，需要大量的ACK包才能产生效果<br>ACK Flood通常与其它方式组合使用，如SYN Flood</li><li>UDP Flood<br>发生大量伪造IP地址的UDP小包攻击开放UDP服务的端口（如流媒体服务器、DNS服务器等），由于UDP不建立连接，因此无法对源进行检测</li><li>ICMP Flood<br>在短时间内向目的主机发送大量ping包，消耗主机资源</li><li>Connection Flood<br>利用真实的IP地址向服务器发起大量的连接，并且建立连接之后很长时间不释放，占用服务器的资源，造成服务器服务器上残余连接(WAIT状态)过多，类似于固定源IP的SYN Flood攻击</li></ul></li><li><p><strong>应用层DDoS</strong></p><ul><li><p>CC攻击<br>起源于Chanllenge Collapasar<br>原理是对一些资源消耗较大的应用页面不断发起正常的请求（如查询数据库，读写硬盘等），以达到消耗服务器资源的目的</p><p>各类搜索引擎、爬虫等与应用层DDoS攻击的结果很像</p></li><li><p>Slowloris攻击<br>以极低的速度往服务器发送HTTP请求，每隔一段时间就再发送请求使连接保持，使服务器连接数达到上限</p></li><li><p>HTTP POST DoS攻击<br>发送HTTP POST包时，指定一个非常大的Content-Length值，然后以很低的速度发包，保持连接不断开，使服务器连接数达到上限</p></li><li><p>ReDoS<br>当正则表达式写的不好时，就有可能被恶意输入利用，消耗大量资源</p></li><li><p>DNS Flood<br>攻击者使用大量肉鸡同时对目标的域名发送解析请求</p></li></ul></li></ol><h2 id="03-防御"><a href="#03-防御" class="headerlink" title="03 防御"></a>03 防御</h2><ol><li><strong>通用方法</strong><ul><li>识别报文的特征和相似性，使用防火墙对有特征的恶意请求进行拦截</li><li>扩容网站的带宽</li><li>使用CDN，拦截直接对域名的攻击，不要泄露源服务器的IP地址</li><li>备份网站，一旦遭受攻击仍然可以继续使用网站</li></ul></li><li><strong>专用方法</strong><ul><li>SYN Flood<ul><li>缩短SYN timeout时间</li><li>设置SYN cookie，当短时间内连续收到同一个源IP的报文时就将其所有报文都丢弃</li></ul></li><li>ACK Flood<ul><li>通过判断收包是不是异常大于发包来判断攻击是否发生</li><li>建立hash表储存TCP连接状态，加快查询速度</li></ul></li><li>UDP Flood<ul><li>限流，对目的地址进行统计，短时间内到达这一目的地址的流量太高就将其丢弃</li><li>使用防火墙进行UDP指纹识别，丢弃所有具有指纹特征的报文</li></ul></li><li>ICMP Flood<br>禁用ping命令</li><li>Connection Flood<ul><li>限制每个IP的连接数</li><li>封禁恶意连接的IP</li></ul></li><li>CC攻击<ul><li>使用验证码</li><li>让用户解析一段JavaScript并给出运行结果，因为大量伪造的请求是直接构造发送HTTP包，而非使用浏览器发起正常的请求</li><li>Yahoo专利，根据IP和cookie计算访问频率并进行拦截</li></ul></li></ul></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>WEB安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>WEB安全</tag>
+      
+      <tag>DoS</tag>
+      
+      <tag>计算机网络</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>十个常见的业务安全漏洞</title>
     <link href="/%E5%8D%81%E4%B8%AA%E5%B8%B8%E8%A7%81%E7%9A%84%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/"/>
     <url>/%E5%8D%81%E4%B8%AA%E5%B8%B8%E8%A7%81%E7%9A%84%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/</url>
