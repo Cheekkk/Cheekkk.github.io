@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#4a4770">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <title>十个常见的业务安全漏洞 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/atelier-forest-light.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Cheekkk's Anti-Gravity Galaxy</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/bg.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.3k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    6
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>验证码、用户登录、注册、密码找回……</p>
+<a id="more"></a>
+
+<h1 id="十个常见的业务安全漏洞"><a href="#十个常见的业务安全漏洞" class="headerlink" title="十个常见的业务安全漏洞"></a>十个常见的业务安全漏洞</h1><h2 id="00-常见的风险点"><a href="#00-常见的风险点" class="headerlink" title="00 常见的风险点"></a>00 常见的风险点</h2><ol>
+<li>身份验证、cookie、Session、验证码等是否可靠</li>
+<li>用户权限的验证是否可靠</li>
+<li>业务流程是否存在乱序，各个流程之间数据是否一致</li>
+<li>数据的传输与存储是否进行了加密</li>
+<li>参数的输入是否经过检查</li>
+</ol>
+<h2 id="01-验证码"><a href="#01-验证码" class="headerlink" title="01 验证码"></a>01 验证码</h2><ol>
+<li><p>常见验证码有图片验证码、滑动验证码、短信验证、邮箱验证、二维码等</p>
+</li>
+<li><p>不安全的验证码：</p>
+<ul>
+<li>验证码不自动刷新，输入错误一次后仍然有效</li>
+<li>验证码隐藏在源码或者cookie中，可以获取</li>
+<li>验证码数量有限或者太简单</li>
+</ul>
+</li>
+<li><p>绕过方法</p>
+<ul>
+<li>对于验证码只在前端验证，而不在后端进行验证的，可以直接无视验证码，对账号密码进行暴力破解即可</li>
+<li>对于使用token的验证码，如果token在前端可以得到，可以使用burpsuite以递归的方式获取token，之后进行爆破</li>
+<li>使用打码平台</li>
+</ul>
+</li>
+</ol>
+<h2 id="02-用户登录"><a href="#02-用户登录" class="headerlink" title="02 用户登录"></a>02 用户登录</h2><ol>
+<li>撞库登录<ul>
+<li>用户名和密码无错误次数限制<br>使用字典暴力破解</li>
+<li>单段时间内密码错误次数限制<br>可以用来锁定他人账号</li>
+<li>单段时间内IP登录错误次数限制<br>用于封锁IP，可能会锁定同一个出口的所有内网IP</li>
+</ul>
+</li>
+<li>API登录<br>点击一个含有用户ID、Token等信息的URL可以直接登录<br>要确保token不可预测并且经常改变</li>
+</ol>
+<h2 id="03-用户注册"><a href="#03-用户注册" class="headerlink" title="03 用户注册"></a>03 用户注册</h2><ol>
+<li><p>大量垃圾用户注册会造成用户质量下降、刷流量、大量广告等现象</p>
+</li>
+<li><p>用户注册需要注意的安全事项</p>
+<ul>
+<li>使用验证码</li>
+<li>限制统一IP的注册次数</li>
+<li>识别大量格式有规律的账号注册</li>
+<li>防御SQL注入与XSS</li>
+</ul>
+</li>
+</ol>
+<h2 id="04-密码找回"><a href="#04-密码找回" class="headerlink" title="04 密码找回"></a>04 密码找回</h2><ol>
+<li>密码找回常用的验证方法有：邮箱验证码、手机验证码、密保问题等</li>
+<li>可能存在的漏洞<ul>
+<li>提交密码修改请求时可以抓包修改账号对应的手机号和邮箱地址</li>
+<li>生成的验证码和token比较简单，可以预测，甚至在源码中直接可以看到将要发生的验证码</li>
+<li>生成的重置密码的链接存在用户ID与Token，而这个token仅用来验证链接是否有效，并不与用户ID对于，因此修改ID就可以更改其他用户的密码</li>
+<li>修改回显信息的验证，如修改成 true、1、ok、success等</li>
+<li>Session可以被覆盖</li>
+</ul>
+</li>
+<li>防御方法<ul>
+<li>手机号和邮箱地址应该从数据库中读取，而不是直接发送</li>
+<li>设置复杂的验证码和错误次数限制</li>
+<li>将重置密码链接的token与用户ID绑定，而不仅用来验证链接有效性</li>
+</ul>
+</li>
+</ol>
+<h2 id="05-资料查看与修改"><a href="#05-资料查看与修改" class="headerlink" title="05 资料查看与修改"></a>05 资料查看与修改</h2><ol>
+<li>可能存在的漏洞<ul>
+<li>用户可以修改请求中的ID等参数来查看和修改其他用户的信息</li>
+<li>用户修改cookie、get、post等参数的ID，就可以获取另一用户的权限</li>
+</ul>
+</li>
+<li>防御方法<ul>
+<li>将用户信息（如订单等）的ID与所属的用户绑定且不易预测</li>
+<li>将用户ID存储在Session中，避免被修改</li>
+</ul>
+</li>
+</ol>
+<h2 id="06-抽奖与投票"><a href="#06-抽奖与投票" class="headerlink" title="06 抽奖与投票"></a>06 抽奖与投票</h2><ol>
+<li>可能存在的漏洞<br>突破用户可以投票或抽奖的次数限制</li>
+<li>绕过方法<ul>
+<li>删除或修改cookie信息</li>
+<li>伪造IP</li>
+<li>批量注册生成大量用户</li>
+<li>修改cookie中的用户信息，伪装成其他用户</li>
+</ul>
+</li>
+<li>防御方法<ul>
+<li>使用机器识别码进行验证</li>
+<li>用户信息从Session中读取，使用户无法修改</li>
+</ul>
+</li>
+</ol>
+<h2 id="07-充值与支付"><a href="#07-充值与支付" class="headerlink" title="07 充值与支付"></a>07 充值与支付</h2><ol>
+<li>可能存在的漏洞<ul>
+<li>修改金额</li>
+<li>修改时间、数量，突破限购</li>
+<li>修改他人订单信息</li>
+<li>订单重放，实现一次付款多次下单</li>
+</ul>
+</li>
+<li>防御方法<ul>
+<li>对订单变量的取值范围作出限制</li>
+<li>对于数额过大或过小的订单进行人工验证</li>
+<li>使用随机数、时间戳等验证订单的唯一性</li>
+</ul>
+</li>
+</ol>
+<h2 id="08-私信与留言"><a href="#08-私信与留言" class="headerlink" title="08 私信与留言"></a>08 私信与留言</h2><ol>
+<li>可能存在的漏洞<ul>
+<li>通过XSS获取他人的cookie，之后进行登录</li>
+<li>也可能存在SQL注入等</li>
+</ul>
+</li>
+<li>防御方法<br>对用户输入进行过滤，同XSS的防御</li>
+</ol>
+<h2 id="09-远程地址访问"><a href="#09-远程地址访问" class="headerlink" title="09 远程地址访问"></a>09 远程地址访问</h2><ol>
+<li><p>可能存在的漏洞</p>
+<p>如果提供了获取远程地址资源的服务，就可能存在SSRF</p>
+</li>
+<li><p>防御方法</p>
+<p>限制用户输入的地址，同SSRF</p>
+</li>
+</ol>
+<h2 id="10-API"><a href="#10-API" class="headerlink" title="10 API"></a>10 API</h2><ol>
+<li>API(Application Programming Interface,应用程序编程接口)，是为其他程序提供资源调用的接口<br>调用方给API传递一个参数，API根据这个参数将结果以JSON、序列化、Base64等方式返回</li>
+<li>可能存在的漏洞<ul>
+<li>未授权访问</li>
+<li>敏感信息泄露，如在返回信息中包含不必要的用户个人信息</li>
+<li>SQL注入、代码执行等漏洞</li>
+</ul>
+</li>
+<li>防御方法<ul>
+<li>加入账户体系或者不可破解的密钥进行身份验证</li>
+<li>规范返回的信息，不输出不必要的敏感信息</li>
+<li>开发时注意每个参数的使用，避免SQL注入、代码执行等漏洞</li>
+</ul>
+</li>
+</ol>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8/">业务安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8/">业务安全</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/Python%E4%B8%AD%E5%87%A0%E4%B8%AA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9D%97/">
+                        <span class="hidden-mobile">Python中几个多线程模块</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "十个常见的业务安全漏洞&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 40,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

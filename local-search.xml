@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>十个常见的业务安全漏洞</title>
+    <link href="/%E5%8D%81%E4%B8%AA%E5%B8%B8%E8%A7%81%E7%9A%84%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/"/>
+    <url>/%E5%8D%81%E4%B8%AA%E5%B8%B8%E8%A7%81%E7%9A%84%E4%B8%9A%E5%8A%A1%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/</url>
+    
+    <content type="html"><![CDATA[<p>验证码、用户登录、注册、密码找回……</p><a id="more"></a><h1 id="十个常见的业务安全漏洞"><a href="#十个常见的业务安全漏洞" class="headerlink" title="十个常见的业务安全漏洞"></a>十个常见的业务安全漏洞</h1><h2 id="00-常见的风险点"><a href="#00-常见的风险点" class="headerlink" title="00 常见的风险点"></a>00 常见的风险点</h2><ol><li>身份验证、cookie、Session、验证码等是否可靠</li><li>用户权限的验证是否可靠</li><li>业务流程是否存在乱序，各个流程之间数据是否一致</li><li>数据的传输与存储是否进行了加密</li><li>参数的输入是否经过检查</li></ol><h2 id="01-验证码"><a href="#01-验证码" class="headerlink" title="01 验证码"></a>01 验证码</h2><ol><li><p>常见验证码有图片验证码、滑动验证码、短信验证、邮箱验证、二维码等</p></li><li><p>不安全的验证码：</p><ul><li>验证码不自动刷新，输入错误一次后仍然有效</li><li>验证码隐藏在源码或者cookie中，可以获取</li><li>验证码数量有限或者太简单</li></ul></li><li><p>绕过方法</p><ul><li>对于验证码只在前端验证，而不在后端进行验证的，可以直接无视验证码，对账号密码进行暴力破解即可</li><li>对于使用token的验证码，如果token在前端可以得到，可以使用burpsuite以递归的方式获取token，之后进行爆破</li><li>使用打码平台</li></ul></li></ol><h2 id="02-用户登录"><a href="#02-用户登录" class="headerlink" title="02 用户登录"></a>02 用户登录</h2><ol><li>撞库登录<ul><li>用户名和密码无错误次数限制<br>使用字典暴力破解</li><li>单段时间内密码错误次数限制<br>可以用来锁定他人账号</li><li>单段时间内IP登录错误次数限制<br>用于封锁IP，可能会锁定同一个出口的所有内网IP</li></ul></li><li>API登录<br>点击一个含有用户ID、Token等信息的URL可以直接登录<br>要确保token不可预测并且经常改变</li></ol><h2 id="03-用户注册"><a href="#03-用户注册" class="headerlink" title="03 用户注册"></a>03 用户注册</h2><ol><li><p>大量垃圾用户注册会造成用户质量下降、刷流量、大量广告等现象</p></li><li><p>用户注册需要注意的安全事项</p><ul><li>使用验证码</li><li>限制统一IP的注册次数</li><li>识别大量格式有规律的账号注册</li><li>防御SQL注入与XSS</li></ul></li></ol><h2 id="04-密码找回"><a href="#04-密码找回" class="headerlink" title="04 密码找回"></a>04 密码找回</h2><ol><li>密码找回常用的验证方法有：邮箱验证码、手机验证码、密保问题等</li><li>可能存在的漏洞<ul><li>提交密码修改请求时可以抓包修改账号对应的手机号和邮箱地址</li><li>生成的验证码和token比较简单，可以预测，甚至在源码中直接可以看到将要发生的验证码</li><li>生成的重置密码的链接存在用户ID与Token，而这个token仅用来验证链接是否有效，并不与用户ID对于，因此修改ID就可以更改其他用户的密码</li><li>修改回显信息的验证，如修改成 true、1、ok、success等</li><li>Session可以被覆盖</li></ul></li><li>防御方法<ul><li>手机号和邮箱地址应该从数据库中读取，而不是直接发送</li><li>设置复杂的验证码和错误次数限制</li><li>将重置密码链接的token与用户ID绑定，而不仅用来验证链接有效性</li></ul></li></ol><h2 id="05-资料查看与修改"><a href="#05-资料查看与修改" class="headerlink" title="05 资料查看与修改"></a>05 资料查看与修改</h2><ol><li>可能存在的漏洞<ul><li>用户可以修改请求中的ID等参数来查看和修改其他用户的信息</li><li>用户修改cookie、get、post等参数的ID，就可以获取另一用户的权限</li></ul></li><li>防御方法<ul><li>将用户信息（如订单等）的ID与所属的用户绑定且不易预测</li><li>将用户ID存储在Session中，避免被修改</li></ul></li></ol><h2 id="06-抽奖与投票"><a href="#06-抽奖与投票" class="headerlink" title="06 抽奖与投票"></a>06 抽奖与投票</h2><ol><li>可能存在的漏洞<br>突破用户可以投票或抽奖的次数限制</li><li>绕过方法<ul><li>删除或修改cookie信息</li><li>伪造IP</li><li>批量注册生成大量用户</li><li>修改cookie中的用户信息，伪装成其他用户</li></ul></li><li>防御方法<ul><li>使用机器识别码进行验证</li><li>用户信息从Session中读取，使用户无法修改</li></ul></li></ol><h2 id="07-充值与支付"><a href="#07-充值与支付" class="headerlink" title="07 充值与支付"></a>07 充值与支付</h2><ol><li>可能存在的漏洞<ul><li>修改金额</li><li>修改时间、数量，突破限购</li><li>修改他人订单信息</li><li>订单重放，实现一次付款多次下单</li></ul></li><li>防御方法<ul><li>对订单变量的取值范围作出限制</li><li>对于数额过大或过小的订单进行人工验证</li><li>使用随机数、时间戳等验证订单的唯一性</li></ul></li></ol><h2 id="08-私信与留言"><a href="#08-私信与留言" class="headerlink" title="08 私信与留言"></a>08 私信与留言</h2><ol><li>可能存在的漏洞<ul><li>通过XSS获取他人的cookie，之后进行登录</li><li>也可能存在SQL注入等</li></ul></li><li>防御方法<br>对用户输入进行过滤，同XSS的防御</li></ol><h2 id="09-远程地址访问"><a href="#09-远程地址访问" class="headerlink" title="09 远程地址访问"></a>09 远程地址访问</h2><ol><li><p>可能存在的漏洞</p><p>如果提供了获取远程地址资源的服务，就可能存在SSRF</p></li><li><p>防御方法</p><p>限制用户输入的地址，同SSRF</p></li></ol><h2 id="10-API"><a href="#10-API" class="headerlink" title="10 API"></a>10 API</h2><ol><li>API(Application Programming Interface,应用程序编程接口)，是为其他程序提供资源调用的接口<br>调用方给API传递一个参数，API根据这个参数将结果以JSON、序列化、Base64等方式返回</li><li>可能存在的漏洞<ul><li>未授权访问</li><li>敏感信息泄露，如在返回信息中包含不必要的用户个人信息</li><li>SQL注入、代码执行等漏洞</li></ul></li><li>防御方法<ul><li>加入账户体系或者不可破解的密钥进行身份验证</li><li>规范返回的信息，不输出不必要的敏感信息</li><li>开发时注意每个参数的使用，避免SQL注入、代码执行等漏洞</li></ul></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>业务安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>业务安全</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Python中几个多线程模块</title>
     <link href="/Python%E4%B8%AD%E5%87%A0%E4%B8%AA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9D%97/"/>
     <url>/Python%E4%B8%AD%E5%87%A0%E4%B8%AA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9D%97/</url>
