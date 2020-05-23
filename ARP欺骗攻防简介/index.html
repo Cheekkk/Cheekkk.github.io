@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>CRLF注入漏洞 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+  <title>ARP欺骗攻防简介 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    526 字
+                    997 字
                   </span>
                 
 
@@ -128,7 +128,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    3
+                    5
                      分钟
                   </span>
                 
@@ -157,58 +157,112 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>CRLF注入漏洞简介</p>
+              <p>ARP协议的原理与中间人攻击</p>
 <a id="more"></a>
 
-<h1 id="CRLF注入漏洞"><a href="#CRLF注入漏洞" class="headerlink" title="CRLF注入漏洞"></a>CRLF注入漏洞</h1><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><p>CRLF是”回车 + 换行”（\r\n）的简称，回车符（CR，ASCII 13，\r，%0d），换行符(LF，ASCII 10，\n，%0a)</p>
-<p>回车使光标移动到行首，源自于打字机的概念<br>换行使光标垂直移动到下一行</p>
-<p>在HTTP协议中，HTTP Header与HTTP Body是用两个CRLF分隔的，浏览器就是根据这两个CRLF来取出HTTP 内容并显示出来</p>
-<p>所以，一旦我们能够控制HTTP 消息头中的字符，注入一些恶意的换行，这样我们就能注入一些会话Cookie或者HTML代码，所以CRLF Injection又叫HTTP Response Splitting，简称HRS</p>
-<h2 id="02-危害"><a href="#02-危害" class="headerlink" title="02 危害"></a>02 危害</h2><ol>
-<li>修改cookie</li>
-<li>反射型XSS</li>
-<li>跳转劫持</li>
-<li>钓鱼</li>
+<h1 id="ARP欺骗攻防简介"><a href="#ARP欺骗攻防简介" class="headerlink" title="ARP欺骗攻防简介"></a>ARP欺骗攻防简介</h1><h2 id="01-ARP协议"><a href="#01-ARP协议" class="headerlink" title="01 ARP协议"></a>01 ARP协议</h2><ol>
+<li><p><strong>简介</strong><br>ARP（Address Resolution Protocol）地址解析协议，是根据IP地址获取物理地址的一个TCP/IP协议<br>在OSI模型中，ARP协议属于链路层，在TCP/IP模型中属于网络层</p>
+</li>
+<li><p><strong>工作过程</strong><br>假设主机A要与主机B通信</p>
+<ul>
+<li><p>A与B在同一网段</p>
+<ul>
+<li>A首先判断出目标IP与自己在同一网段</li>
+<li>A首先在自己的ARP缓存中寻找B的IP地址匹配的MAC地址</li>
+<li>如果缓存中没有B的MAC地址，主机A就将发送一个ARP请求广播到网络中全部主机，请求中包含B的IP地址</li>
+<li>所有主机收到ARP请求后就将对比请求中的IP地址与自己的IP地址，如果不同，就丢弃请求，如果相同，就将自己的MAC地址回复给主机A</li>
+<li>主机A收到B发送的MAC地址后就将其储存到ARP缓存中</li>
+</ul>
+</li>
+<li><p>A与B在不同网段</p>
+<ul>
+<li>A首先判断出目标IP与自己在不同网段</li>
+<li>A将发送广播ARP请求获取网关的MAC地址</li>
+<li>网关收到ARP请求后将自己的MAC地址回复给A</li>
+<li>A收到回复后将其储存到ARP缓存中</li>
+<li>A以网关MAC地址为目的地址进行发送数据</li>
+<li>路由器收到数据包后发现目的IP不是自己，之后查询路由表向B转发，如果网关不知道B的MAC地址也要使用ARP协议进行查询</li>
+<li>路由器收到B的MAC地址后，以自己的MAC地址为源地址，以B的MAC地址为目的地址发送数据包</li>
+<li>主机B向A回复的过程与此相同（不需要再次ARP解析了）</li>
+</ul>
+</li>
+<li><p>总结</p>
+<ul>
+<li>ARP请求以广播的方式进行发送</li>
+<li>跨网段通信时需要使用网关作为中介</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Linux中ARP协议的命令</strong></p>
+<ul>
+<li>arp -a/-g<br>查看ARP缓存中所有的条目</li>
+<li>arp -a -i 接口<br>查看该接口的缓存</li>
+<li>arp -s 主机名 物理地址<br>添加一条缓存</li>
+<li>arp -d 主机名<br>删除一条缓存</li>
+</ul>
+</li>
 </ol>
-<h2 id="03-利用"><a href="#03-利用" class="headerlink" title="03 利用"></a>03 利用</h2><h3 id="固定会话漏洞"><a href="#固定会话漏洞" class="headerlink" title="固定会话漏洞"></a>固定会话漏洞</h3><p>假设一个网页具有跳转功能，代码如下：</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-  $url=$_GET[<span class="hljs-string">'url'</span>];
-	header(<span class="hljs-string">"Location:$url"</span>);
-<span class="hljs-meta">?&gt;</span></code></pre>
-
-<p>可以在URL中传参进行跳转 ?url=<a href="http://www.baidu.com" target="_blank" rel="noopener">http://www.baidu.com</a></p>
-<p>正常的响应包如下:</p>
-<pre><code class="hljs groovy">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">302</span> Moved Temporarily 
-<span class="hljs-string">Date:</span> xxx
-Content-<span class="hljs-string">Type:</span> text/html 
-Content-<span class="hljs-string">Length:</span> <span class="hljs-number">154</span> 
-<span class="hljs-string">Connection:</span> close 
-<span class="hljs-string">Location:</span> <span class="hljs-string">http:</span><span class="hljs-comment">//www.baidu.com</span></code></pre>
-
-<p>如果在传参时使用CRLF注入指定cookie<br>?url=<a href="http://www.baidu.com%0d%0aSet-cookie:JSPSESSID%3Dcrlftest">http://www.baidu.com%0d%0aSet-cookie:JSPSESSID%3Dcrlftest</a></p>
-<p>检测到%0d%0a后，就认为Location首部字段这行结束了，Set-Cookie就会被认为是下一行</p>
-<p>响应如下：</p>
-<pre><code class="hljs groovy">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">302</span> Moved Temporarily 
-<span class="hljs-string">Date:</span> xxx
-Content-<span class="hljs-string">Type:</span> text/html 
-Content-<span class="hljs-string">Length:</span> <span class="hljs-number">154</span> 
-<span class="hljs-string">Connection:</span> close 
-<span class="hljs-string">Location:</span> <span class="hljs-string">http:</span><span class="hljs-comment">//www.baidu.com</span>
-Set-<span class="hljs-string">cookie:</span> JSPSESSID=crlftest</code></pre>
-
-<p>此时我们成功设置了一个Session，造成了固定会话漏洞</p>
-<h3 id="绕过XSSFilter"><a href="#绕过XSSFilter" class="headerlink" title="绕过XSSFilter"></a>绕过XSSFilter</h3><p>利用CRLF还可以绕过浏览器的保护，造成XSS</p>
-<p>原因是当HTTP头中含有X-XSS-Protection并且值为0时，浏览器不会开启Filter，我们可以利用CRLF注入为HTTP头添加这一字段</p>
-<p>?url=%0aX-XSS-Protection:%200%0d%0a%0d%0a&lt;img%20src=1%20onerror=alert(1)&gt;</p>
-<p>此时就成功注入了</p>
-<pre><code class="hljs angelscript">X-XSS-Protection：<span class="hljs-number">0</span></code></pre>
-
-<p>关闭了浏览器的Filter</p>
-<p>同时注入</p>
-<pre><code class="hljs routeros">&lt;img <span class="hljs-attribute">src</span>=1 <span class="hljs-attribute">onerror</span>=alert(1)&gt;</code></pre>
-
-<p>实现了XSS</p>
-<h2 id="04-修复"><a href="#04-修复" class="headerlink" title="04 修复"></a>04 修复</h2><p>对用户输入的数据的合法性进行校验，限制用户输入CR和LF，或者在数据返回到响应头之前删除所有的换行符</p>
+<h2 id="02-ARP欺骗攻击（ARP毒化）"><a href="#02-ARP欺骗攻击（ARP毒化）" class="headerlink" title="02 ARP欺骗攻击（ARP毒化）"></a>02 ARP欺骗攻击（ARP毒化）</h2><ol>
+<li><p><strong>分类</strong></p>
+<ul>
+<li>主机欺骗，针对单个主机进行欺骗</li>
+<li>网关欺骗，针对网关进行欺骗，可以欺骗所有通过这一网关的主机</li>
+</ul>
+</li>
+<li><p><strong>危害</strong></p>
+<ul>
+<li>使目标主机无法正常上网</li>
+<li>挟持目标主机的流量</li>
+</ul>
+</li>
+<li><p><strong>攻击过程</strong><br>假设主机A（IP：192.168.1.1）与主机B（IP：192.168.1.2）进行通信，攻击者C（IP：192.168.1.3）要进行ARP攻击，攻击过程如下：</p>
+<ul>
+<li>主机A发送ARP请求，询问B的MAC地址</li>
+<li>C收到了ARP请求，但它并没有丢弃，而是假装自己是B，将自己的MAC地址回复给A</li>
+<li>A收到C的回复后，将C的MAC地址与B的IP地址对应起来存入缓存</li>
+<li>C可以以同样的方法对B进行欺骗，就可以进行双向欺骗</li>
+</ul>
+</li>
+<li><p><strong>arp spoof</strong></p>
+<ul>
+<li><p>命令格式<br>arpspoof [-i interface] [-t target] [-r] host</p>
+</li>
+<li><p>参数含义</p>
+<ul>
+<li>-i 指定一个接口</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>-t 指定目标IP，可以指定多个，若不指定则为网段中的全部主机<ul>
+<li>-r 进行双向欺骗</li>
+<li>host 攻击者要仿冒的主机</li>
+</ul>
+</li>
+</ul>
+<ol start="5">
+<li><strong>防御</strong><ul>
+<li>在主机和网关添加静态ARP记录</li>
+<li>使用ARP防火墙</li>
+</ul>
+</li>
+</ol>
+<h2 id="03-RARP"><a href="#03-RARP" class="headerlink" title="03 RARP"></a>03 RARP</h2><ol>
+<li><p><strong>简介</strong></p>
+<p>RARP（Reverse Address Resolution Protocol）反向地址解析协议，与ARP相反，使用MAC地址获取对应的IP地址<br>RARP请求仍然是广播的形式，但是只有RARP服务才能回复<br>网络中可以有多个RARP服务器，起到平衡负载和备份的作用</p>
+</li>
+<li><p><strong>工作过程</strong></p>
+<ul>
+<li>主机A发送一个RARP广播，包含A自己的MAC地址和目标主机B的MAC地址</li>
+<li>RARP服务器收到此请求后，检查自己的RARP列表，查找该MAC地址对应的IP地址</li>
+<li>如果找到，RARP服务器就回复给主机A</li>
+<li>如果没有找到，RARP服务器就不做任何回应</li>
+</ul>
+</li>
+</ol>
 
             </article>
             <hr>
@@ -226,11 +280,9 @@ Set-<span class="hljs-string">cookie:</span> JSPSESSID=crlftest</code></pre>
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
+                      <a class="hover-with-bg" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a>
+                    
                       <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
-                    
-                      <a class="hover-with-bg" href="/tags/CRLF/">CRLF</a>
-                    
-                      <a class="hover-with-bg" href="/tags/XSS/">XSS</a>
                     
                   </div>
                 
@@ -243,18 +295,12 @@ Set-<span class="hljs-string">cookie:</span> JSPSESSID=crlftest</code></pre>
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/CSRF%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">CSRF漏洞简介</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/">
-                        <span class="hidden-mobile">生成webshell的三个工具</span>
+                      <a href="/DDoS%E6%94%BB%E9%98%B2%E7%AE%80%E4%BB%8B/">
+                        <span class="hidden-mobile">DDoS攻防简介</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -394,7 +440,7 @@ Set-<span class="hljs-string">cookie:</span> JSPSESSID=crlftest</code></pre>
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "CRLF注入漏洞&nbsp;",
+        "ARP欺骗攻防简介&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,
