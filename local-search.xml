@@ -4,6 +4,35 @@
   
   
   <entry>
+    <title>Metasploit简介</title>
+    <link href="/Metasploit%E7%AE%80%E4%BB%8B/"/>
+    <url>/Metasploit%E7%AE%80%E4%BB%8B/</url>
+    
+    <content type="html"><![CDATA[<p>Metasploit的模块与基本使用命令</p><a id="more"></a><h1 id="Metasploit简介"><a href="#Metasploit简介" class="headerlink" title="Metasploit简介"></a>Metasploit简介</h1><h2 id="01-简介"><a href="#01-简介" class="headerlink" title="01 简介"></a>01 简介</h2><p>Metasploit是一个开源的渗透测试软件，也是一个逐步发展成熟的漏洞研究与渗透测试代码开发平台（可扩展），此外也将成为支持整个渗透测试过程的安全技术集成开发与应用环境</p><p>Metasploit最初使用Perl语言写成，后来使用Ruby语言进行了重写</p><p>Metasploit集成了数百个攻击模块，可以通过自动化编码机制绕过攻击限制于检测措施，对目标系统实施远程攻击，获取系统的访问控制权</p><p>除渗透攻击外，Metasploit在发展过程中逐渐增加了对渗透测试全过程的支持，包括情报搜集、威胁建模、漏洞分析、后渗透攻击与报告生成</p><h2 id="02-模块"><a href="#02-模块" class="headerlink" title="02 模块"></a>02 模块</h2><ol><li><p><strong>辅助模块 Auxiliary</strong><br>用于信息搜集，包括对网络服务的扫描、敏感协议嗅探、口令猜测破解、实施网络协议欺骗等功能</p></li><li><p><strong>编码器模块 Encoders</strong><br>对payload进行加密</p></li><li><p><strong>空指令 NOP</strong><br>是一些对程序运行状态不会造成实质影响的空操作或者无关操作指令<br>用于提高payload的稳定性以及维持大小，使shellcode避免受到内存地址随机化、返回地址计算偏差等原因造成的执行失败</p></li><li><p><strong>渗透攻击 Exploits</strong><br>分为主动攻击和被动攻击</p><p>主动攻击所利用的安全漏洞位于网络服务端软件与服务承载的上层应用程序之中，由于这些服务通常是在主机上开启一些监听接口等待客户端连接，因此针对他们的渗透攻击可以主动发起</p><p>被动攻击所利用的安全漏洞位于客户端软件中，需要通过构造钓鱼网站、邮件、应用程序等诱骗目标用户打开，从而触发安全漏洞</p></li><li><p><strong>有效载荷 Payloads</strong></p><p>payload是指渗透攻击成功后使目标运行的一段代码，通常用来为攻击者打开在目标系统上的控制会话连接</p><p>可以分为single(完整的一体化的payload)、stagers(目标内存有限时，用于建立连接的较小的payload)、stages(使用stagers建立连接时后续的payload)三种</p></li><li><p><strong>后渗透 Post</strong></p><p>用于在渗透攻击获取到目标系统控制权后，在受控系统中进行各种后渗透攻击，如获取敏感信息、提权、跳板攻击等</p></li></ol><h2 id="03-模块使用"><a href="#03-模块使用" class="headerlink" title="03 模块使用"></a>03 模块使用</h2><ol><li><p><strong>启动Metasploit</strong><br>输入msfconsole，即可运行，会显示出随机的banner图案<br><img src="/Metasploit%E7%AE%80%E4%BB%8B/6.png" srcset="/img/loading.gif" alt></p></li><li><p><strong>用目录查询</strong></p><p>如可以使用 search auxiliary/scanner/portscan 查询所有端口扫描模块</p><p><img src="/Metasploit%E7%AE%80%E4%BB%8B/1.png" srcset="/img/loading.gif" alt></p></li><li><p><strong>用模块名查询</strong><br>如查询smb相关的模块 search smb</p><p><img src="/Metasploit%E7%AE%80%E4%BB%8B/2.png" srcset="/img/loading.gif" alt></p></li><li><p><strong>使用模块</strong><br>以ms17-010为例<br>使用search ms17-010查询<br><img src="/Metasploit%E7%AE%80%E4%BB%8B/3.png" srcset="/img/loading.gif" alt></p><p>Check表示是否对目标具有漏洞进行检查<br>选择第三个<br>use exploit/windows/smb/ms17_010_eternalblue</p><p>输入show options可以看到需要设置的参数<br>Required表示必要参数<br>使用info命令可以获得更详细的介绍</p><p><img src="/Metasploit%E7%AE%80%E4%BB%8B/4.png" srcset="/img/loading.gif" alt></p><p>使用set设置参数<br><img src="/Metasploit%E7%AE%80%E4%BB%8B/5.png" srcset="/img/loading.gif" alt></p><p>必要参数设置完成后，输入run或exploit进行执行，即可获得返回的shell</p></li></ol><h2 id="04-常用模块"><a href="#04-常用模块" class="headerlink" title="04 常用模块"></a>04 常用模块</h2><ol><li><strong>敏感目录扫描</strong><br>可以使用auxiliary中的brute_dirs、dir_listing、dir_scanner等进行敏感目录扫描，但是需要提供一个目录字典</li><li><strong>主机发现</strong><br>可以使用auxiliary/scanner/discovery/中的exploits<br><img src="/Metasploit%E7%AE%80%E4%BB%8B/7.png" srcset="/img/loading.gif" alt></li><li><strong>端口扫描</strong><br>可以使用auxiliary/scanner/portscan/中的exploits<br><img src="/Metasploit%E7%AE%80%E4%BB%8B/8.png" srcset="/img/loading.gif" alt><br>一般使用syn扫描，速度快且不易被发现</li><li><strong>服务查点</strong><ul><li>Telnet<br>auxiliary/scanner/telnet/telnet_version</li><li>SSH<br>auxiliary/scanner/ssh/ssh_version</li><li>MSSQL<br>auxiliary/scanner/mssql/mssql_ping</li></ul></li></ol><h2 id="05-常用命令"><a href="#05-常用命令" class="headerlink" title="05 常用命令"></a>05 常用命令</h2><ul><li><p>sessions<br>查看已获取的对话</p></li><li><p>sessions -i 编号<br>切换到编号对应的会话</p></li><li><p>background<br>将会话隐藏到后台</p></li><li><p>quit<br>关闭当前会话</p></li><li><p>shell<br>获取系统控制台的shell</p></li><li><p>pwd</p><p>查看当前目录</p></li><li><p>cd<br>切换目录</p></li><li><p>ls<br>列出当前目录下的内容</p></li><li><p>search<br>搜索文件</p></li><li><p>cat<br>查看文件内容</p></li><li><p>upload<br>上传文件</p></li><li><p>download<br>下载文件</p></li><li><p>edit<br>编辑文件</p></li><li><p>ipconfig / ifconfig<br>查看网卡信息</p></li><li><p>route<br>查看路由信息</p></li><li><p>sysinfo<br>查看系统信息</p></li><li><p>getuid<br>获取当前用户id</p></li><li><p>ps<br>查看进程</p></li><li><p>getpid<br>获取当前进程id</p></li><li><p>migrate<br>切换进程</p></li><li><p>kill<br>终止进程</p></li><li><p>execute<br>执行文件</p></li><li><p>screenshot<br>屏幕截图</p></li><li><p>shutdown<br>关机</p></li></ul>]]></content>
+    
+    
+    <categories>
+      
+      <category>工具使用</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>MSF</tag>
+      
+      <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Python迭代器与生成器</title>
     <link href="/Python%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%B8%8E%E7%94%9F%E6%88%90%E5%99%A8/"/>
     <url>/Python%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%B8%8E%E7%94%9F%E6%88%90%E5%99%A8/</url>
@@ -286,9 +315,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>XSS</tag>
-      
       <tag>CRLF</tag>
+      
+      <tag>XSS</tag>
       
     </tags>
     
@@ -728,9 +757,9 @@
     
     <tags>
       
-      <tag>信息收集</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>信息收集</tag>
       
     </tags>
     
@@ -757,11 +786,11 @@
       
       <tag>WEB安全</tag>
       
+      <tag>渗透测试</tag>
+      
       <tag>python</tag>
       
       <tag>信息收集</tag>
-      
-      <tag>渗透测试</tag>
       
     </tags>
     
@@ -815,9 +844,9 @@
     
     <tags>
       
-      <tag>python</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>python</tag>
       
     </tags>
     
@@ -842,9 +871,9 @@
     
     <tags>
       
-      <tag>python</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>python</tag>
       
       <tag>密码学</tag>
       
