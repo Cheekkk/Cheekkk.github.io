@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>Linux基本命令</title>
+    <link href="/Linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/"/>
+    <url>/Linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</url>
+    
+    <content type="html"><![CDATA[<p>Linux和vim最常用的一些命令</p><a id="more"></a><h1 id="Linux基本命令"><a href="#Linux基本命令" class="headerlink" title="Linux基本命令"></a>Linux基本命令</h1><h2 id="01-系统命令"><a href="#01-系统命令" class="headerlink" title="01 系统命令"></a>01 系统命令</h2><ul><li>whoami 查看当前用户</li><li>ifconfig 查看网卡信息</li><li>netstat 查看端口信息<ul><li>-a 列出所有端口</li><li>-t TCP端口</li><li>-u UDP 端口</li><li>-l 查看监听端口</li><li>-s 统计端口信息</li><li>-p 显示PID和进程名称</li><li>-n 不显示主机、端口和用户名，用英文代替</li><li>-c 每秒持续输出</li><li>-r 显示核心路由信息</li><li>-i 显示网络接口列表</li></ul></li><li>history 查看命令历史记录</li><li>clear 清屏</li><li>alias 为命令设置别名<ul><li>alias lx=ls 将lx设置为ls的别名</li></ul></li><li>–help 查看帮助信息</li><li>man 查看手册</li><li>&gt; 将输出结果保存到指定文件（覆盖）</li><li>&gt;&gt; 将输出结果保存到指定文件（在尾部追加）</li><li>| 管道，将前面命令的输出结果作为后面命令的输入</li><li>reboot 重启</li><li>shutdown 关机<ul><li>-h 指定时间<ul><li>-h now 立即关机</li><li>-h +10 十分钟后关机</li></ul></li></ul></li><li>常用快捷键<ul><li>tab 自动补齐</li><li>Ctrl+U 清空至行首</li><li>Ctrl+K 清空至行尾</li><li>Ctrl+L 清屏</li><li>Ctrl+C 取消命令编辑或执行</li></ul></li></ul><h2 id="02-目录与文件操作"><a href="#02-目录与文件操作" class="headerlink" title="02 目录与文件操作"></a>02 目录与文件操作</h2><ul><li><p>pwd 查看当前目录</p></li><li><p>cd 切换目录</p><ul><li>cd+绝对路径</li><li>cd+相对路径</li><li>cd ~ 返回用户目录</li><li>cd . 不切换，仍然在当前目录</li><li>cd .. 切换到上级目录</li><li>cd ../.. 切换到上上级目录</li><li>cd - 切换到上一次访问的目录</li></ul></li><li><p>ls 查看文件与文件夹</p><ul><li>ls -a 查看所有文件与文件夹（包含隐藏内容）</li><li>ls -l 以列表的形式显示详细信息（包括权限信息、时间、大小等）</li><li>ls -h 配合-l使用，将大小以k为单位显示</li><li>ls -R 递归列出子文件夹与子文件</li></ul></li><li><p>tree 查看树状结构</p></li><li><p>find 查找文件</p></li><li><p>touch 创建文件</p><ul><li>touch+文件名 创建单个文件，可以用空格分开，同时创建多个文件</li><li>touch+文件名{起始字符..终止字符} 批量创建文件<br>如 touch test{a..d} 就创建了testa,testb,testc,testd四个文件</li></ul></li><li><p>mkdir 创建文件夹</p><ul><li>mkdir -p 创建多个文件</li></ul></li><li><p>mv 移动并重命名文件，文件夹</p><ul><li>mv 要重命名的文件 新文件名</li><li>mv 要移动的文件名 目标目录</li><li>mv -i 询问移动时是否覆盖同名文件</li><li>mv -b 不覆盖，将原来的同名文件备份</li><li>mv -f 强制覆盖</li></ul></li><li><p>cp 复制文件</p><ul><li>cp -i 询问复制时是否覆盖同名文件</li><li>cp -f 强制覆盖</li><li>cp -r 复制文件夹及其子文件夹和文件</li></ul></li><li><p>cat 查看文件内容</p></li><li><p>more 分页查看文件内容</p></li><li><p>less 分行查看文件内容</p></li><li><p>head -n 查看文件前n行，默认为10</p></li><li><p>tail -n 查看文件后n行，默认为10</p></li><li><p>rm 删除文件，文件夹</p><ul><li>rm -i 删除时进行询问</li><li>rm -f 强制删除</li><li>rm -r 删除文件夹</li></ul></li><li><p>ln 建立链接</p><ul><li>ln 源文件 链接文件 硬链接，占用硬盘空间</li><li>ln -s 源文件 链接文件 软链接，不占用硬盘空间</li></ul></li><li><p>grep 用于过滤搜索指定的字符串</p><ul><li>-a \ –text 不忽略二进制的数据</li><li>-c \ –count 计算查找结果的列数</li><li>-E &lt;匹配样式&gt;\ –extended-regexp=&lt;匹配样式&gt; 使用正则表达式匹配</li><li>-i \ –ignore-case 忽略大小写</li><li>-n \ –line-number 显示匹配结果的列的编号</li><li>-v \ –revert-match 显示不匹配的所有行</li></ul></li><li><p>tar 压缩和解压</p><ul><li><p>-c / –create 创建新的备份文件</p></li><li><p>-C 在特定的目录解压缩</p></li><li><p>-v 显示操作过程</p></li><li><p>-f &lt;文件名&gt; / –file=&lt;文件名&gt; 指定备份文件</p></li><li><p>-x / –extract / –get 从备份文件中还原文件</p></li><li><p>-t / –list 列出备份文件的内容</p></li><li><p>-z 打包后，以 gzip 压缩</p></li><li><p>-j 打包后，以 bzip2 压缩 </p></li><li><p>常用命令</p><ul><li>压　缩：tar -jcvf filename.tar.bz2 要被压缩的文件或目录名称</li><li>查　询：tar -jtvf filename.tar.bz2</li><li>解压缩：tar -jxvf filename.tar.bz2 -C 欲解压缩的目录</li></ul></li></ul></li></ul><h2 id="03-账号与权限"><a href="#03-账号与权限" class="headerlink" title="03 账号与权限"></a>03 账号与权限</h2><ul><li><p>用户账号分类（标识符UID）</p><ul><li>超级用户</li><li>程序用户</li><li>普通用户</li></ul></li><li><p>组账号分类（标识符GID）</p><ul><li>基本组</li><li>附加组</li></ul></li><li><p>信息存储</p><ul><li>/etc/passwd 保存了用户信息</li><li>/etc/shadow 保存了密码信息</li><li>/etc/group 保存了组信息</li></ul></li><li><p>useradd 添加用户</p><ul><li>-d 指定用户主目录，如果不存在就使用-m选项新建目录</li><li>-g 指定所属的用户组</li><li>-G 指定所属的附加组</li><li>-s 指定登录shell</li><li>-u 指定用户号</li><li>-o 可以重复使用其他用户的用户号</li></ul></li><li><p>userdel 删除用户</p><ul><li>-r 将用户的主目录一起删除</li></ul></li><li><p>usermod 修改用户信息，选项与useradd相似</p></li><li><p>passwd 修改密码（超级用户可以修改其他用户的密码）</p><ul><li>-l 禁用账号</li><li>-u 口令解锁</li><li>-d 使账号口令为空</li><li>-f 使用户下次登录时修改口令</li></ul></li><li><p>groupadd 添加组</p><ul><li>-g 指定组标识号</li><li>-o 可以重复使用其他组的组号</li><li>-n 将组的名字改为新名字</li></ul></li><li><p>newgrp 组名 切换到其他组</p></li><li><p>文件类型</p><ul><li>d 目录</li><li>- 文件</li><li>l 链接文件</li><li>b 可控存储的接口设备</li><li>c 串行端口设备</li></ul></li><li><p>文件权限</p><ul><li>r 读取，对应数字4</li><li>w 写入，对应数字2</li><li>x 执行，对应数字1</li></ul></li><li><p>chgrp 属组名 文件名 更改文件属组</p><ul><li>-R 递归更改</li></ul></li><li><p>chown 属主名(:属组名) 文件名 更改属主（和属组）</p><ul><li>-R 递归更改</li></ul></li><li><p>chmod 三位数字 文件或目录 更改权限为数字对应的权限</p><ul><li>-R 递归更改</li></ul></li><li><p>chmod u=rwx,g=rx,o=r 文件名 属主设为rwx，属组为rx，其他为r</p><ul><li>u表示属主，g表示属组，o表示其他</li><li>+ 增加权限、- 去除权限、=设定为权限</li></ul></li></ul><h2 id="04-进程"><a href="#04-进程" class="headerlink" title="04 进程"></a>04 进程</h2><ul><li>ps 查看进程<ul><li>a 查看所有程序，包括其他用户的程序</li><li>u 用以用户为主的格式显示</li><li>x 显示所有程序，不以终端机来区分</li><li>c 显示每个程序真正的指令名称</li><li>e 显示每个程序的环境变量</li><li>-A 显示所有程序</li><li>-H 显示树状结构（pstree）</li><li>-N 显示所有程序，除了执行ps指令的终端机下的程序</li><li>-t 指定终端机编号</li></ul></li><li>pgrep 查找进程<ul><li>-o 显示最小的进程号</li><li>-n 显示最大的进程号</li><li>-l 显示进程名称</li><li>-p 指定父进程好</li><li>-g 指定进程组</li><li>-t 指定终端</li><li>-u 指定用户ID</li></ul></li><li>kill 终止进程号对应的进程<ul><li>-9 强制终止</li></ul></li><li>top 查看当前进程的资源占用情况<ul><li>-u 指定用户名</li><li>-p 指定进程号</li><li>-c 显示完整命令</li><li>-n 设置更新次数</li><li>-d 设置更新间隔，单位秒</li></ul></li><li>进程操作<ul><li>Ctrl+z 将前台进程调入后台</li><li>Ctrl+c 强制结束进程</li><li>jobs 查看后台进程</li><li>fg n 将后台第n个进程在前台运行</li><li>bg n 将后台第n个进程在后台运行</li><li>&amp; 将进程放在后台运行</li></ul></li></ul><h2 id="05-计划任务"><a href="#05-计划任务" class="headerlink" title="05 计划任务"></a>05 计划任务</h2><ul><li><p>crontab 周期性计划任务</p><ul><li><p>配置文件 /etc/crontab</p></li><li><p>启动服务 service crond start</p><ul><li>类似的还有stop,restart,reload,status</li></ul></li><li><p>查看是否为开机启动 ntsysv</p><ul><li>设置为开机启动ntsysv -level 35 crond on</li></ul></li><li><p>配置内容（文件前四行）</p><ul><li>SHELL 使用的shell</li><li>PATH 执行命令的路径</li><li>MAILTO 将执行信息使用电子邮件发送给root用户</li><li>HOME 使用的主目录</li></ul></li><li><p>执行命令的格式</p><ul><li><p>minute hour day month week command</p></li><li><p>各字段可以用以下特殊符号</p><ul><li>* 星号代表所有可能的值</li><li>, 逗号分隔多个取值</li><li>- 表示一个整数范围（包括两端）</li><li>/ 表示间隔，如hour字段的0-23/2 表示每天每两小时执行一次</li></ul></li></ul></li><li><p>crontab -e [-u 用户名] 编辑计划任务</p></li><li><p>crontab -l [-u 用户名] 查看计划任务</p></li><li><p>crontab -r [-u 用户名] 删除计划任务</p><ul><li>如果编辑时没有指定用户名表示为当前用户设定计划任务 </li></ul></li></ul></li><li><p>at 执行一次性任务</p><ul><li><p>命令格式 now + count time-units 表示从现在开始过多久执行任务</p></li><li><p>-f 指定包含具体指令的任务文件</p></li><li><p>-q 指定新任务的队列名称</p></li><li><p>-l 显示待执行任务的列表</p></li><li><p>-d 删除指定的待执行任务</p></li><li><p>-m 任务执行完成后向用户发送</p></li><li><p>atq 查看当前的任务列表</p></li><li><p>atrm n 删除编号为n的任务</p></li><li><p>at -c n 查看编号为n的任务的内容</p></li></ul></li></ul><h2 id="06-vim"><a href="#06-vim" class="headerlink" title="06 vim"></a>06 vim</h2><ul><li><p>三种模式的转换</p><ul><li>命令模式==》末行模式 ：键</li><li>命令模式==》输入模式 a,i,o键</li><li>输入模式、末行模式==》命令模式 Esc键</li></ul></li><li><p>命令模式操作</p><ul><li>光标移动<br>方向键或k、j、h、l</li><li>翻页<ul><li>向下翻页 PageDown 或 Ctrl+F</li><li>向上翻页 PageUp 或 Ctrl+B</li></ul></li><li>行内跳转<br>HOME键、^键、数字0</li><li>行间跳转<ul><li>1G、gg跳转到首行</li><li>G 跳转到末行</li><li>nG 跳转到第n行</li></ul></li><li>剪切（删除）<ul><li>x、Del键 删除当前光标处的单个字符</li><li>dd 剪切当前行</li><li>ndd 剪切从光标处开始的n行</li><li>d^ 删除当前光标到行首的所有内容</li><li>d$ 删除当前光标到行尾的所有内容</li></ul></li><li>复制<ul><li>yy 复制当前行</li><li>nyy 复制从光标处开始的n行</li></ul></li><li>粘贴<ul><li>p 粘贴到当前行下</li><li>P 粘贴到当前行上</li></ul></li><li>撤销<ul><li>u 取消最近一次操作</li><li>U 取消当前行的所有操作</li></ul></li><li>保存<br>ZZ 保存并退出当前编辑</li></ul></li><li><p>末行模式</p><ul><li><p>查找</p><ul><li>/word 从上至下在文中查找word字符串</li><li>?word 从下至上在文中查找word字符串</li><li>n 定位下一个匹配字</li><li>N 定位上一个匹配字</li></ul></li><li><p>显示行号</p><ul><li>:set nu 显示行号</li><li>:set nonu 取消显示行号</li></ul></li><li><p>保存</p><ul><li>:w 保存修改内容</li><li>:w /path/file 另存为</li></ul></li><li><p>退出</p><ul><li>:q 未修改退出</li><li>:q! 放弃修改强制退出</li></ul></li><li><p>保存并退出</p><p>:wq! 保存退出</p></li><li><p>打开新文件编辑</p><p>:e /path/file</p></li><li><p>读入文件内容到当前编辑</p><p>:r /path/file</p></li><li><p>将当前行查找到的第一个字符串old替换为new</p><p>:s /old/new</p></li><li><p>将当前行查找到的所有字符串old替换为new</p><p>:s /old/new/g</p></li><li><p>在行号范围 #,#内查找到的所有字符串old替换为new</p><p>:#,# s /old/new/g</p></li><li><p>在整个文件内查找到的所有字符串old替换为new<br>:% s old/new/g</p></li><li><p>在替换命令末尾加上c，用户将对每次替换进行确认</p></li></ul></li></ul>]]></content>
+    
+    
+    <categories>
+      
+      <category>Linux</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Linux</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Metasploit后渗透</title>
     <link href="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/"/>
     <url>/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/</url>
@@ -624,9 +649,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>代码执行</tag>
-      
       <tag>代码审计</tag>
+      
+      <tag>代码执行</tag>
       
     </tags>
     
@@ -682,9 +707,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>代码审计</tag>
-      
       <tag>命令执行</tag>
+      
+      <tag>代码审计</tag>
       
     </tags>
     
