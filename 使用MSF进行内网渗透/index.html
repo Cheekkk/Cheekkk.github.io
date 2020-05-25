@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#4a4770">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <title>使用MSF进行内网渗透 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/atelier-forest-light.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Cheekkk's Anti-Gravity Galaxy</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/bg.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    488 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    2
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>内网的跳板攻击与代理设置</p>
+<a id="more"></a>
+
+<h1 id="使用MSF进行内网渗透"><a href="#使用MSF进行内网渗透" class="headerlink" title="使用MSF进行内网渗透"></a>使用MSF进行内网渗透</h1><p>网络示意图</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/1.png" srcset="/img/loading.gif" alt></p>
+<h2 id="01-使用msf获取shell"><a href="#01-使用msf获取shell" class="headerlink" title="01 使用msf获取shell"></a>01 使用msf获取shell</h2><p>生成后门程序，注意反弹IP要是公网IP，注意目标32位还是64位</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/2.png" srcset="/img/loading.gif" alt></p>
+<p>设置payload，然后exploit</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/3.png" srcset="/img/loading.gif" alt></p>
+<p>当前状态：攻击者（192.168.101.168）使用meterpreter与web服务器（192.168.31.164）获得了通信，但还无法访问内网（192.168.103.*）</p>
+<h2 id="02-跳板攻击与自动路由"><a href="#02-跳板攻击与自动路由" class="headerlink" title="02 跳板攻击与自动路由"></a>02 跳板攻击与自动路由</h2><ul>
+<li>Pivoting<ul>
+<li>利用已经被入侵的主机作为跳板来攻击网络中的其他系统</li>
+<li>访问由于路由问题而不能直接访问的内网系统</li>
+</ul>
+</li>
+<li>自动路由<ul>
+<li>Run autoroute -s 192.168.103.0/24</li>
+<li>Run post/multi/manage/autoroute</li>
+<li>扫描内网网络<ul>
+<li>Run post/windows/gather/arp_scanner rhosts=192.168.103.0/24</li>
+<li>use auxiliary/scanner/portscan/tcp</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="操作过程"><a href="#操作过程" class="headerlink" title="操作过程"></a>操作过程</h3><p>添加自动路由</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/4.png" srcset="/img/loading.gif" alt></p>
+<p>使用-p查看路由表，成功获得了跳板</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/5.png" srcset="/img/loading.gif" alt></p>
+<p>有了跳板之后，可以对内网进行扫描</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/6.png" srcset="/img/loading.gif" alt></p>
+<p>TCP端口扫描</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/7.png" srcset="/img/loading.gif" alt></p>
+<h2 id="03-设置代理"><a href="#03-设置代理" class="headerlink" title="03 设置代理"></a>03 设置代理</h2><p>要想使用msf之外的工具，需要设置代理</p>
+<ul>
+<li>Socket代理<ul>
+<li>auxiliary/server/socks4a</li>
+</ul>
+</li>
+<li>ProxyChains<ul>
+<li>任何TCP连接都可以通过TOR或者SOCKS4，SOCKS5，HTTP/HTTPS到达目的地，在这个通道技术中可以使用多个代理服务器，除此之外还提供匿名网络</li>
+</ul>
+</li>
+</ul>
+<h3 id="操作过程-1"><a href="#操作过程-1" class="headerlink" title="操作过程"></a>操作过程</h3><p>使用socket代理，配置选项</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/8.png" srcset="/img/loading.gif" alt></p>
+<p>开启代理</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/9.png" srcset="/img/loading.gif" alt></p>
+<p>配置proxychains</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/10.png" srcset="/img/loading.gif" alt></p>
+<p>在末尾添加上使用的socks4代理</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/12.png" srcset="/img/loading.gif" alt></p>
+<p>配置好之后即可使用nmap对内网进行扫描，查看是否存在ms08-067漏洞</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/13.png" srcset="/img/loading.gif" alt></p>
+<p>使用msf进行攻击</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/14.png" srcset="/img/loading.gif" alt></p>
+<p>注意payload要使用直连而非反弹shell，因为路由是单向的，靶机无法访问到攻击者主机</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/15.png" srcset="/img/loading.gif" alt></p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/16.png" srcset="/img/loading.gif" alt></p>
+<p>对内网攻击时，都是通过跳板，显示的攻击者IP是跳板机的IP</p>
+<h3 id="多级内网的情况"><a href="#多级内网的情况" class="headerlink" title="多级内网的情况"></a>多级内网的情况</h3><p>存在多级内网时，需要再次添加代理</p>
+<p>设置代理</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/17.png" srcset="/img/loading.gif" alt></p>
+<p>再添加一个端口</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/18.png" srcset="/img/loading.gif" alt></p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/19.png" srcset="/img/loading.gif" alt></p>
+<p>设置proxychains</p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/20.png" srcset="/img/loading.gif" alt></p>
+<p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/21.png" srcset="/img/loading.gif" alt></p>
+<p>之后就可以使用nmap进行扫描</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+                    
+                      <a class="hover-with-bg" href="/tags/MSF/">MSF</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/">
+                        <span class="hidden-mobile">MSF和NC永久后门植入</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "使用MSF进行内网渗透&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 40,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

