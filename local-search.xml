@@ -8,7 +8,7 @@
     <link href="/Diffie-Hellman%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2%E7%AE%97%E6%B3%95/"/>
     <url>/Diffie-Hellman%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2%E7%AE%97%E6%B3%95/</url>
     
-    <content type="html"><![CDATA[<p>DH密钥交换的实现过程</p><a id="more"></a><h1 id="Diffie-Hellman密钥交换算法"><a href="#Diffie-Hellman密钥交换算法" class="headerlink" title="Diffie-Hellman密钥交换算法"></a>Diffie-Hellman密钥交换算法</h1><h2 id="01-简介"><a href="#01-简介" class="headerlink" title="01 简介"></a>01 简介</h2><p>迪菲赫尔曼密钥交换（Diffie-Hellman Key Exchange，简称DH），是一种可以使双方在不安全的信道上安全地获得一个共同密钥的算法，这个密钥可以在后续的通讯中作为对称密钥进行加密通信</p><h2 id="02-实现过程"><a href="#02-实现过程" class="headerlink" title="02 实现过程"></a>02 实现过程</h2><p>假设Alice与Bob使用DH算法交换密钥，实现过程如下:</p><ul><li>选取一个公开的大素数p和一个生成元g（2 ≤ g ≤ p-2），p和g均公开</li><li>Alice选取一个随机数a（1 ≤ a ≤ p-2 ），a保密</li><li>Alice计算A=g^a (mod p)，将A发送给Bob，A公开</li><li>Bob选取一个随机数b（1 ≤ b ≤ p-2 ），b保密</li><li>Bob计算B=g^b (mod p)，将B发送给Alice，B公开</li><li>Alice收到B后计算S=B^a(mod p)=g^ba(mod p)，S保密</li><li>Bob收到A后计算S=A^b(mod p)=g^ab(mod p)，S保密</li><li>经过这一个交换过程，双方获得了相同的密钥S</li></ul><p>各数据保密与公开情况：</p><ul><li>公开：p，g，A，B</li><li>保密：a，b，S</li></ul><h2 id="03-安全性"><a href="#03-安全性" class="headerlink" title="03 安全性"></a>03 安全性</h2><ol><li><p><strong>窃听者</strong><br>假设存在一个窃听者Eve，他可以获得全部信息是p，g，A，B</p><p>如果Eve想要计算出S的值，就需要知取离散对数，而当p很大时，计算是非常困难的，在使用时，p可以取一个至少300位的素数，a和b都至少有100位，但是g的值不需要很大，一般取2或5</p><p>因此，DH的安全性来自于离散对数的计算难度，如果出现了一个高效的解决离散对数的算法，包括DH在内的很多算法都将变得不安全</p></li><li><p><strong>中间人攻击</strong></p><p>由于DH算法不验证收发信息的双方身份，因此容易遭受中间人攻击</p><p>假设存在中间人Eve获取了公开的p和g的值，他的中间人攻击过程如下：</p><ul><li>Eve选择随机数e，计算E=g^e(mod p)</li><li>Eve拦截Alice发送的A，并将E发送给Alice</li><li>Eve拦截Bob发送的B，并将E发送给Bob</li><li>Eve计算Ea=A^e(mod p)=g^ae(mod p)</li><li>Eve计算Eb=B^e(mod p)=g^be(mod p)</li><li>Alice计算Sa=E^a(mod p)=g^ea(mod p)=Ea</li><li>Bob计算Sb=E^b(mod p)=g^eb(mod p)=Eb</li><li>由此Eve分别于Alice和Bob获得了相同的密钥</li></ul></li></ol>]]></content>
+    <content type="html"><![CDATA[<p>DH密钥交换的实现过程</p><a id="more"></a><h1 id="Diffie-Hellman密钥交换算法"><a href="#Diffie-Hellman密钥交换算法" class="headerlink" title="Diffie-Hellman密钥交换算法"></a>Diffie-Hellman密钥交换算法</h1><h2 id="01-简介"><a href="#01-简介" class="headerlink" title="01 简介"></a>01 简介</h2><p>迪菲赫尔曼密钥交换（Diffie-Hellman Key Exchange，简称DH），是一种可以使双方在不安全的信道上安全地获得一个共同密钥的算法，这个密钥可以在后续的通讯中作为对称密钥进行加密通信</p><h2 id="02-实现过程"><a href="#02-实现过程" class="headerlink" title="02 实现过程"></a>02 实现过程</h2><p>假设Alice与Bob使用DH算法交换密钥，实现过程如下:</p><ul><li>选取一个公开的大素数p和一个生成元g（2 ≤ g ≤ p-2），p和g均公开</li><li>Alice选取一个随机数a（1 ≤ a ≤ p-2 ），a保密</li><li>Alice计算A=g^a (mod p)，将A发送给Bob，A公开</li><li>Bob选取一个随机数b（1 ≤ b ≤ p-2 ），b保密</li><li>Bob计算B=g^b (mod p)，将B发送给Alice，B公开</li><li>Alice收到B后计算S=B^a(mod p)=g^ba(mod p)，S保密</li><li>Bob收到A后计算S=A^b(mod p)=g^ab(mod p)，S保密</li><li>经过这一个交换过程，双方获得了相同的密钥S</li></ul><p>各数据保密与公开情况：</p><ul><li>公开：p，g，A，B</li><li>保密：a，b，S</li></ul><h2 id="03-安全性"><a href="#03-安全性" class="headerlink" title="03 安全性"></a>03 安全性</h2><ol><li><p><strong>窃听者</strong><br>假设存在一个窃听者Eve，他可以获得全部信息是p，g，A，B</p><p>如果Eve想要计算出S的值，就需要知取离散对数，而当p很大时，计算是非常困难的，在使用时，p可以取一个至少300位的素数，a和b都至少有100位，但是g的值不需要很大，一般取2或5</p><p>因此，DH的安全性来自于离散对数的计算难度，如果出现了一个高效的解决离散对数的算法，包括DH在内的很多算法都将变得不安全</p></li><li><p><strong>中间人攻击</strong></p><p>由于DH算法不验证收发信息的双方身份，因此容易遭受中间人攻击</p><p>假设存在中间人Eve获取了公开的p和g的值，他的中间人攻击过程如下：</p><ul><li>Eve选择随机数e，计算E=g^e(mod p)</li><li>Eve拦截Alice发送的A，并将E发送给Alice</li><li>Eve拦截Bob发送的B，并将E发送给Bob</li><li>Eve计算Ea=A^e(mod p)=g^ae(mod p)</li><li>Eve计算Eb=B^e(mod p)=g^be(mod p)</li><li>Alice计算Sa=E^a(mod p)=g^ea(mod p)=Ea</li><li>Bob计算Sb=E^b(mod p)=g^eb(mod p)=Eb</li><li>由此Eve分别于Alice和Bob获得了相同的密钥</li></ul><p>因此为了改进安全性，DH需要增加对双方身份的验证</p></li></ol>]]></content>
     
     
     <categories>
@@ -1008,9 +1008,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>密码学</tag>
+      
+      <tag>工具使用</tag>
       
       <tag>python</tag>
       
