@@ -216,18 +216,14 @@ curl_exec($curlobj);
 <p><img src="/SSRF%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/2.png" srcset="/img/loading.gif" alt></p>
 </li>
 <li><p><strong>防御方法</strong></p>
-<ul>
-<li>限制协议<br>仅允许http和https请求</li>
-</ul>
 </li>
 </ol>
 <ul>
+<li>限制协议<br>   仅允许http和https请求</li>
 <li>限制IP<br>   发送的请求的IP不能是内网IP<br> 几个内网IP的正则表达式<ul>
-<li>^10(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){3}$<ul>
+<li>^10(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){3}$</li>
 <li>^172.([1][6-9]|[2]\d|3[01])(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$</li>
 <li>^192.168(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$</li>
-</ul>
-</li>
 </ul>
 </li>
 <li>限制端口<br>   限制请求的端口为http常用的端口</li>
