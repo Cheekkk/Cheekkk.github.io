@@ -242,9 +242,11 @@
 </li>
 <li><p>防御方法：文件内容检查<br>如检查文件是否为图片，可以使用PHP中的getimagesize()函数，此函数本意是检查图片大小，但是在检查之前会首先判断文件是否是一个图片</p>
 <p>绕过方法：在文件内容开头添加文件幻数，如添加GIF89a之后即可被认为是GIF文件</p>
-<pre><code class="hljs angelscript">.jpg   FF D8 FF E0 <span class="hljs-number">00</span> <span class="hljs-number">10</span> <span class="hljs-number">4</span>A <span class="hljs-number">46</span> <span class="hljs-number">49</span> <span class="hljs-number">46</span>
-.gif   <span class="hljs-number">47</span> <span class="hljs-number">49</span> <span class="hljs-number">46</span> <span class="hljs-number">38</span> <span class="hljs-number">39</span> <span class="hljs-number">61</span>
-.png   <span class="hljs-number">89</span> <span class="hljs-number">50</span> <span class="hljs-number">4</span>E <span class="hljs-number">47</span></code></pre>
+<ul>
+<li>jpg 格式图片头部是JFIF </li>
+<li>gif头部是GIF89a</li>
+<li>png头部是%PNG</li>
+</ul>
 </li>
 <li><p>防御方法：隐藏或加密上传文件名与路径<br>使上传文件名与路径不可预测，使攻击者无法找到上传的文件</p>
 </li>
