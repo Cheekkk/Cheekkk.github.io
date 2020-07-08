@@ -4,11 +4,11 @@
   
   
   <entry>
-    <title>Windows下的补丁与EXP对照搜索工具 WindowsVulnScan</title>
-    <link href="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/"/>
-    <url>/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/</url>
+    <title>Linux下的补丁与EXP对照搜索工具 linux-exploit-suggester-2</title>
+    <link href="/Linux%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-linux-exploit-suggester-2/"/>
+    <url>/Linux%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-linux-exploit-suggester-2/</url>
     
-    <content type="html"><![CDATA[<p>查看缺失的补丁，找到对应EXP</p><a id="more"></a><h1 id="WindowsVulnScan"><a href="#WindowsVulnScan" class="headerlink" title="WindowsVulnScan"></a>WindowsVulnScan</h1><h2 id="00-项目简介"><a href="#00-项目简介" class="headerlink" title="00 项目简介"></a>00 项目简介</h2><p><a href="https://github.com/chroblert/WindowsVulnScan" target="_blank" rel="noopener">GitHub</a></p><p>可在此查看源码并查看作者介绍（以下一些内容摘自作者介绍）</p><p><strong>功能：</strong></p><ul><li>查找主机上具有的CVE</li><li>查找具有公开EXP的CVE</li></ul><p><strong>原理：</strong></p><ol><li><p>搜集CVE与KB的对应关系。首先在微软官网上收集CVE与KB对应的关系，然后存储进数据库中</p></li><li><p>查找特定CVE网上是否有公开的EXP</p></li><li><p>利用powershell脚本收集主机的一些系统版本与KB信息</p></li><li><p>利用系统版本与KB信息搜寻主机上具有存在公开EXP的CVE</p></li></ol><h2 id="01-使用方法"><a href="#01-使用方法" class="headerlink" title="01 使用方法"></a>01 使用方法</h2><pre><code class="hljs awk"><span class="hljs-comment"># author: JC0o0l</span><span class="hljs-comment"># GitHub: https://github.com/chroblert/</span>可选参数:  -h, --help            show this help message and <span class="hljs-keyword">exit</span>  -u, --update-cve      更新CVEKB数据  -U, --update-exp      更新CVEEXP数据  -C, --check-EXP       检索具有EXP的CVE  -f FILE, --file FILE  ps1脚本运行后产生的.json文件</code></pre><p><strong>运行步骤：</strong></p><ol><li>首先运行powershell脚本<code>KBCollect.ps</code>收集一些信息</li></ol><pre><code class="hljs reasonml">.\<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">KBCollect</span>.</span></span>ps1</code></pre><ol start="2"><li><p>将运行后产生的<code>KB.json</code>文件移动到<code>cve-check.py</code>所在的目录</p></li><li><p>安装一些python3模块</p></li></ol><pre><code class="hljs cmake">python3 -m pip <span class="hljs-keyword">install</span> requirements.txt</code></pre><ol start="4"><li><p>运行<code>cve-check.py -u</code>创建CVEKB数据库</p></li><li><p>运行<code>cve-check.py -U</code>更新CVEKB数据库中的<code>hasPOC</code>字段</p></li><li><p>运行<code>cve-check.py -C -f KB.json</code>查看具有公开EXP的CVE</p></li></ol><p>在Windows10中进行测试，结果如下：</p><p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/3.png" srcset="/img/loading.gif" alt></p><p>可以看到系统信息、补丁与EXP</p><h2 id="02-使用中的问题"><a href="#02-使用中的问题" class="headerlink" title="02 使用中的问题"></a>02 使用中的问题</h2><ol><li><p>执行<strong>.\KBCollect.ps1</strong>时出错，系统禁止运行脚本<br><strong>解决：</strong>运行powershell时要使用管理员权限运行，否则没有权限运行KBCollect.ps1</p><p>但要注意使用管理员和非管理员权限运行时初始路径不同</p><p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/1.png" srcset="/img/loading.gif" alt></p></li><li><p>执行<strong>python3 -m pip install requirements.txt</strong>命令安装Python模块时无反应</p><p><strong>解决：</strong>直接安装需求的模块</p><p>打开requirements.txt发现只有requests2.23.0一个需求的模块，直接使用pip安装即可，<strong>pip install requests==2.23.0</strong></p><p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/2.png" srcset="/img/loading.gif" alt></p></li><li><p>执行<strong>python .\cve-check.py -C -f .\KB.json</strong>时出现错误</p><p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/4.png" srcset="/img/loading.gif" alt></p><p><strong>解决：</strong>修改cve-check.py代码中的编码问题</p><p>将第275-277行修改为以下内容</p><pre><code class="hljs python"><span class="hljs-keyword">if</span> args.file:            <span class="hljs-keyword">with</span> open(args.file,<span class="hljs-string">"r"</span>,encoding=<span class="hljs-string">"utf-8-sig"</span>,errors=<span class="hljs-string">"ignore"</span>) <span class="hljs-keyword">as</span> f:                KBResult = json.load(f,strict=<span class="hljs-literal">False</span>)</code></pre></li></ol>]]></content>
+    <content type="html"><![CDATA[<p>Linux下查看缺失的补丁，找到对应EXP</p><a id="more"></a><h1 id="linux-exploit-suggester-2"><a href="#linux-exploit-suggester-2" class="headerlink" title="linux-exploit-suggester-2"></a>linux-exploit-suggester-2</h1><h2 id="00-项目简介"><a href="#00-项目简介" class="headerlink" title="00 项目简介"></a>00 项目简介</h2><p><a href="https://github.com/jondonas/linux-exploit-suggester-2" target="_blank" rel="noopener">GitHub</a></p><p>可在此查看源码并查看作者介绍（以下一些内容摘自作者介绍）</p><p><a href="https://github.com/SecWiki/linux-kernel-exploits" target="_blank" rel="noopener">Linux下的漏洞表</a></p><p><strong>关键点：</strong></p><ul><li>更多的exploits（更新至2019-3-27）</li><li>可从ExploitDB直接下载利用代码</li><li>精确匹配，更大搜索范围</li><li>输出配色，更易阅读</li><li>还有更多等你来发现</li></ul><p><em>类似的工具还有Windows-exloit-suggester，但数据库只更新到2017年</em></p><h2 id="01-使用方法"><a href="#01-使用方法" class="headerlink" title="01 使用方法"></a>01 使用方法</h2><ol><li><p>无参数启动 </p><p>脚本自己执行<strong>uname -r</strong>命令</p><p>直接返回可能的漏洞列表，但可能不准确</p><pre><code class="hljs angelscript">./linux-exploit-suggester.pl  Local Kernel: <span class="hljs-number">4.4</span><span class="hljs-number">.0</span>  Searching among <span class="hljs-number">73</span> exploits...  Possible Exploits  [<span class="hljs-number">1</span>] af_packet      CVE<span class="hljs-number">-2016</span><span class="hljs-number">-8655</span>      Source: http:<span class="hljs-comment">//www.exploit-db.com/exploits/40871</span>  [<span class="hljs-number">2</span>] dirty_cow      CVE<span class="hljs-number">-2016</span><span class="hljs-number">-5195</span>      Source: http:<span class="hljs-comment">//www.exploit-db.com/exploits/40616</span>  [<span class="hljs-number">3</span>] exploit_x      CVE<span class="hljs-number">-2018</span><span class="hljs-number">-14665</span>      Source: http:<span class="hljs-comment">//www.exploit-db.com/exploits/45697</span>  [<span class="hljs-number">4</span>] get_rekt      CVE<span class="hljs-number">-2017</span><span class="hljs-number">-16695</span>      Source: http:<span class="hljs-comment">//www.exploit-db.com/exploits/45010</span></code></pre></li><li><p>使用<strong>-k</strong>参数手动添加系统发行版本</p><pre><code class="hljs angelscript">$ ./linux-exploit-suggester.pl -k <span class="hljs-number">3</span></code></pre></li><li><p>使用<strong>-d</strong>参数打开下载菜单</p><p>可以从ExploitDB下载全部代码或选择单独的代码进行设计</p><pre><code class="hljs vim">$ ./linux-exploit-suggester.pl -d  Exploit Download  (Download <span class="hljs-keyword">al</span><span class="hljs-variable">l:</span> <span class="hljs-string">'a'</span> / Individually: <span class="hljs-string">'2,4,5'</span> / Exi<span class="hljs-variable">t:</span> ^<span class="hljs-keyword">c</span>)  Select exploits <span class="hljs-keyword">to</span> download: <span class="hljs-keyword">a</span>  Downloading http<span class="hljs-variable">s:</span>//www.exploit-db.<span class="hljs-keyword">com</span>/raw/<span class="hljs-number">40871</span> -&gt; exploit_af_packet  Downloading http<span class="hljs-variable">s:</span>//www.exploit-db.<span class="hljs-keyword">com</span>/raw/<span class="hljs-number">40616</span> -&gt; exploit_dirty_cow  Downloading http<span class="hljs-variable">s:</span>//www.exploit-db.<span class="hljs-keyword">com</span>/raw/<span class="hljs-number">45697</span> -&gt; exploit_exploit_x  Downloading http<span class="hljs-variable">s:</span>//www.exploit-db.<span class="hljs-keyword">com</span>/raw/<span class="hljs-number">45010</span> -&gt; exploit_get_rekt</code></pre></li><li><p>使用使用<strong>-h</strong>参数打开帮助菜单</p></li></ol><p>在最新版的kali Linux系统中进行了测试，可能是由于系统较新，并没有检测到可利用的漏洞</p><p><img src="/Linux%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-linux-exploit-suggester-2/1.png" srcset="/img/loading.gif" alt></p><p>可以看到可供检测的Exploits共有72个</p>]]></content>
     
     
     <categories>
@@ -20,11 +20,40 @@
     
     <tags>
       
-      <tag>工具使用</tag>
+      <tag>权限提升</tag>
       
       <tag>Windows</tag>
       
+      <tag>工具使用</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Windows下的补丁与EXP对照搜索工具 WindowsVulnScan</title>
+    <link href="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/"/>
+    <url>/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/</url>
+    
+    <content type="html"><![CDATA[<p>Windows下查看缺失的补丁，找到对应EXP</p><a id="more"></a><h1 id="WindowsVulnScan"><a href="#WindowsVulnScan" class="headerlink" title="WindowsVulnScan"></a>WindowsVulnScan</h1><h2 id="00-项目简介"><a href="#00-项目简介" class="headerlink" title="00 项目简介"></a>00 项目简介</h2><p><a href="https://github.com/chroblert/WindowsVulnScan" target="_blank" rel="noopener">GitHub</a></p><p>可在此查看源码并查看作者介绍（以下一些内容摘自作者介绍）</p><p><a href="https://github.com/SecWiki/windows-kernel-exploits" target="_blank" rel="noopener">Windows下的漏洞与EXP对照表</a></p><p><strong>功能：</strong></p><ul><li>查找主机上具有的CVE</li><li>查找具有公开EXP的CVE</li></ul><p><strong>原理：</strong></p><ol><li><p>搜集CVE与KB的对应关系。首先在微软官网上收集CVE与KB对应的关系，然后存储进数据库中</p></li><li><p>查找特定CVE网上是否有公开的EXP</p></li><li><p>利用powershell脚本收集主机的一些系统版本与KB信息</p></li><li><p>利用系统版本与KB信息搜寻主机上具有存在公开EXP的CVE</p></li></ol><p><em>类似的工具还有Windows-exloit-suggester，但数据库只更新到2017年</em></p><h2 id="01-使用方法"><a href="#01-使用方法" class="headerlink" title="01 使用方法"></a>01 使用方法</h2><pre><code class="hljs awk"><span class="hljs-comment"># author: JC0o0l</span><span class="hljs-comment"># GitHub: https://github.com/chroblert/</span>可选参数:  -h, --help            show this help message and <span class="hljs-keyword">exit</span>  -u, --update-cve      更新CVEKB数据  -U, --update-exp      更新CVEEXP数据  -C, --check-EXP       检索具有EXP的CVE  -f FILE, --file FILE  ps1脚本运行后产生的.json文件</code></pre><p><strong>运行步骤：</strong></p><ol><li>首先运行powershell脚本<code>KBCollect.ps</code>收集一些信息</li></ol><pre><code class="hljs reasonml">.\<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">KBCollect</span>.</span></span>ps1</code></pre><ol start="2"><li><p>将运行后产生的<code>KB.json</code>文件移动到<code>cve-check.py</code>所在的目录</p></li><li><p>安装一些python3模块</p></li></ol><pre><code class="hljs cmake">python3 -m pip <span class="hljs-keyword">install</span> requirements.txt</code></pre><ol start="4"><li><p>运行<code>cve-check.py -u</code>创建CVEKB数据库</p></li><li><p>运行<code>cve-check.py -U</code>更新CVEKB数据库中的<code>hasPOC</code>字段</p></li><li><p>运行<code>cve-check.py -C -f KB.json</code>查看具有公开EXP的CVE</p></li></ol><p>在Windows10中进行测试，结果如下：</p><p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/3.png" srcset="/img/loading.gif" alt></p><p>可以看到系统信息、补丁与EXP</p><h2 id="02-使用中的问题"><a href="#02-使用中的问题" class="headerlink" title="02 使用中的问题"></a>02 使用中的问题</h2><ol><li><p>执行<strong>.\KBCollect.ps1</strong>时出错，系统禁止运行脚本<br><strong>解决：</strong>运行powershell时要使用管理员权限运行，否则没有权限运行KBCollect.ps1</p><p>但要注意使用管理员和非管理员权限运行时初始路径不同</p><p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/1.png" srcset="/img/loading.gif" alt></p></li><li><p>执行<strong>python3 -m pip install requirements.txt</strong>命令安装Python模块时无反应</p><p><strong>解决：</strong>直接安装需求的模块</p><p>打开requirements.txt发现只有requests2.23.0一个需求的模块，直接使用pip安装即可，<strong>pip install requests==2.23.0</strong></p><p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/2.png" srcset="/img/loading.gif" alt></p></li><li><p>执行<strong>python .\cve-check.py -C -f .\KB.json</strong>时出现错误</p><p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/4.png" srcset="/img/loading.gif" alt></p><p><strong>解决：</strong>修改cve-check.py代码中的编码问题</p><p>将第275-277行修改为以下内容</p><pre><code class="hljs python"><span class="hljs-keyword">if</span> args.file:            <span class="hljs-keyword">with</span> open(args.file,<span class="hljs-string">"r"</span>,encoding=<span class="hljs-string">"utf-8-sig"</span>,errors=<span class="hljs-string">"ignore"</span>) <span class="hljs-keyword">as</span> f:                KBResult = json.load(f,strict=<span class="hljs-literal">False</span>)</code></pre></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>工具使用</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
       <tag>权限提升</tag>
+      
+      <tag>Windows</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -49,11 +78,11 @@
     
     <tags>
       
-      <tag>工具使用</tag>
+      <tag>权限提升</tag>
       
       <tag>Windows</tag>
       
-      <tag>权限提升</tag>
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -78,9 +107,9 @@
     
     <tags>
       
-      <tag>渗透测试</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
       
     </tags>
     
@@ -157,9 +186,9 @@
     
     <tags>
       
-      <tag>渗透测试</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
       
       <tag>MSF</tag>
       
@@ -186,9 +215,9 @@
     
     <tags>
       
-      <tag>渗透测试</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
       
       <tag>MSF</tag>
       
@@ -240,15 +269,15 @@
     
     <tags>
       
-      <tag>渗透测试</tag>
-      
-      <tag>工具使用</tag>
-      
-      <tag>MSF</tag>
+      <tag>权限提升</tag>
       
       <tag>Windows</tag>
       
-      <tag>权限提升</tag>
+      <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
+      
+      <tag>MSF</tag>
       
     </tags>
     
@@ -273,9 +302,9 @@
     
     <tags>
       
-      <tag>渗透测试</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
       
       <tag>MSF</tag>
       
@@ -327,9 +356,9 @@
     
     <tags>
       
-      <tag>计算机网络</tag>
-      
       <tag>WEB安全</tag>
+      
+      <tag>计算机网络</tag>
       
     </tags>
     
@@ -354,9 +383,9 @@
     
     <tags>
       
-      <tag>计算机网络</tag>
-      
       <tag>WEB安全</tag>
+      
+      <tag>计算机网络</tag>
       
       <tag>DoS</tag>
       
@@ -597,9 +626,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>渗透测试</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
       
     </tags>
     
@@ -1070,9 +1099,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>渗透测试</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>渗透测试</tag>
       
     </tags>
     
@@ -1124,9 +1153,9 @@
     
     <tags>
       
-      <tag>密码学</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>密码学</tag>
       
       <tag>python</tag>
       
