@@ -4,6 +4,35 @@
   
   
   <entry>
+    <title>Windows提权 JuicyPotato</title>
+    <link href="/Windows%E6%8F%90%E6%9D%83-JuicyPotato/"/>
+    <url>/Windows%E6%8F%90%E6%9D%83-JuicyPotato/</url>
+    
+    <content type="html"><![CDATA[<p>多汁土豆…</p><a id="more"></a><h1 id="JuicyPotato"><a href="#JuicyPotato" class="headerlink" title="JuicyPotato"></a>JuicyPotato</h1><h2 id="00-项目地址"><a href="#00-项目地址" class="headerlink" title="00 项目地址"></a>00 项目地址</h2><p><a href="https://github.com/ohpe/juicy-potato" target="_blank" rel="noopener">GitHub地址</a></p><h2 id="01-简介"><a href="#01-简介" class="headerlink" title="01 简介"></a>01 简介</h2><p>Juicy Potato（多汁土豆）是一款Windows系统的本地提权工具，是在工具RottenPotatoNG（烂土豆）的基础上做了扩展，适用条件更广（with a bit of juice）</p><p>RottenPotatoNG（烂土豆）也是一个本地提权工具，针对本地用户的，不能用于域用户，相关漏洞是MS16-075，详细介绍可以看<a href="https://docs.microsoft.com/zh-cn/security-updates/securitybulletins/2016/ms16-075" target="_blank" rel="noopener">这里</a></p><p>用途：将本地用户从低权限(SeImpersonate权限或SeAssignPrimaryToken权限)提升至NT AUTHORITY\SYSTEM</p><h2 id="02-原理"><a href="#02-原理" class="headerlink" title="02 原理"></a>02 原理</h2><p>实现过程类似于中间人攻击，通过拦截替换身份认证的数据包来完成身份认证，在创建进程时传入令牌，获取system权限，详细过程可以参考<a href="https://3gstudent.github.io/3gstudent.github.io/Windows本地提权工具Juicy-Potato测试分析/" target="_blank" rel="noopener">这篇文章</a></p><p>一些名词解释：</p><ul><li><p>COM<br>组件对象模型（Component Object Model），<a href="https://zh.wikipedia.org/wiki/组件对象模型" target="_blank" rel="noopener">维基百科</a></p></li><li><p>DCOM</p><p>分布式组件对象模型（Distributed Component Object Model），<a href="https://zh.wikipedia.org/wiki/Distributed_COM" target="_blank" rel="noopener">维基百科</a></p></li><li><p>BITS</p><p>后台智能传输服务（Background Intelligent Transfer Service），<a href="https://zh.wikipedia.org/wiki/后台智能传输服务" target="_blank" rel="noopener">维基百科</a></p></li><li><p>NTLM</p><p>问询/认证身份验证协议（NT LAN Manager），<a href="https://baike.baidu.com/item/NTLM/6371298" target="_blank" rel="noopener">百度百科</a></p></li><li><p>CLSID</p><p>类标识符（Class Identifier），<a href="https://baike.baidu.com/item/类标识符/3351394?fromtitle=clsid&fromid=2712545" target="_blank" rel="noopener">百度百科</a></p></li></ul><h2 id="03-用法"><a href="#03-用法" class="headerlink" title="03 用法"></a>03 用法</h2><ul><li>必选参数<ul><li>-t 创建进程 <ul><li>&lt;t&gt; CreateProcessWithTokenW</li><li>&lt;u&gt; CreateProcessAsUser</li><li>&lt;*&gt; 两种方法都进行尝试</li></ul></li></ul></li><li>可选参数<ul><li>-m &lt;ip&gt; 设置COM服务器监听地址，默认127.0.0.1</li><li>-a &lt;argument&gt; 要传递的参数，默认为NULL</li><li>-k &lt;ip&gt; RPC服务器IP地址，默认为127.0.0.1</li><li>-n &lt;port&gt; RPC服务器监听端口，默认为135</li><li>-c &lt;{clsid}&gt; CLSID，默认为BITS:{4991d34b-80a1-4291-83b6-3328366b9097}</li><li>-z 只测试CLSID并打印令牌的用户</li></ul></li></ul><p>作者使用示意图：</p><p><img src="/Windows%E6%8F%90%E6%9D%83-JuicyPotato/1.png" srcset="/img/loading.gif" alt></p><p>可以看到成功获取了system权限</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>工具使用</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工具使用</tag>
+      
+      <tag>Windows</tag>
+      
+      <tag>权限提升</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>冰蝎webshell与通信方式</title>
     <link href="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/"/>
     <url>/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/</url>
@@ -20,9 +49,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -99,11 +128,11 @@
     
     <tags>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
       <tag>工具使用</tag>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
       
     </tags>
     
@@ -128,11 +157,11 @@
     
     <tags>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
       <tag>工具使用</tag>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
       
     </tags>
     
@@ -182,11 +211,15 @@
     
     <tags>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
       <tag>工具使用</tag>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
+      
+      <tag>Windows</tag>
+      
+      <tag>权限提升</tag>
       
     </tags>
     
@@ -211,11 +244,11 @@
     
     <tags>
       
-      <tag>MSF</tag>
+      <tag>渗透测试</tag>
       
       <tag>工具使用</tag>
       
-      <tag>渗透测试</tag>
+      <tag>MSF</tag>
       
     </tags>
     
@@ -506,9 +539,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>CRLF</tag>
-      
       <tag>XSS</tag>
+      
+      <tag>CRLF</tag>
       
     </tags>
     
@@ -535,9 +568,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -1008,9 +1041,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -1062,9 +1095,9 @@
     
     <tags>
       
-      <tag>密码学</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>密码学</tag>
       
       <tag>python</tag>
       
