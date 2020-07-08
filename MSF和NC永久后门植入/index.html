@@ -178,8 +178,8 @@
 </ul>
 </li>
 </ul>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/1.png" srcset="/img/loading.gif" alt></p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/2.png" srcset="/img/loading.gif" alt></p>
+<p><img src="1.png" srcset="/img/loading.gif" alt=""></p>
+<p><img src="2.png" srcset="/img/loading.gif" alt=""></p>
 <ul>
 <li>端口固定为31337，如果扫描发现31337打开，就很可能被植入过后门</li>
 <li>防火墙和UAC可能会影响后门</li>
@@ -187,7 +187,7 @@
 <h3 id="persistence后门"><a href="#persistence后门" class="headerlink" title="persistence后门"></a>persistence后门</h3><ul>
 <li>使用 run persistence -h 查看帮助菜单，如图</li>
 </ul>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/3.png" srcset="/img/loading.gif" alt></p>
+<p><img src="3.png" srcset="/img/loading.gif" alt=""></p>
 <ul>
 <li>比较重要的参数有：<ul>
 <li>-A 自动连接后门</li>
@@ -201,13 +201,13 @@
 </li>
 </ul>
 <p>运行persistence后门，设置了时间间隔为20</p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/4.png" srcset="/img/loading.gif" alt></p>
+<p><img src="4.png" srcset="/img/loading.gif" alt=""></p>
 <p>成功获取了Session，编号是21</p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/5.png" srcset="/img/loading.gif" alt></p>
+<p><img src="5.png" srcset="/img/loading.gif" alt=""></p>
 <p>手动关闭获取的Session</p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/6.png" srcset="/img/loading.gif" alt></p>
+<p><img src="6.png" srcset="/img/loading.gif" alt=""></p>
 <p>由于设置了i参数，20s后重新获得了Session，编号变成了22</p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/7.png" srcset="/img/loading.gif" alt></p>
+<p><img src="7.png" srcset="/img/loading.gif" alt=""></p>
 <p>由于使用了-X参数，目标靶机重启后也会自动连接上Session</p>
 <h2 id="02-NC后门"><a href="#02-NC后门" class="headerlink" title="02 NC后门"></a>02 NC后门</h2><h3 id="基本指令"><a href="#基本指令" class="headerlink" title="基本指令"></a>基本指令</h3><ul>
 <li>上传nc<br>upload /root/nc.exe C:\\windows\system32</li>
@@ -227,15 +227,15 @@
 <li>开始连接<br>nc -v ip port</li>
 </ul>
 <h3 id="操作实例"><a href="#操作实例" class="headerlink" title="操作实例"></a>操作实例</h3><p> 添加键值 -Ldp 444 -e cmd.exe 表示把cmd转发的444端口</p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/8.png" srcset="/img/loading.gif" alt></p>
+<p><img src="8.png" srcset="/img/loading.gif" alt=""></p>
 <p>查看添加的键值</p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/9.png" srcset="/img/loading.gif" alt></p>
+<p><img src="9.png" srcset="/img/loading.gif" alt=""></p>
 <p>登录到cmd</p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/10.png" srcset="/img/loading.gif" alt></p>
+<p><img src="10.png" srcset="/img/loading.gif" alt=""></p>
 <p>直接关闭防火墙容易引起怀疑，可以将444端口伪装成正常的防火墙而不被过滤，不容易被发现</p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/11.png" srcset="/img/loading.gif" alt></p>
+<p><img src="11.png" srcset="/img/loading.gif" alt=""></p>
 <p>靶机重启后自动运行了nc.exe,后门仍然有效<br>在kali中使用nc进行连接，获得shell</p>
-<p><img src="/MSF%E5%92%8CNC%E6%B0%B8%E4%B9%85%E5%90%8E%E9%97%A8%E6%A4%8D%E5%85%A5/12.png" srcset="/img/loading.gif" alt></p>
+<p><img src="12.png" srcset="/img/loading.gif" alt=""></p>
 
             </article>
             <hr>
@@ -496,5 +496,5 @@
 
 
 
-</body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body>
 </html>

@@ -161,7 +161,7 @@
 <a id="more"></a>
 
 <h1 id="Metasploit后渗透"><a href="#Metasploit后渗透" class="headerlink" title="Metasploit后渗透"></a>Metasploit后渗透</h1><h2 id="01-权限提升"><a href="#01-权限提升" class="headerlink" title="01 权限提升"></a>01 权限提升</h2><ol>
-<li><p><strong>权限提升</strong><br>使用msf获取sessions后，可以使用getuid查看当前用户<br><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/1.png" srcset="/img/loading.gif" alt><br>当前为root权限，不是system权限</p>
+<li><p><strong>权限提升</strong><br>使用msf获取sessions后，可以使用getuid查看当前用户<br><img src="1.png" srcset="/img/loading.gif" alt=""><br>当前为root权限，不是system权限</p>
 <p>权限提升有三种方法：</p>
 <ul>
 <li>提高程序运行级别</li>
@@ -170,19 +170,19 @@
 </ul>
 </li>
 <li><p><strong>提高程序运行级别</strong><br>使用的msf模块：exploit/windows/local/ask</p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/2.png" srcset="/img/loading.gif" alt><br>设置session的ID，使用run执行即可</p>
+<p><img src="2.png" srcset="/img/loading.gif" alt=""><br>设置session的ID，使用run执行即可</p>
 <p>再次切换到session，使用getsystem命令提权<br>发现已经获得了system权限</p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/3.png" srcset="/img/loading.gif" alt></p>
+<p><img src="3.png" srcset="/img/loading.gif" alt=""></p>
 <p><strong>这种方法需要靶机在弹出框中点击允许，容易被防范</strong></p>
 </li>
 <li><p><strong>UAC绕过</strong><br>使用的msf模块：exploit/windows/local/bypassuac</p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/4.png" srcset="/img/loading.gif" alt><br>设置session的ID，然后执行</p>
+<p><img src="4.png" srcset="/img/loading.gif" alt=""><br>设置session的ID，然后执行</p>
 <p>再次切换到session，使用getsystem命令提权<br>发现已经获得了system权限</p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/3.png" srcset="/img/loading.gif" alt></p>
+<p><img src="3.png" srcset="/img/loading.gif" alt=""></p>
 <p><strong>这种方法不需要需要靶机参与</strong></p>
 </li>
 <li><p><strong>利用提权漏洞进行提权</strong><br>使用的msf模块：exploit/windows/local/ms14_058_track_popup_menu</p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/5.png" srcset="/img/loading.gif" alt></p>
+<p><img src="5.png" srcset="/img/loading.gif" alt=""></p>
 <p>仍然是设置session的ID，然后执行<br>再次切换到session,使用getid命令，发现已经获得了system权限，不需要再次执行getsystem命令</p>
 </li>
 </ol>
@@ -207,10 +207,10 @@
 <li>获取IE缓存：run post/windows/gather/enum_ie</li>
 <li>获取常见信息： run scraper / run wienum</li>
 </ul>
-<p>执行run scraper命令<br><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/6.png" srcset="/img/loading.gif" alt></p>
-<p>导出的结果<br><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/7.png" srcset="/img/loading.gif" alt></p>
-<p>执行run winenum命令<br><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/8.png" srcset="/img/loading.gif" alt></p>
-<p>导出的结果<br><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/9.png" srcset="/img/loading.gif" alt></p>
+<p>执行run scraper命令<br><img src="6.png" srcset="/img/loading.gif" alt=""></p>
+<p>导出的结果<br><img src="7.png" srcset="/img/loading.gif" alt=""></p>
+<p>执行run winenum命令<br><img src="8.png" srcset="/img/loading.gif" alt=""></p>
+<p>导出的结果<br><img src="9.png" srcset="/img/loading.gif" alt=""></p>
 </li>
 <li><p><strong>数据包捕获</strong></p>
 <ul>
@@ -259,11 +259,11 @@
 <li>run post/windows/gather/hashdump<br>hashdump需要有system权限，或者root权限下绕过UAC</li>
 <li>run post/windows/gather/smart_hashdump<br>smart_hashdump可以根据不同的权限和系统采取不同的行动</li>
 </ul>
-<p>hashdump<br><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/10.png" srcset="/img/loading.gif" alt></p>
+<p>hashdump<br><img src="10.png" srcset="/img/loading.gif" alt=""></p>
 <p>run post/windows/gather/hashdump</p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/11.png" srcset="/img/loading.gif" alt></p>
+<p><img src="/11.png" srcset="/img/loading.gif" alt=""></p>
 <p>run post/windows/gather/smart_hashdump</p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/12.png" srcset="/img/loading.gif" alt></p>
+<p><img src="12.png" srcset="/img/loading.gif" alt=""></p>
 <p>即使获取了权限，也最好得到管理员的账号密码，防止陌生人登录被发现。并且管理员可能在多个服务器上使用了相同的账号密码</p>
 </li>
 <li><p><strong>HASH破解</strong></p>
@@ -273,11 +273,11 @@
 <li>msf模块：run auxiliary/analyze/jtr_crack_fast</li>
 <li>hash传递：run exploit/windows/smb/psexec</li>
 </ul>
-<p>hash传递，不用破解，直接使用hash进行登录<br><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/13.png" srcset="/img/loading.gif" alt></p>
+<p>hash传递，不用破解，直接使用hash进行登录<br><img src="13.png" srcset="/img/loading.gif" alt=""></p>
 <p>设置payload为反弹tcp，执行即可获取shell</p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/14.png" srcset="/img/loading.gif" alt></p>
+<p><img src="14.png" srcset="/img/loading.gif" alt=""></p>
 <p>如图可见user为root</p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/15.png" srcset="/img/loading.gif" alt></p>
+<p><img src="15.png" srcset="/img/loading.gif" alt=""></p>
 </li>
 </ol>
 <h2 id="04-关闭防火墙和杀毒软件"><a href="#04-关闭防火墙和杀毒软件" class="headerlink" title="04 关闭防火墙和杀毒软件"></a>04 关闭防火墙和杀毒软件</h2><ul>
@@ -326,8 +326,8 @@
 <li>不用获取账号密码就能窃取Token伪装成合法用户</li>
 <li>适用于域环境下提权渗透</li>
 </ul>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/16.png" srcset="/img/loading.gif" alt></p>
-<p><img src="/Metasploit%E5%90%8E%E6%B8%97%E9%80%8F/17.png" srcset="/img/loading.gif" alt></p>
+<p><img src="16.png" srcset="/img/loading.gif" alt=""></p>
+<p><img src="17.png" srcset="/img/loading.gif" alt=""></p>
 </li>
 </ol>
 
@@ -594,5 +594,5 @@
 
 
 
-</body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body>
 </html>

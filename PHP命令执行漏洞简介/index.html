@@ -188,8 +188,8 @@
 &#125;
 <span class="hljs-meta">?&gt;</span></code></pre>
 
-<p>GET方式传入参数cmd=whoami，成功执行命令<br>   <img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/1.png" srcset="/img/loading.gif" alt></p>
-<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/2.png" srcset="/img/loading.gif" alt></p>
+<p>GET方式传入参数cmd=whoami，成功执行命令<br>   <img src="1.png" srcset="/img/loading.gif" alt=""></p>
+<p><img src="2.png" srcset="/img/loading.gif" alt=""></p>
 <ol start="2">
 <li><p>shell_exec()<br>将字符串作为系统命令执行，不输出结果<br>测试代码如下：</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
@@ -215,8 +215,8 @@
 <p>执行whoami命令结果如下</p>
 </li>
 </ol>
-<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/1.png" srcset="/img/loading.gif" alt></p>
-<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/3.png" srcset="/img/loading.gif" alt></p>
+<p><img src="1.png" srcset="/img/loading.gif" alt=""></p>
+<p><img src="3.png" srcset="/img/loading.gif" alt=""></p>
 <ol start="4">
 <li><p>passthru()<br>与system()类似，将字符串作为系统命令执行，并且输出结果<br>无返回值，可以输出二进制数据<br>测试代码如下：</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
@@ -237,7 +237,7 @@
 &#125;
 <span class="hljs-meta">?&gt;</span></code></pre>
 
-<p>执行whoami命令之后，生成了一个1.TXT文件，内容为命令结果<br><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/4.png" srcset="/img/loading.gif" alt></p>
+<p>执行whoami命令之后，生成了一个1.TXT文件，内容为命令结果<br><img src="4.png" srcset="/img/loading.gif" alt=""></p>
 </li>
 <li><p>反引号<br>反引号``内的字符串会被当做系统命令执行</p>
 <pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span>
@@ -253,10 +253,10 @@
 </li>
 </ol>
 <h2 id="03-DVWA中的命令执行漏洞"><a href="#03-DVWA中的命令执行漏洞" class="headerlink" title="03 DVWA中的命令执行漏洞"></a>03 DVWA中的命令执行漏洞</h2><p>输入一个IP地址，即可执行ping命令</p>
-<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/5.png" srcset="/img/loading.gif" alt></p>
-<p>源码：<br><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/6.png" srcset="/img/loading.gif" alt></p>
+<p><img src="5.png" srcset="/img/loading.gif" alt=""></p>
+<p>源码：<br><img src="6.png" srcset="/img/loading.gif" alt=""></p>
 <p>我们可以使用拼接的方法执行其他命令<br>如图，同时执行了ping和whoami命令</p>
-<p><img src="/PHP%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B/7.png" srcset="/img/loading.gif" alt></p>
+<p><img src="7.png" srcset="/img/loading.gif" alt=""></p>
 <p>可以使用自动化工具commix直接获取网站shell<br>commix -u “<a href="http://127.0.0.1/cmd.php?cmd=127.0.0.1&quot;" target="_blank" rel="noopener">http://127.0.0.1/cmd.php?cmd=127.0.0.1&quot;</a></p>
 <h2 id="04-拼接符介绍"><a href="#04-拼接符介绍" class="headerlink" title="04 拼接符介绍"></a>04 拼接符介绍</h2><ul>
 <li>windows下的拼接符：<ul>
@@ -541,5 +541,5 @@
 
 
 
-</body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body>
 </html>
