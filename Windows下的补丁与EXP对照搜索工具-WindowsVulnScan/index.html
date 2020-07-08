@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>Windows提权 JuicyPotato | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+  <title>Windows下的补丁与EXP对照搜索工具 WindowsVulnScan | Cheekkk&#39;s Anti-Gravity Galaxy</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    423 字
+                    536 字
                   </span>
                 
 
@@ -128,7 +128,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    2
+                    3
                      分钟
                   </span>
                 
@@ -157,66 +157,86 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>多汁土豆…</p>
+              <p>查看缺失的补丁，找到对应EXP</p>
 <a id="more"></a>
 
-<h1 id="JuicyPotato"><a href="#JuicyPotato" class="headerlink" title="JuicyPotato"></a>JuicyPotato</h1><h2 id="00-项目地址"><a href="#00-项目地址" class="headerlink" title="00 项目地址"></a>00 项目地址</h2><p><a href="https://github.com/ohpe/juicy-potato" target="_blank" rel="noopener">GitHub地址</a></p>
-<h2 id="01-简介"><a href="#01-简介" class="headerlink" title="01 简介"></a>01 简介</h2><p>Juicy Potato（多汁土豆）是一款Windows系统的本地提权工具，是在工具RottenPotatoNG（烂土豆）的基础上做了扩展，适用条件更广（with a bit of juice）</p>
-<p>RottenPotatoNG（烂土豆）也是一个本地提权工具，针对本地用户的，不能用于域用户，相关漏洞是MS16-075，详细介绍可以看<a href="https://docs.microsoft.com/zh-cn/security-updates/securitybulletins/2016/ms16-075" target="_blank" rel="noopener">这里</a></p>
-<p>用途：将本地用户从低权限(SeImpersonate权限或SeAssignPrimaryToken权限)提升至NT AUTHORITY\SYSTEM</p>
-<h2 id="02-原理"><a href="#02-原理" class="headerlink" title="02 原理"></a>02 原理</h2><p>实现过程类似于中间人攻击，通过拦截替换身份认证的数据包来完成身份认证，在创建进程时传入令牌，获取system权限，详细过程可以参考<a href="https://3gstudent.github.io/3gstudent.github.io/Windows本地提权工具Juicy-Potato测试分析/" target="_blank" rel="noopener">这篇文章</a></p>
-<p>一些名词解释：</p>
+<h1 id="WindowsVulnScan"><a href="#WindowsVulnScan" class="headerlink" title="WindowsVulnScan"></a>WindowsVulnScan</h1><h2 id="00-项目简介"><a href="#00-项目简介" class="headerlink" title="00 项目简介"></a>00 项目简介</h2><p><a href="https://github.com/chroblert/WindowsVulnScan" target="_blank" rel="noopener">GitHub</a></p>
+<p>可在此查看源码并查看作者介绍（以下一些内容摘自作者介绍）</p>
+<p><strong>功能：</strong></p>
 <ul>
-<li><p>COM<br>组件对象模型（Component Object Model），<a href="https://zh.wikipedia.org/wiki/组件对象模型" target="_blank" rel="noopener">维基百科</a></p>
-</li>
-<li><p>DCOM</p>
-<p>分布式组件对象模型（Distributed Component Object Model），<a href="https://zh.wikipedia.org/wiki/Distributed_COM" target="_blank" rel="noopener">维基百科</a></p>
-</li>
-<li><p>BITS</p>
-<p>后台智能传输服务（Background Intelligent Transfer Service），<a href="https://zh.wikipedia.org/wiki/后台智能传输服务" target="_blank" rel="noopener">维基百科</a></p>
-</li>
-<li><p>NTLM</p>
-<p>问询/认证身份验证协议（NT LAN Manager），<a href="https://baike.baidu.com/item/NTLM/6371298" target="_blank" rel="noopener">百度百科</a></p>
-</li>
-<li><p>CLSID</p>
-<p>类标识符（Class Identifier），<a href="https://baike.baidu.com/item/类标识符/3351394?fromtitle=clsid&fromid=2712545" target="_blank" rel="noopener">百度百科</a></p>
-</li>
+<li>查找主机上具有的CVE</li>
+<li>查找具有公开EXP的CVE</li>
 </ul>
-<h2 id="03-用法"><a href="#03-用法" class="headerlink" title="03 用法"></a>03 用法</h2><ul>
-<li>必选参数<ul>
-<li>-t 创建进程 <ul>
-<li>&lt;t&gt; CreateProcessWithTokenW</li>
-<li>&lt;u&gt; CreateProcessAsUser</li>
-<li>&lt;*&gt; 两种方法都进行尝试</li>
-</ul>
+<p><strong>原理：</strong></p>
+<ol>
+<li><p>搜集CVE与KB的对应关系。首先在微软官网上收集CVE与KB对应的关系，然后存储进数据库中</p>
 </li>
-</ul>
+<li><p>查找特定CVE网上是否有公开的EXP</p>
 </li>
-<li>可选参数<ul>
-<li>-m &lt;ip&gt; 设置COM服务器监听地址，默认127.0.0.1</li>
-<li>-a &lt;argument&gt; 要传递的参数，默认为NULL</li>
-<li>-k &lt;ip&gt; RPC服务器IP地址，默认为127.0.0.1</li>
-<li>-n &lt;port&gt; RPC服务器监听端口，默认为135</li>
-<li>-c &lt;{clsid}&gt; CLSID，默认为BITS:{4991d34b-80a1-4291-83b6-3328366b9097}</li>
-<li>-z 只测试CLSID并打印令牌的用户</li>
-</ul>
+<li><p>利用powershell脚本收集主机的一些系统版本与KB信息</p>
 </li>
-</ul>
-<p>作者使用示意图：</p>
-<p><img src="/Windows%E6%8F%90%E6%9D%83-JuicyPotato/1.png" srcset="/img/loading.gif" alt></p>
-<p>可以看到成功获取了system权限</p>
+<li><p>利用系统版本与KB信息搜寻主机上具有存在公开EXP的CVE</p>
+</li>
+</ol>
+<h2 id="01-使用方法"><a href="#01-使用方法" class="headerlink" title="01 使用方法"></a>01 使用方法</h2><pre><code class="hljs awk"><span class="hljs-comment"># author: JC0o0l</span>
+<span class="hljs-comment"># GitHub: https://github.com/chroblert/</span>
+可选参数:
+  -h, --help            show this help message and <span class="hljs-keyword">exit</span>
+  -u, --update-cve      更新CVEKB数据
+  -U, --update-exp      更新CVEEXP数据
+  -C, --check-EXP       检索具有EXP的CVE
+  -f FILE, --file FILE  ps1脚本运行后产生的.json文件</code></pre>
+
+<p><strong>运行步骤：</strong></p>
+<ol>
+<li>首先运行powershell脚本<code>KBCollect.ps</code>收集一些信息</li>
+</ol>
+<pre><code class="hljs reasonml">.\<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">KBCollect</span>.</span></span>ps1</code></pre>
+
+<ol start="2">
+<li><p>将运行后产生的<code>KB.json</code>文件移动到<code>cve-check.py</code>所在的目录</p>
+</li>
+<li><p>安装一些python3模块</p>
+</li>
+</ol>
+<pre><code class="hljs cmake">python3 -m pip <span class="hljs-keyword">install</span> requirements.txt</code></pre>
+
+<ol start="4">
+<li><p>运行<code>cve-check.py -u</code>创建CVEKB数据库</p>
+</li>
+<li><p>运行<code>cve-check.py -U</code>更新CVEKB数据库中的<code>hasPOC</code>字段</p>
+</li>
+<li><p>运行<code>cve-check.py -C -f KB.json</code>查看具有公开EXP的CVE</p>
+</li>
+</ol>
+<p>在Windows10中进行测试，结果如下：</p>
+<p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/3.png" srcset="/img/loading.gif" alt></p>
+<p>可以看到系统信息、补丁与EXP</p>
+<h2 id="02-使用中的问题"><a href="#02-使用中的问题" class="headerlink" title="02 使用中的问题"></a>02 使用中的问题</h2><ol>
+<li><p>执行<strong>.\KBCollect.ps1</strong>时出错，系统禁止运行脚本<br><strong>解决：</strong>运行powershell时要使用管理员权限运行，否则没有权限运行KBCollect.ps1</p>
+<p>但要注意使用管理员和非管理员权限运行时初始路径不同</p>
+<p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/1.png" srcset="/img/loading.gif" alt></p>
+</li>
+<li><p>执行<strong>python3 -m pip install requirements.txt</strong>命令安装Python模块时无反应</p>
+<p><strong>解决：</strong>直接安装需求的模块</p>
+<p>打开requirements.txt发现只有requests2.23.0一个需求的模块，直接使用pip安装即可，<strong>pip install requests==2.23.0</strong></p>
+<p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/2.png" srcset="/img/loading.gif" alt></p>
+</li>
+<li><p>执行<strong>python .\cve-check.py -C -f .\KB.json</strong>时出现错误</p>
+<p><img src="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/4.png" srcset="/img/loading.gif" alt></p>
+<p><strong>解决：</strong>修改cve-check.py代码中的编码问题</p>
+<p>将第275-277行修改为以下内容</p>
+<pre><code class="hljs python"><span class="hljs-keyword">if</span> args.file:
+            <span class="hljs-keyword">with</span> open(args.file,<span class="hljs-string">"r"</span>,encoding=<span class="hljs-string">"utf-8-sig"</span>,errors=<span class="hljs-string">"ignore"</span>) <span class="hljs-keyword">as</span> f:
+                KBResult = json.load(f,strict=<span class="hljs-literal">False</span>)</code></pre>
+
+</li>
+</ol>
 
             </article>
             <hr>
             <div>
               <div class="post-metas mb-3">
-                
-                  <div class="post-meta mr-3">
-                    <i class="iconfont icon-category"></i>
-                    
-                      <a class="hover-with-bg" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
-                    
-                  </div>
                 
                 
                   <div class="post-meta">
@@ -227,6 +247,8 @@
                       <a class="hover-with-bg" href="/tags/Windows/">Windows</a>
                     
                       <a class="hover-with-bg" href="/tags/%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87/">权限提升</a>
+                    
+                      <a class="hover-with-bg" href="/tags/object-Object/">[object Object]</a>
                     
                   </div>
                 
@@ -239,18 +261,12 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Windows下的补丁与EXP对照搜索工具 WindowsVulnScan</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/">
-                        <span class="hidden-mobile">冰蝎webshell与通信方式</span>
+                      <a href="/Windows%E6%8F%90%E6%9D%83-JuicyPotato/">
+                        <span class="hidden-mobile">Windows提权 JuicyPotato</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -390,7 +406,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Windows提权 JuicyPotato&nbsp;",
+        "Windows下的补丁与EXP对照搜索工具 WindowsVulnScan&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,
