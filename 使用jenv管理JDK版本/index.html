@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>分类 - 工具使用 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+  <title>使用jenv管理JDK版本 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -46,7 +46,7 @@
 
 
 <body>
-  <header style="height: 60vh;">
+  <header style="height: 70vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -111,6 +111,31 @@
             </span>
 
             
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    197 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    1
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
           </div>
 
           
@@ -121,73 +146,126 @@
 
   <main>
     
-      <div class="container nopadding-md">
-        <div class="py-5" id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
-
-<div class="list-group">
-<!--  <p class="h4">共计 7 篇文章</p>-->
-  <hr>
-  
-    
       
-      <p class="h5">2020</p>
-    
-    <a href="/%E4%BD%BF%E7%94%A8jenv%E7%AE%A1%E7%90%86JDK%E7%89%88%E6%9C%AC/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">使用jenv管理JDK版本</span>
-      <span style="float: right;">07-14</span>
-    </a>
-  
-    
-    <a href="/%E5%87%A0%E4%B8%AA%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">几个网络相关的小工具</span>
-      <span style="float: right;">07-08</span>
-    </a>
-  
-    
-    <a href="/Linux%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-linux-exploit-suggester-2/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">Linux下的补丁与EXP对照搜索工具 linux-exploit-suggester-2</span>
-      <span style="float: right;">07-08</span>
-    </a>
-  
-    
-    <a href="/Windows%E4%B8%8B%E7%9A%84%E8%A1%A5%E4%B8%81%E4%B8%8EEXP%E5%AF%B9%E7%85%A7%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7-WindowsVulnScan/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">Windows下的补丁与EXP对照搜索工具 WindowsVulnScan</span>
-      <span style="float: right;">07-08</span>
-    </a>
-  
-    
-    <a href="/Windows%E6%8F%90%E6%9D%83-JuicyPotato/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">Windows提权 JuicyPotato</span>
-      <span style="float: right;">07-08</span>
-    </a>
-  
-    
-    <a href="/%E5%86%B0%E8%9D%8Ewebshell%E4%B8%8E%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">冰蝎webshell与通信方式</span>
-      <span style="float: right;">07-07</span>
-    </a>
-  
-    
-    <a href="/Metasploit%E7%AE%80%E4%BB%8B/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">Metasploit简介</span>
-      <span style="float: right;">05-24</span>
-    </a>
-  
-</div>
 
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>JDK版本切换确实是件头疼的事</p>
+<a id="more"></a>
 
+<h1 id="使用jenv管理JDK版本"><a href="#使用jenv管理JDK版本" class="headerlink" title="使用jenv管理JDK版本"></a>使用jenv管理JDK版本</h1><ol>
+<li><p>使用Homebrew下载</p>
+<pre><code class="hljs shell">brew install jenv</code></pre>
+</li>
+<li><p>安装之后的配置</p>
+<pre><code class="hljs jboss-cli"><span class="hljs-keyword">echo</span> 'export PATH=<span class="hljs-string">"$HOME/.jenv/bin:$PATH"</span>' &gt;&gt; ~<span class="hljs-string">/.bash_profile</span>
+<span class="hljs-keyword">echo</span> 'eval <span class="hljs-string">"$(jenv init -)"</span>' &gt;&gt; ~<span class="hljs-string">/.bash_profile</span></code></pre>
 
+<p>使配置生效</p>
+<pre><code class="hljs bash"><span class="hljs-built_in">source</span> .bash_profile</code></pre>
+</li>
+<li><p>使用命令 jenv versions 可以查看当前所有版本</p>
+<p><img src="1.png" srcset="/img/loading.gif" alt=""></p>
+<p>如图安装有1.8、11、openjdk几个版本，当前使用的是1.8</p>
+</li>
+<li><p>查看所有JDK的目录</p>
+<pre><code class="hljs awk">cd <span class="hljs-regexp">/Library/</span>Java<span class="hljs-regexp">/JavaVirtualMachines/</span></code></pre>
+
+<p><img src="2.png" srcset="/img/loading.gif" alt=""></p>
+<p>如图有8、11、12三个目录</p>
+</li>
+<li><p>添加JDK到jenv中</p>
+<pre><code class="hljs awk">jenv add <span class="hljs-regexp">/System/</span>Library<span class="hljs-regexp">/Java/</span>JavaVirtualMachines<span class="hljs-regexp">/要添加的JDK/</span>Contents<span class="hljs-regexp">/Home/</span></code></pre>
+
+<p>根据要添加的JDK版本补全以上命令并执行</p>
+</li>
+<li><p>切换JDK版本</p>
+<p>查看当前java版本</p>
+<pre><code class="hljs applescript">java -<span class="hljs-built_in">version</span></code></pre>
+
+<p><img src="3.png" srcset="/img/loading.gif" alt=""></p>
+<p>当前为1.8版本</p>
+<p>切换到11版本</p>
+<pre><code class="hljs angelscript">jenv local <span class="hljs-number">11</span></code></pre>
+
+<p>再次查看，发现已经切换成功了</p>
+<p><img src="4.png" srcset="/img/loading.gif" alt=""></p>
+</li>
+</ol>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                  </div>
+                
               </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/%E5%87%A0%E4%B8%AA%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7/">
+                        <span class="hidden-mobile">几个网络相关的小工具</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
             </div>
+
+            
           </div>
         </div>
       </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
     
   </main>
 
@@ -251,6 +329,34 @@
 
 
 
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
 
 
   <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
@@ -270,7 +376,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "分类 - 工具使用&nbsp;",
+        "使用jenv管理JDK版本&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,
@@ -313,6 +419,20 @@
   </script>
 
 
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
 
 
 

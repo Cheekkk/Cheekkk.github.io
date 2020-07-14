@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>使用jenv管理JDK版本</title>
+    <link href="/%E4%BD%BF%E7%94%A8jenv%E7%AE%A1%E7%90%86JDK%E7%89%88%E6%9C%AC/"/>
+    <url>/%E4%BD%BF%E7%94%A8jenv%E7%AE%A1%E7%90%86JDK%E7%89%88%E6%9C%AC/</url>
+    
+    <content type="html"><![CDATA[<p>JDK版本切换确实是件头疼的事</p><a id="more"></a><h1 id="使用jenv管理JDK版本"><a href="#使用jenv管理JDK版本" class="headerlink" title="使用jenv管理JDK版本"></a>使用jenv管理JDK版本</h1><ol><li><p>使用Homebrew下载</p><pre><code class="hljs shell">brew install jenv</code></pre></li><li><p>安装之后的配置</p><pre><code class="hljs jboss-cli"><span class="hljs-keyword">echo</span> 'export PATH=<span class="hljs-string">"$HOME/.jenv/bin:$PATH"</span>' &gt;&gt; ~<span class="hljs-string">/.bash_profile</span><span class="hljs-keyword">echo</span> 'eval <span class="hljs-string">"$(jenv init -)"</span>' &gt;&gt; ~<span class="hljs-string">/.bash_profile</span></code></pre><p>使配置生效</p><pre><code class="hljs bash"><span class="hljs-built_in">source</span> .bash_profile</code></pre></li><li><p>使用命令 jenv versions 可以查看当前所有版本</p><p><img src="1.png" srcset="/img/loading.gif" alt=""></p><p>如图安装有1.8、11、openjdk几个版本，当前使用的是1.8</p></li><li><p>查看所有JDK的目录</p><pre><code class="hljs awk">cd <span class="hljs-regexp">/Library/</span>Java<span class="hljs-regexp">/JavaVirtualMachines/</span></code></pre><p><img src="2.png" srcset="/img/loading.gif" alt=""></p><p>如图有8、11、12三个目录</p></li><li><p>添加JDK到jenv中</p><pre><code class="hljs awk">jenv add <span class="hljs-regexp">/System/</span>Library<span class="hljs-regexp">/Java/</span>JavaVirtualMachines<span class="hljs-regexp">/要添加的JDK/</span>Contents<span class="hljs-regexp">/Home/</span></code></pre><p>根据要添加的JDK版本补全以上命令并执行</p></li><li><p>切换JDK版本</p><p>查看当前java版本</p><pre><code class="hljs applescript">java -<span class="hljs-built_in">version</span></code></pre><p><img src="3.png" srcset="/img/loading.gif" alt=""></p><p>当前为1.8版本</p><p>切换到11版本</p><pre><code class="hljs angelscript">jenv local <span class="hljs-number">11</span></code></pre><p>再次查看，发现已经切换成功了</p><p><img src="4.png" srcset="/img/loading.gif" alt=""></p></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>工具使用</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工具使用</tag>
+      
+      <tag>Java</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>几个网络相关的小工具</title>
     <link href="/%E5%87%A0%E4%B8%AA%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7/"/>
     <url>/%E5%87%A0%E4%B8%AA%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7/</url>
@@ -70,9 +97,9 @@
     
     <tags>
       
-      <tag>Windows</tag>
-      
       <tag>权限提升</tag>
+      
+      <tag>Windows</tag>
       
       <tag>工具使用</tag>
       
@@ -99,9 +126,9 @@
     
     <tags>
       
-      <tag>Windows</tag>
-      
       <tag>权限提升</tag>
+      
+      <tag>Windows</tag>
       
       <tag>工具使用</tag>
       
@@ -128,9 +155,9 @@
     
     <tags>
       
-      <tag>Windows</tag>
-      
       <tag>权限提升</tag>
+      
+      <tag>Windows</tag>
       
       <tag>工具使用</tag>
       
@@ -319,9 +346,9 @@
     
     <tags>
       
-      <tag>Windows</tag>
-      
       <tag>权限提升</tag>
+      
+      <tag>Windows</tag>
       
       <tag>工具使用</tag>
       
@@ -1203,9 +1230,9 @@
     
     <tags>
       
-      <tag>密码学</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>密码学</tag>
       
       <tag>python</tag>
       
