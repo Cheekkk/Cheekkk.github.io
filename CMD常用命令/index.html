@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    2k 字
+                    2.4k 字
                   </span>
                 
 
@@ -128,7 +128,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    11
+                    14
                      分钟
                   </span>
                 
@@ -225,7 +225,43 @@
 <li>tracert 查看与目标直接的路由路径</li>
 <li>telnet 远程登录 </li>
 </ul>
-<h2 id="05-一些系统常量"><a href="#05-一些系统常量" class="headerlink" title="05 一些系统常量"></a>05 一些系统常量</h2><p>%HOMEDRIVE% =C:\ 当前启动的系统的所在分区</p>
+<h2 id="05-内网渗透常用探测命令"><a href="#05-内网渗透常用探测命令" class="headerlink" title="05 内网渗透常用探测命令"></a>05 内网渗透常用探测命令</h2><pre><code class="hljs pgsql">ipconfig /<span class="hljs-keyword">all</span>        <span class="hljs-comment">------ 查询本机IP段，所在域等</span>
+net <span class="hljs-keyword">user</span>           <span class="hljs-comment">------ 本机用户列表</span>
+net localgroup administrators      <span class="hljs-comment">------ 本机管理员[通常含有域用户]</span>
+net <span class="hljs-keyword">user</span> /<span class="hljs-keyword">domain</span>             <span class="hljs-comment">------ 查询域用户</span>
+net ``<span class="hljs-keyword">group</span>` `/<span class="hljs-keyword">domain</span>            <span class="hljs-comment">------ 查询域里面的工作组</span>
+net ``<span class="hljs-keyword">group</span>` `"domain admins"` `/<span class="hljs-keyword">domain</span>    <span class="hljs-comment">------ 查询域管理员用户组</span>
+net localgroup administrators /<span class="hljs-keyword">domain</span>  <span class="hljs-comment">------ 登录本机的域管理员</span>
+net localgroup administrators workgroup\user001 /<span class="hljs-keyword">add</span>  <span class="hljs-comment">------域用户添加到本机</span>
+net ``<span class="hljs-keyword">group</span>` `"domain controllers"` `/<span class="hljs-keyword">domain</span>    <span class="hljs-comment">------ 查看域控制器(如果有多台)</span>
+net <span class="hljs-type">time</span> /<span class="hljs-keyword">domain</span>          <span class="hljs-comment">------ 判断主域，主域服务器都做时间服务器</span>
+net config workstation       <span class="hljs-comment">------ 当前登录域</span>
+net <span class="hljs-keyword">session</span>            <span class="hljs-comment">------ 查看当前会话</span>
+net use \\ip\ipc$ pawword /<span class="hljs-keyword">user</span>:username   <span class="hljs-comment">------ 建立IPC会话[空连接-***]</span>
+net <span class="hljs-keyword">share</span>             <span class="hljs-comment">------ 查看SMB指向的路径[即共享]</span>
+net <span class="hljs-keyword">view</span>              <span class="hljs-comment">------ 查询同一域内机器列表</span>
+net <span class="hljs-keyword">view</span> \\ip           <span class="hljs-comment">------ 查询某IP共享</span>
+net <span class="hljs-keyword">view</span> /<span class="hljs-keyword">domain</span>          <span class="hljs-comment">------ 查询域列表</span>
+net <span class="hljs-keyword">view</span> /<span class="hljs-keyword">domain</span>:domainname    <span class="hljs-comment">------ 查看workgroup域中计算机列表</span>
+net <span class="hljs-keyword">start</span>             <span class="hljs-comment">------ 查看当前运行的服务</span>
+net accounts            <span class="hljs-comment">------ 查看本地密码策略</span>
+net accounts /<span class="hljs-keyword">domain</span>        <span class="hljs-comment">------ 查看域密码策略</span>
+nbtstat –A ip           <span class="hljs-comment">------netbios 查询</span>
+netstat –an/ano/anb        <span class="hljs-comment">------ 网络连接查询</span>
+route print            <span class="hljs-comment">------ 路由表tasklist /V            ----- 查看进程[显示对应用户]</span>
+tasklist /S ip /U <span class="hljs-keyword">domain</span>\username /P /V       <span class="hljs-comment">----- 查看远程计算机进程列表</span>
+qprocess *             <span class="hljs-comment">----- 类似tasklist</span>
+qprocess /<span class="hljs-keyword">SERVER</span>:IP        <span class="hljs-comment">----- 远程查看计算机进程列表</span>
+nslookup –qt-MX Yahoo.com     <span class="hljs-comment">----- 查看邮件服务器</span>
+whoami /<span class="hljs-keyword">all</span>            <span class="hljs-comment">----- 查询当前用户权限等</span>
+<span class="hljs-keyword">set</span>`                `<span class="hljs-comment">----- 查看系统环境变量</span>
+systeminfo             <span class="hljs-comment">----- 查看系统信息</span>
+qwinsta              <span class="hljs-comment">----- 查看登录情况</span>
+qwinsta /<span class="hljs-keyword">SERVER</span>:IP         <span class="hljs-comment">----- 查看远程登录情况</span>
+fsutil fsinfo drives        <span class="hljs-comment">----- 查看所有盘符</span>
+gpupdate /force          <span class="hljs-comment">----- 更新域策略cmdkey /l             ----- 看是否保存了登陆凭证。（攻击者会先查看管理员是否保留了登陆凭证，方便后续的凭证抓取。） echo %logonserver%         ----- 查看登陆域</span></code></pre>
+
+<h2 id="06-一些系统常量"><a href="#06-一些系统常量" class="headerlink" title="06 一些系统常量"></a>06 一些系统常量</h2><p>%HOMEDRIVE% =C:\ 当前启动的系统的所在分区</p>
 <p>%SystemRoot% =C:\WINDOWS 当前启动的系统的所在目录</p>
 <p>%windir% = %SystemRoot% = C:\WINDOWS 当前启动的系统的所在目录</p>
 <p>%USERPROFILE% =C:\Documents and Settings\用户名 当前用户数据变量</p>

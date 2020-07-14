@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    932 字
+                    1.3k 字
                   </span>
                 
 
@@ -128,7 +128,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    6
+                    9
                      分钟
                   </span>
                 
@@ -157,7 +157,7 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>ncat、curl、lcx</p>
+              <p>ncat、curl、lcx、netstat、tcpdump</p>
 <a id="more"></a>
 
 <h1 id="几个网络相关的小工具"><a href="#几个网络相关的小工具" class="headerlink" title="几个网络相关的小工具"></a>几个网络相关的小工具</h1><h2 id="00-ncat"><a href="#00-ncat" class="headerlink" title="00 ncat"></a>00 ncat</h2><ol>
@@ -345,9 +345,56 @@
 <li>肉鸡执行 lcx.exe -slave 本机公网IP 9999 肉鸡IP 3389</li>
 </ul>
 <p>结果：将肉鸡的3389端口转发到本机的9999端口</p>
-<p>​      </p>
-<p>​      </p>
-<p>​      </p>
+<h1 id="03-netstat"><a href="#03-netstat" class="headerlink" title="03 netstat"></a>03 netstat</h1><p>参考：codesheep</p>
+<p>netstat用于获取网络连接信息</p>
+<ol>
+<li>参数<ul>
+<li>-n 使用IP地址表示主机</li>
+<li>-a 显示结果中包含的socket</li>
+<li>-t 仅显示TCP连接</li>
+<li>-r 显示路由信息</li>
+<li>-i 显示网卡接口数据流量</li>
+<li>-c 每隔一秒输出一次</li>
+<li>-o 显示socket定时器的信息</li>
+<li>-p 显示socket所属的进程的PID和名字</li>
+<li>-s 打印统计信息</li>
+</ul>
+</li>
+<li>常用组合<ul>
+<li>只列出TCP或UDP连接 netstat -at/-au</li>
+<li>列出监听中的连接 netstat -tnl</li>
+<li>获取进程名、进程号及用户ID netstat -nlpt</li>
+<li>持续输出 netstat -ct</li>
+<li>打印active状态的连接 netstat -atpn | grep ESTA</li>
+<li>查看服务是否运行 netstat -aple | grep ntp</li>
+</ul>
+</li>
+</ol>
+<h2 id="04-tcpdump"><a href="#04-tcpdump" class="headerlink" title="04 tcpdump"></a>04 tcpdump</h2><p>参考：codesheep</p>
+<ol>
+<li>参数<ul>
+<li>-n 使用IP地址表示主机，使用数字表示端口</li>
+<li>-i 指定要监听的端口，如果为”-i any“则表示所有网卡数据包</li>
+<li>-v 输出TTL等更详细的信息</li>
+<li>-t 不打印时间戳</li>
+<li>-e 显示以太网帧头部信息</li>
+<li>-c 仅抓取指定数量的数据包</li>
+<li>-x 按照十六进制显示内容</li>
+<li>-X 输出十六进制和对应的ASCII字符</li>
+<li>-S 设置抓包长度</li>
+<li>-W 将结果定向输出到某个文件，一般是pcap后缀</li>
+<li>-r 从pcap文件读取数据包并显示</li>
+<li>post 指定端口</li>
+</ul>
+</li>
+<li>常用组合<ul>
+<li>指定捕获包的协议类型 tcpdump -i eth0 arp</li>
+<li>捕获DNS请求和响应 tcpdump -i eth0 -s0 port 53</li>
+<li>匹配HTTP请求头 tcpdump -s 0 -v -n -l |egrep -i “POST /|GET /|Host:”</li>
+<li>获取特点目的IP+PORT的数据包 tcpdump -i eth0 dst address and port 22</li>
+</ul>
+</li>
+</ol>
 
             </article>
             <hr>
