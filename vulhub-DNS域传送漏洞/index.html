@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>IPC连接常用命令 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+  <title>vulhub DNS域传送漏洞 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    852 字
+                    490 字
                   </span>
                 
 
@@ -128,7 +128,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    5
+                    2
                      分钟
                   </span>
                 
@@ -157,68 +157,42 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>IPC连接的一些整理</p>
+              <p>vulhub学习DNS域传送漏洞</p>
 <a id="more"></a>
 
-<h1 id="IPC连接常用命令"><a href="#IPC连接常用命令" class="headerlink" title="IPC连接常用命令"></a>IPC连接常用命令</h1><h2 id="00-概念"><a href="#00-概念" class="headerlink" title="00 概念"></a>00 概念</h2><p>IPC是英文Internet Process Connection的缩写，可以理解为“命名管道”资源，它是Windows操作系统提供的一个通信基础，用来在两台计算机进程之间建立通信连接，而IPC后面的“$”是Windows系统所使用的隐藏符号，因此“IPC$”表示IPC共享，但是是隐藏的共享</p>
-<p>IPC$是Windows NT及Windows 2000/XP/2003特有的一项功能，通过这项功能，一些网络程序的数据交换可以建立在IPC上面，实现远程访问和管理计算机</p>
-<p>为了配合IPC共享工作，Windows操作系统（不包括Windows 98系列）在安装完成后，自动设置共享的目录为：C盘、D盘、E盘、ADMIN目录（C:\WINNT\）等，即为ADMIN$、C$、D$、E$等等，但要注意，这些共享是隐藏的，只有管理员能够对他们进行远程操作。在MS-DOS中键入“net share”命令来查看本机共享资源</p>
-<h2 id="02-利用条件"><a href="#02-利用条件" class="headerlink" title="02 利用条件"></a>02 利用条件</h2><ol>
-<li>开启了139，445端口</li>
-<li>Windows NT及以上操作系统</li>
-<li>得知目标的用户名和密码</li>
-</ol>
-<h2 id="03-操作命令"><a href="#03-操作命令" class="headerlink" title="03 操作命令"></a>03 操作命令</h2><ol>
-<li><p>建立空连接</p>
-<pre><code class="hljs shell">net use \\127.0.0.1\ipc$ "" /user:""</code></pre>
+<h1 id="vulhub-DNS域传送漏洞"><a href="#vulhub-DNS域传送漏洞" class="headerlink" title="vulhub DNS域传送漏洞"></a>vulhub DNS域传送漏洞</h1><h2 id="00-环境搭建"><a href="#00-环境搭建" class="headerlink" title="00 环境搭建"></a>00 环境搭建</h2><ul>
+<li>docker路径 dns/dns-zone-transfer</li>
+<li>启动 <ul>
+<li>docker-compose build</li>
+<li>docker-compose up -d</li>
+</ul>
 </li>
-<li><p>建立完整连接</p>
-<pre><code class="hljs shell">net use \\127.0.0.1\ipc$ "password" /user:"username"</code></pre>
-</li>
-<li><p>映射路径</p>
-<pre><code class="hljs shell">net use z: \\127.0.0.1\c$ "密码" /user:"用户名"  (即可将对方的c盘映射为自己的z盘，其他盘类推)</code></pre>
-</li>
-<li><p>访问路径</p>
-<pre><code class="hljs shell">net use z: \\127.0.0.1\c$   #直接访问</code></pre>
-</li>
-<li><p>删除路径</p>
-<pre><code class="hljs shell">net use c: /del     删除映射的c盘，其他盘类推 
-net use * /del      删除全部,会有提示要求按y确认</code></pre>
-</li>
-<li><p>删除IPC$连接</p>
-<pre><code class="hljs shell">net use \\127.0.0.1\ipc$ /del</code></pre>
-</li>
-<li><p>启动与关闭服务</p>
-<pre><code class="hljs shell">net start //查看已经开启的服务
-net start servername //启动服务
-net stop servername	//关闭服务</code></pre>
-</li>
-<li><p>启动与关闭共享</p>
-<pre><code class="hljs shell">net shate ipc$ //开启ipc$默认共享
-net share ipc$ /del //关闭ipc$默认共享
-net share c=c:\ //完全共享c盘
-net share d=d:\ //删除完全共享的d盘</code></pre>
-</li>
-<li><p>复制远程文件</p>
-<pre><code class="hljs shell">Copy e:\server.exe \\127.0.0.1\c$ \\将本地的E盘下的server.exe这个文件copy到对方系统的C盘根目录下</code></pre>
-
-<p>Copy复制成功所需的条件：必须与主机建立ipc$连接</p>
-</li>
-<li><p>运行远程程序</p>
-<pre><code class="hljs shell">At \\127.0.0.1 12:30 c:\server.exe \\让主机在中午12:30分运行我们已经复制到他C盘根目录下的木马server.exe</code></pre>
-
-</li>
-</ol>
-<h2 id="04-错误代码"><a href="#04-错误代码" class="headerlink" title="04 错误代码"></a>04 错误代码</h2><ol>
-<li>错误号5，拒绝访问 ： 很可能你使用的用户不是管理员权限的，先提升权限；</li>
-<li>错误号51，Windows 无法找到网络路径 : 网络有问题； </li>
-<li>错误号53，找不到网络路径 ： ip地址错误；目标未开机；目标lanmanserver服务未启动；目标有防火墙（端口过滤）</li>
-<li>错误号67，找不到网络名 ： 你的lanmanworkstation服务未启动，目标删除了ipc$；</li>
-<li>错误号1219，提供的凭据与已存在的凭据集冲突 ： 你已经和对方建立了一个ipc$，请删除再连</li>
-<li>错误号1326，未知的用户名或错误密码 </li>
-<li>错误号1792，试图登录，但是网络登录服务没有启动 ： 目标NetLogon服务未启动。（连接域控会出现此情况） </li>
-<li>错误号2242，此用户的密码已经过期 ： 目标有帐号策略，强制定期要求更改密码。</li>
-</ol>
+<li>关闭 docker-compose down</li>
+</ul>
+<p>环境运行后，将会监听TCP和UDP的53端口，DNS协议同时支持从这两个端口进行数据传输。因为涉及到1024以下的端口号，所以运行上述命令可能需要root权限</p>
+<h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><p>DNS服务器分为：主服务器、备份服务器和缓存服务器。在主备服务器之间同步数据库，需要使用“DNS域传送”。域传送是指后备服务器从主服务器拷贝数据，并用得到的数据更新自身数据库</p>
+<p>DNS服务器配置不当，可能导致匿名用户获取某个域的所有记录。造成整个网络的拓扑结构泄露给潜在的攻击者</p>
+<p>常见DNS记录类型:</p>
+<ul>
+<li>A       IP地址记录,记录一个域名对应的IP地址</li>
+<li>AAAA    IPv6 地址记录，记录一个域名对应的IPv6地址</li>
+<li>CNAME   别名记录，记录一个主机的别名 </li>
+<li>MX      电子邮件交换记录，记录一个邮件域名对应的IP地址，如<a href="mailto:root@xxxx.com">root@xxxx.com</a></li>
+<li>NS      域名服务器记录 ,记录该域名由哪台域名服务器解析</li>
+<li>PTR     反向记录，也即从IP地址到域名的一条记录</li>
+<li>TXT     记录域名的相关文本信息</li>
+<li>SOA记录   start of anthorization 开始授权，是一种比较难以理解的记录值，一般二级域名才会有</li>
+</ul>
+<h2 id="02-使用dig命令"><a href="#02-使用dig命令" class="headerlink" title="02 使用dig命令"></a>02 使用dig命令</h2><p><strong>1. dig @your-ip <a href="http://www.vulhub.org" target="_blank" rel="noopener">www.vulhub.org</a></strong></p>
+<p><img src="1.png" srcset="/img/loading.gif" alt=""></p>
+<p><strong>2. 发送axfr类型的dns请求</strong></p>
+<p><strong>dig @your-ip -t axfr <a href="http://www.vulhub.org" target="_blank" rel="noopener">www.vulhub.org</a></strong></p>
+<p>axfr类型是Authoritative Transfer的缩写，指请求传送某个区域的全部记录</p>
+<p><img src="2.png" srcset="/img/loading.gif" alt=""></p>
+<h2 id="03-使用nmap"><a href="#03-使用nmap" class="headerlink" title="03 使用nmap"></a>03 使用nmap</h2><p>所用脚本：dns-zone-transfer.nse</p>
+<p>参数设置：dns-zone-transfer.domain=vulhub.org</p>
+<p>完整命令：nmap –script dns-zone-transfer.nse –script-args “dns-zone-transfer.domain=vulhub.org” -Pn -p 53 your-ip</p>
+<p><img src="3.png" srcset="/img/loading.gif" alt=""></p>
 
             </article>
             <hr>
@@ -229,7 +203,9 @@ net share d=d:\ //删除完全共享的d盘</code></pre>
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+                      <a class="hover-with-bg" href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">漏洞复现</a>
+                    
+                      <a class="hover-with-bg" href="/tags/vulhub/">vulhub</a>
                     
                   </div>
                 
@@ -242,18 +218,12 @@ net share d=d:\ //删除完全共享的d盘</code></pre>
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/cobalt-strike%E4%B8%8A%E7%BA%BF%E4%B8%BB%E6%9C%BA%E7%9A%84%E6%96%B9%E6%B3%95/cobalt-strike%E4%B8%8A%E7%BA%BF%E4%B8%BB%E6%9C%BA%E7%9A%84%E6%96%B9%E6%B3%95/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">cobalt strike上线主机的方法</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/cobalt-strike%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
-                        <span class="hidden-mobile">cobalt strike内网渗透常用命令</span>
+                      <a href="/cobalt-strike%E4%B8%8A%E7%BA%BF%E4%B8%BB%E6%9C%BA%E7%9A%84%E6%96%B9%E6%B3%95/%E6%9C%AA%E5%91%BD%E5%90%8D/">
+                        <span class="hidden-mobile">cobalt-strike上线主机的方法/未命名</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -393,7 +363,7 @@ net share d=d:\ //删除完全共享的d盘</code></pre>
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "IPC连接常用命令&nbsp;",
+        "vulhub DNS域传送漏洞&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,

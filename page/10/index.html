@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>标签 - 漏洞分析 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+  <title>Cheekkk&#39;s Anti-Gravity Galaxy</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -46,7 +46,7 @@
 
 
 <body>
-  <header style="height: 80vh;">
+  <header style="height: 100vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -114,6 +114,10 @@
           </div>
 
           
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
+          
         </div>
       </div>
     </div>
@@ -123,27 +127,58 @@
     
       <div class="container nopadding-md">
         <div class="py-5" id="board"
-          >
+          style=margin-top:0>
           
           <div class="container">
             <div class="row">
               <div class="col-12 col-md-10 m-auto">
                 
 
-<div class="list-group">
-<!--  <p class="h4">共计 1 篇文章</p>-->
-  <hr>
-  
+
+  <div class="row mx-auto index-card">
     
-      
-      <p class="h5">2020</p>
     
-    <a href="/%E5%BF%83%E8%84%8F%E6%BB%B4%E8%A1%80%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B-CVE-2014-0160/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">心脏滴血漏洞简介 CVE-2014-0160</span>
-      <span style="float: right;">07-07</span>
-    </a>
+    <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/SQL%E6%B3%A8%E5%85%A5%E6%95%B4%E7%90%86/">SQL注入整理</a>
+
+      <a href="/SQL%E6%B3%A8%E5%85%A5%E6%95%B4%E7%90%86/" class="index-excerpt">
+        
+        
+          
+        
+        <div>本文整理了SQL注入的原理、分类等基础知识</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+            
+              <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/page/9/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span>
+    </span>
+  </nav>
   
-</div>
+  <script>
+    for (ele of document.getElementById("pagination").getElementsByTagName("a")) {
+      ele.href += '#board';
+    }
+  </script>
 
 
 
@@ -234,7 +269,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "标签 - 漏洞分析&nbsp;",
+        "Welcome! This is Cheekkk's blog. Sorridi~&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,
